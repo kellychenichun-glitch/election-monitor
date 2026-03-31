@@ -18,8 +18,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python src/monitor.py
         env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_CX_ID: ${{ secrets.GOOGLE_CX_ID }}
+          SERPER_API_KEY: ${{ secrets.SERPER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
