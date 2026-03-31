@@ -8,8 +8,16 @@ Layer 4: ErrorLog     - 錯誤記錄
 
 
 
+
+
+
+
 搜尋來源：Serper.dev (Google/FB/IG/Threads/PTT) + Google News RSS
 """
+
+
+
+
 
 
 
@@ -20,6 +28,10 @@ from html.parser import HTMLParser
 from urllib.parse import quote
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+
+
+
 
 
 
@@ -35,12 +47,4 @@ SHEET_ID       = os.environ["GOOGLE_SHEET_ID"].strip()
 
 
 
-TODAY  = datetime.date.today().isoformat()
-RUN_ID = str(uuid.uuid4())[:8]
-
-
-
-
-# ─── 監控目標（只抓這兩位）───
-CANDIDATES = ["黃柏瑜", "陳素月"]
 
