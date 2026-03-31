@@ -10,22 +10,19 @@ on:
 jobs:
   run-monitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
     steps:
-      - name: 取得程式碼
-        uses: actions/checkout@v4
-
-      - name: 安裝 Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
-
-      - name: 安裝套件
-        run: pip install -r requirements.txt
-
-      - name: 執行監控
+      - run: pip install -r requirements.txt
+      - run: python src/monitor.py
         env:
-          GOOGLE_API_KEY:    ${{ secrets.GOOGLE_API_KEY }}
-          GOOGLE_CX_ID:      ${{ secrets.GOOGLE_CX_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CX_ID: ${{ secrets.GOOGLE_CX_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
