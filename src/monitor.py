@@ -21,11 +21,15 @@ GMAIL_PASS       = os.environ["GMAIL_PASS"]
 NOTIFY_EMAIL     = os.environ["NOTIFY_EMAIL"]
 SHEET_ID         = os.environ["GOOGLE_SHEET_ID"]
 
-# ─── 監控目標設定（在這裡修改你要監控的候選人/議題）───
+# ─── 監控目標設定 ───
 CANDIDATES = [
-    "陳素月",      # 候選人/議題名稱
-    # "黃柏瑜",    # 新增更多只要取消 # 號
-    # "婦幼政策",
+    "賴清德",
+    "陳素月",
+    "蔡英文",
+    "黃柏瑜",
+    "彰化縣",
+    "彰化市",
+    "民進黨",
 ]
 
 DIMENSIONS = [
@@ -46,7 +50,7 @@ def search_google(keyword: str, num: int = 10) -> list[dict]:
         "q":   keyword,
         "num": num,
         "hl":  "zh-TW",
-        "dateRestrict": "d1",   # 只搜今天
+        "dateRestrict": "d1",
     }
     try:
         r = requests.get(url, params=params, timeout=10)
@@ -80,11 +84,9 @@ def search_threads(keyword: str) -> list[dict]:
     }
     results = []
     try:
-        # Threads 公開搜尋頁
         url = f"https://www.threads.net/search?q={requests.utils.quote(keyword)}&serp_type=default"
         r = requests.get(url, headers=headers, timeout=15)
 
-        # 簡單解析：抓取 og:title / og:description meta 標籤
         from html.parser import HTMLParser
 
         class MetaParser(HTMLParser):
@@ -119,7 +121,6 @@ def search_threads(keyword: str) -> list[dict]:
     except Exception as e:
         print(f"[Threads 爬蟲錯誤] {keyword}: {e}")
 
-    # 若爬蟲取不到資料，改用 Google 搜尋 Threads 網域
     if not results:
         try:
             url = "https://www.googleapis.com/customsearch/v1"
@@ -151,7 +152,6 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
     if not items:
         return []
 
-    # 把所有標題+摘要整理成一個 prompt
     content_list = "\n".join(
         f"{i+1}. 標題：{it['title']}\n   摘要：{it['summary']}"
         for i, it in enumerate(items)
@@ -177,7 +177,7 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
                 "content-type":      "application/json",
             },
             json={
-                "model":      "claude-haiku-4-5-20251001",  # 用最便宜的模型做情緒判定
+                "model":      "claude-haiku-4-5-20251001",
                 "max_tokens": 1000,
                 "messages":   [{"role": "user", "content": prompt}],
             },
@@ -188,7 +188,6 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
         text = text.replace("```json", "").replace("```", "").strip()
         sentiments = json.loads(text)
 
-        # 把情緒結果合併回原始資料
         sent_map = {s["index"]: s for s in sentiments}
         for i, item in enumerate(items):
             s = sent_map.get(i + 1, {})
@@ -207,15 +206,11 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
 # ─── 寫入 Google Sheets ──────────────────────────────────
 
 def append_to_sheet(rows: list[list]) -> bool:
-    """把資料附加到 Google Sheets（使用公開可編輯的 Sheet）"""
-    url = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/A1:append"
-    # 注意：這裡需要 OAuth，改用 gspread 套件更簡單
-    # 下方用 gspread + service account 的方式
+    """把資料附加到 Google Sheets"""
     try:
         import gspread
         from google.oauth2.service_account import Credentials
 
-        # 從環境變數讀取 Service Account JSON
         sa_info = json.loads(os.environ["GOOGLE_SA_JSON"])
         creds = Credentials.from_service_account_info(
             sa_info,
@@ -225,7 +220,6 @@ def append_to_sheet(rows: list[list]) -> bool:
         gc     = gspread.authorize(creds)
         sheet  = gc.open_by_key(SHEET_ID).sheet1
 
-        # 如果是第一行，先寫標頭
         if sheet.row_count == 0 or sheet.cell(1, 1).value is None:
             sheet.append_row(["時間", "候選人", "維度", "平台", "標題", "摘要", "情緒", "原因", "來源連結"])
 
@@ -341,22 +335,18 @@ def main():
             keyword = f"{candidate} {dimension}"
             print(f"  🔍 搜尋：{keyword}")
 
-            # 1. Google 搜尋
             google_items = search_google(keyword)
-            time.sleep(1)  # 避免速率限制
+            time.sleep(1)
 
-            # 2. Threads 搜尋
             threads_items = search_threads(keyword)
             time.sleep(1)
 
             items = google_items + threads_items
             print(f"     取得 {len(items)} 筆（Google:{len(google_items)} Threads:{len(threads_items)}）")
 
-            # 3. Claude 情緒分析
             if items:
                 items = analyze_sentiment(items, candidate)
 
-            # 加上候選人和維度標記
             for item in items:
                 item["candidate"] = candidate
                 item["dimension"] = dimension
@@ -366,7 +356,6 @@ def main():
 
     print(f"\n共蒐集 {len(all_results)} 筆資料")
 
-    # 4. 寫入 Google Sheets
     if all_results:
         rows = [
             [
@@ -378,7 +367,6 @@ def main():
         ]
         append_to_sheet(rows)
 
-    # 5. 發送 Email 通知
     html = build_email_html(all_results, run_time)
     send_email(f"📡 選情日報 {run_time}｜共 {len(all_results)} 筆", html)
 
