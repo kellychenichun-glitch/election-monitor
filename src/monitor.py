@@ -1,18 +1,9 @@
 """
 選情監控系統 - 主程式
 搜尋來源：Serper.dev (Google/FB/IG/Threads/PTT) + Google News RSS
-情緒分析：Claude AI
-儲存：Google Sheets
-通知：Email
 """
 
-import os
-import json
-import time
-import datetime
-import smtplib
-import requests
-import xml.etree.ElementTree as ET
+import os, json, time, datetime, smtplib, requests, xml.etree.ElementTree as ET
 from urllib.parse import quote
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -27,25 +18,9 @@ SHEET_ID       = os.environ["GOOGLE_SHEET_ID"].strip()
 
 TODAY = datetime.date.today().isoformat()
 
-# ─── 監控目標 ───
-CANDIDATES = [
-    "賴清德",
-    "陳素月",
-    "蔡英文",
-    "黃柏瑜",
-    "彰化縣",
-    "彰化市",
-    "民進黨",
-]
+CANDIDATES = ["賴清德","陳素月","蔡英文","黃柏瑜","彰化縣","彰化市","民進黨"]
+DIMENSIONS  = ["政見","爭議","支持","批評"]
 
-DIMENSIONS = [
-    "政見",
-    "爭議",
-    "支持",
-    "批評",
-]
-
-# 各平台 site 限制
 PLATFORMS = {
     "Google":  "",
     "FB":      "site:facebook.com",
@@ -54,26 +29,15 @@ PLATFORMS = {
     "PTT":     "site:ptt.cc",
 }
 
+# ─── Serper.dev 搜尋 ─────────────────────────────────────
 
-# ─── Serper.dev 搜尋 ──────────────────────────────────────
-
-def search_serper(keyword: str, site_prefix: str = "", platform: str = "Google", num: int = 3) -> list[dict]:
-    """用 Serper.dev 搜尋（每月 2500 次免費）"""
+def search_serper(keyword: str, site_prefix: str = "", platform: str = "Google", num: int = 5) -> list[dict]:
     query = f"{site_prefix} {keyword}".strip() if site_prefix else keyword
     try:
         r = requests.post(
             "https://google.serper.dev/search",
-            headers={
-                "X-API-KEY": SERPER_API_KEY,
-                "Content-Type": "application/json",
-            },
-            json={
-                "q": query,
-                "gl": "tw",
-                "hl": "zh-tw",
-                "num": num,
-                "tbs": "qdr:d",  # 只搜今天
-            },
+            headers={"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"},
+            json={"q": query, "num": num, "gl": "tw", "hl": "zh-tw", "tbs": "qdr:d"},
             timeout=10,
         )
         r.raise_for_status()
@@ -83,13 +47,12 @@ def search_serper(keyword: str, site_prefix: str = "", platform: str = "Google",
             "title":    i.get("title", ""),
             "summary":  i.get("snippet", ""),
             "url":      i.get("link", ""),
-        } for i in items[:num]]
+        } for i in items]
     except Exception as e:
-        print(f"  [{platform} 錯誤] {e}")
+        print(f"  [Serper {platform} 錯誤] {e}")
         return []
 
-
-# ─── Google News RSS（免費，只取今天）──────────────────────
+# ─── Google News RSS（免費）──────────────────────────────
 
 def search_google_news_rss(keyword: str, num: int = 5) -> list[dict]:
     results = []
@@ -106,29 +69,19 @@ def search_google_news_rss(keyword: str, num: int = 5) -> list[dict]:
             if pub_date:
                 try:
                     from email.utils import parsedate_to_datetime
-                    pub_day = parsedate_to_datetime(pub_date).date().isoformat()
-                    if pub_day != TODAY:
+                    if parsedate_to_datetime(pub_date).date().isoformat() != TODAY:
                         continue
-                except:
-                    pass
-            results.append({
-                "platform": "Google News",
-                "title":    title,
-                "summary":  desc,
-                "url":      link,
-            })
-            if len(results) >= num:
-                break
+                except: pass
+            results.append({"platform": "Google News", "title": title, "summary": desc, "url": link})
+            if len(results) >= num: break
     except Exception as e:
         print(f"  [Google News RSS 錯誤] {e}")
     return results
 
-
 # ─── Claude AI 情緒分析 ──────────────────────────────────
 
 def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
-    if not items:
-        return []
+    if not items: return []
     content_list = "\n".join(
         f"{i+1}. 標題：{it['title']}\n   摘要：{it['summary']}"
         for i, it in enumerate(items)
@@ -146,25 +99,15 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
     try:
         r = requests.post(
             "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": ANTHROPIC_KEY,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
-            json={
-                "model": "claude-haiku-4-5-20251001",
-                "max_tokens": 1000,
-                "messages": [{"role": "user", "content": prompt}],
-            },
+            headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json"},
+            json={"model": "claude-haiku-4-5-20251001", "max_tokens": 1000, "messages": [{"role": "user", "content": prompt}]},
             timeout=30,
         )
         r.raise_for_status()
-        text = r.json()["content"][0]["text"].strip()
-        text = text.replace("```json", "").replace("```", "").strip()
-        sentiments = json.loads(text)
-        sent_map = {s["index"]: s for s in sentiments}
+        text = r.json()["content"][0]["text"].strip().replace("```json","").replace("```","").strip()
+        sent_map = {s["index"]: s for s in json.loads(text)}
         for i, item in enumerate(items):
-            s = sent_map.get(i + 1, {})
+            s = sent_map.get(i+1, {})
             item["sentiment"] = s.get("sentiment", "中立")
             item["reason"]    = s.get("reason", "")
     except Exception as e:
@@ -174,7 +117,6 @@ def analyze_sentiment(items: list[dict], candidate: str) -> list[dict]:
             item["reason"]    = "分析失敗"
     return items
 
-
 # ─── 寫入 Google Sheets ──────────────────────────────────
 
 def append_to_sheet(rows: list[list]) -> bool:
@@ -182,15 +124,13 @@ def append_to_sheet(rows: list[list]) -> bool:
         import gspread
         from google.oauth2.service_account import Credentials
         sa_info = json.loads(os.environ["GOOGLE_SA_JSON"].strip())
-        creds = Credentials.from_service_account_info(
-            sa_info,
-            scopes=["https://spreadsheets.google.com/feeds",
-                    "https://www.googleapis.com/auth/drive"],
-        )
-        gc    = gspread.authorize(creds)
-        sheet = gc.open_by_key(SHEET_ID).sheet1
-        if sheet.row_count == 0 or sheet.cell(1, 1).value is None:
-            sheet.append_row(["時間", "候選人", "維度", "平台", "標題", "摘要", "情緒", "原因", "來源連結"])
+        creds = Credentials.from_service_account_info(sa_info, scopes=[
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive"
+        ])
+        sheet = gspread.authorize(creds).open_by_key(SHEET_ID).sheet1
+        if sheet.row_count == 0 or sheet.cell(1,1).value is None:
+            sheet.append_row(["時間","候選人","維度","平台","標題","摘要","情緒","原因","來源連結"])
         sheet.append_rows(rows)
         print(f"[Sheets] ✅ 寫入 {len(rows)} 筆")
         return True
@@ -198,8 +138,7 @@ def append_to_sheet(rows: list[list]) -> bool:
         print(f"[Sheets 錯誤] {e}")
         return False
 
-
-# ─── Email 通知 ──────────────────────────────────────────
+# ─── Email ───────────────────────────────────────────────
 
 def send_email(subject: str, html_body: str):
     try:
@@ -208,63 +147,47 @@ def send_email(subject: str, html_body: str):
         msg["From"]    = GMAIL_USER
         msg["To"]      = NOTIFY_EMAIL
         msg.attach(MIMEText(html_body, "html", "utf-8"))
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(GMAIL_USER, GMAIL_PASS)
-            server.sendmail(GMAIL_USER, NOTIFY_EMAIL, msg.as_string())
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+            s.login(GMAIL_USER, GMAIL_PASS)
+            s.sendmail(GMAIL_USER, NOTIFY_EMAIL, msg.as_string())
         print(f"[Email] ✅ → {NOTIFY_EMAIL}")
     except Exception as e:
         print(f"[Email 錯誤] {e}")
 
-
-def build_email_html(results: list[dict], run_time: str, api_count: int) -> str:
+def build_email_html(results, run_time):
     pos   = sum(1 for r in results if r.get("sentiment") == "正面")
     neg   = sum(1 for r in results if r.get("sentiment") == "負面")
     total = len(results)
-    score = round(((pos - neg) / total * 100)) if total else 0
-    platform_counts = {}
-    for r in results:
-        p = r.get("platform", "")
-        platform_counts[p] = platform_counts.get(p, 0) + 1
-    platform_summary = " ｜ ".join(f"{k} {v}筆" for k, v in sorted(platform_counts.items()))
+    score = round(((pos-neg)/total*100)) if total else 0
+    pc    = {}
+    for r in results: pc[r.get("platform","")] = pc.get(r.get("platform",""),0)+1
+    ps    = " ｜ ".join(f"{k} {v}筆" for k,v in sorted(pc.items()))
     rows_html = ""
     for r in results:
-        color = "#22c55e" if r.get("sentiment") == "正面" else "#ef4444" if r.get("sentiment") == "負面" else "#94a3b8"
-        emoji = "🟢" if r.get("sentiment") == "正面" else "🔴" if r.get("sentiment") == "負面" else "⚪"
+        color = "#22c55e" if r.get("sentiment")=="正面" else "#ef4444" if r.get("sentiment")=="負面" else "#94a3b8"
+        emoji = "🟢" if r.get("sentiment")=="正面" else "🔴" if r.get("sentiment")=="負面" else "⚪"
         rows_html += f"""<tr>
-          <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px;color:#64748b">{r.get('platform','')}</td>
+          <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px">{r.get('platform','')}</td>
           <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px;font-weight:600">{r.get('candidate','')}</td>
           <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px">{r.get('dimension','')}</td>
           <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;max-width:280px">{r.get('title','')[:55]}...</td>
           <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="color:{color};font-weight:700">{emoji} {r.get('sentiment','')}</span></td>
           <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px"><a href="{r.get('url','')}" style="color:#3b82f6">查看</a></td>
         </tr>"""
-    score_color = "#22c55e" if score > 0 else "#ef4444" if score < 0 else "#94a3b8"
-    score_str = f"+{score}" if score > 0 else str(score)
-    return f"""<!DOCTYPE html>
-<html><body style="font-family:'Microsoft JhengHei',sans-serif;background:#f8fafc;padding:20px;margin:0">
+    sc = f"+{score}" if score>0 else str(score)
+    sc_color = "#22c55e" if score>0 else "#ef4444" if score<0 else "#94a3b8"
+    return f"""<!DOCTYPE html><html><body style="font-family:'Microsoft JhengHei',sans-serif;background:#f8fafc;padding:20px">
 <div style="max-width:820px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)">
   <div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:28px;color:white">
     <h1 style="margin:0;font-size:22px">📡 選情監控日報</h1>
-    <p style="margin:6px 0 0;opacity:0.6;font-size:12px">{run_time}｜僅限今日資料｜Serper {api_count} 次</p>
-    <p style="margin:4px 0 0;opacity:0.5;font-size:11px">{platform_summary}</p>
+    <p style="margin:6px 0 0;opacity:0.6;font-size:12px">{run_time}｜僅限今日資料</p>
+    <p style="margin:4px 0 0;opacity:0.5;font-size:11px">{ps}</p>
   </div>
   <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#f1f5f9">
-    <div style="background:white;border-radius:8px;padding:14px;text-align:center">
-      <div style="font-size:28px;font-weight:900;color:#3b82f6">{total}</div>
-      <div style="font-size:11px;color:#64748b">今日聲量</div>
-    </div>
-    <div style="background:white;border-radius:8px;padding:14px;text-align:center">
-      <div style="font-size:28px;font-weight:900;color:#22c55e">{pos}</div>
-      <div style="font-size:11px;color:#64748b">🟢 正面</div>
-    </div>
-    <div style="background:white;border-radius:8px;padding:14px;text-align:center">
-      <div style="font-size:28px;font-weight:900;color:#ef4444">{neg}</div>
-      <div style="font-size:11px;color:#64748b">🔴 負面</div>
-    </div>
-    <div style="background:white;border-radius:8px;padding:14px;text-align:center">
-      <div style="font-size:28px;font-weight:900;color:{score_color}">{score_str}</div>
-      <div style="font-size:11px;color:#64748b">情緒指數</div>
-    </div>
+    <div style="background:white;border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:900;color:#3b82f6">{total}</div><div style="font-size:11px;color:#64748b">今日聲量</div></div>
+    <div style="background:white;border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:900;color:#22c55e">{pos}</div><div style="font-size:11px;color:#64748b">🟢 正面</div></div>
+    <div style="background:white;border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:900;color:#ef4444">{neg}</div><div style="font-size:11px;color:#64748b">🔴 負面</div></div>
+    <div style="background:white;border-radius:8px;padding:14px;text-align:center"><div style="font-size:28px;font-weight:900;color:{sc_color}">{sc}</div><div style="font-size:11px;color:#64748b">情緒指數</div></div>
   </div>
   <div style="padding:16px 20px;overflow-x:auto">
     <table style="width:100%;border-collapse:collapse">
@@ -279,17 +202,13 @@ def build_email_html(results: list[dict], run_time: str, api_count: int) -> str:
       <tbody>{rows_html}</tbody>
     </table>
   </div>
-  <div style="padding:14px 20px;background:#f8fafc;font-size:11px;color:#94a3b8;text-align:center;border-top:1px solid #e2e8f0">
-    選情雷達自動產生 · 來源：Google / FB / IG / Threads / PTT / Google News RSS
-  </div>
+  <div style="padding:14px 20px;background:#f8fafc;font-size:11px;color:#94a3b8;text-align:center">選情雷達 · 來源：Google / FB / IG / Threads / PTT / Google News</div>
 </div></body></html>"""
-
 
 # ─── 主流程 ──────────────────────────────────────────────
 
 def main():
-    run_time  = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    api_count = 0
+    run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     print(f"\n{'='*55}")
     print(f"  選情監控啟動 {run_time}（今日：{TODAY}）")
     print(f"  搜尋引擎：Serper.dev + Google News RSS")
@@ -303,48 +222,34 @@ def main():
             keyword = f"{candidate} {dimension}"
             for platform, prefix in PLATFORMS.items():
                 items = search_serper(keyword, prefix, platform, num=3)
-                api_count += 1
-                if items:
-                    print(f"  ✅ {platform} [{keyword}]: {len(items)} 筆")
+                if items: print(f"  {platform} [{keyword}]: {len(items)} 筆")
                 for item in items:
                     item.update({"candidate": candidate, "dimension": dimension, "time": run_time})
                 all_results.extend(items)
                 time.sleep(0.2)
 
-            # Google News RSS（免費）
             news = search_google_news_rss(keyword, num=3)
-            if news:
-                print(f"  ✅ Google News [{keyword}]: {len(news)} 筆")
+            if news: print(f"  Google News [{keyword}]: {len(news)} 筆（今日）")
             for item in news:
                 item.update({"candidate": candidate, "dimension": dimension, "time": run_time})
             all_results.extend(news)
 
-    print(f"\n📊 共蒐集 {len(all_results)} 筆 | Serper API 用量 {api_count} 次")
+    print(f"\n📊 共蒐集 {len(all_results)} 筆")
 
-    # 情緒分析
     if all_results:
         print("\n🤖 Claude 情緒分析中...")
         for candidate in CANDIDATES:
             group = [r for r in all_results if r.get("candidate") == candidate]
-            if group:
-                analyze_sentiment(group, candidate)
+            if group: analyze_sentiment(group, candidate)
 
-    # 寫入 Sheets
-    if all_results:
-        rows = [[
-            r["time"], r["candidate"], r.get("dimension", ""),
-            r["platform"], r["title"], r["summary"],
-            r.get("sentiment", "中立"), r.get("reason", ""), r["url"],
-        ] for r in all_results]
+        rows = [[r["time"],r["candidate"],r.get("dimension",""),r["platform"],r["title"],r["summary"],r.get("sentiment","中立"),r.get("reason",""),r["url"]] for r in all_results]
         append_to_sheet(rows)
     else:
-        print("⚠️  今日無資料")
+        print("⚠️ 今日無資料")
 
-    # Email
-    html = build_email_html(all_results, run_time, api_count)
-    send_email(f"📡 選情日報 {run_time}｜今日 {len(all_results)} 筆", html)
-    print(f"\n✅ 完成！Serper 用量：{api_count} 次")
-
+    html = build_email_html(all_results, run_time)
+    send_email(f"📡 選情日報 {run_time}｜{len(all_results)} 筆", html)
+    print("\n✅ 完成！")
 
 if __name__ == "__main__":
     main()
