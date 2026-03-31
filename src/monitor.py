@@ -6,8 +6,12 @@ Layer 3: Report       - 分析報告
 Layer 4: ErrorLog     - 錯誤記錄
 
 
+
+
 搜尋來源：Serper.dev (Google/FB/IG/Threads/PTT) + Google News RSS
 """
+
+
 
 
 import os, json, time, datetime, smtplib, requests, hashlib, re, uuid
@@ -16,6 +20,8 @@ from html.parser import HTMLParser
 from urllib.parse import quote
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+
 
 
 # ─── 設定區 ───
@@ -27,17 +33,14 @@ NOTIFY_EMAIL   = os.environ["NOTIFY_EMAIL"].strip()
 SHEET_ID       = os.environ["GOOGLE_SHEET_ID"].strip()
 
 
+
+
 TODAY  = datetime.date.today().isoformat()
 RUN_ID = str(uuid.uuid4())[:8]
+
+
 
 
 # ─── 監控目標（只抓這兩位）───
 CANDIDATES = ["黃柏瑜", "陳素月"]
 
-
-DIMENSIONS = ["政見", "爭議", "支持", "批評"]
-
-
-PLATFORMS = {
-    "Google":  "",
-    "FB":      "site:facebook.com",
