@@ -270,6 +270,32 @@ function getImportanceLevel(score) {
 }
 
 function enrichData(data) {
+  // === 陳素月硬過濾：排除員林市長業務 ===
+  data = data.filter(function(r) {
+    if (r.candidate !== "陳素月") return true;
+    // 員林市長陳素月的業務（我們監控的是立協陳素月）
+    var noWords = [
+      "員林市","員林市長","員林農會","農產包材","白米","包材","漲價",
+      "八卦山","步道","大峦巫步道","按摩","環保考察","農會",
+      "北溝排水","永安區","業林建設",
+      "楽齐老人","長照","局斯中"
+    ];
+    var txt = (r.title + " " + r.topic + " " + r.summary).toLowerCase();
+    for (var i = 0; i < noWords.length; i++) {
+      if (txt.indexOf(noWords[i]) > -1) return false;
+    }
+    // 如果沒有明確提到立委相關譞彙，而且來源是 IG/Threads，表示高風險
+    var liWeiWords = ["立委","立法院","交通委員會","彰化縣長","彰化縣選","彰化縣4選區","選舉","提名","訊求"];
+    if (r.source === "IG" || r.source === "Threads") {
+      var hasLiWei = false;
+      for (var j = 0; j < liWeiWords.length; j++) {
+        if (txt.indexOf(liWeiWords[j]) > -1) { hasLiWei = true; break; }
+      }
+      if (!hasLiWei) return false;
+    }
+    return true;
+  });
+  // === 過濾結束 ===
   // 為每筆資料加上計算屬性
   return data.map(function(r) {
     var copy = Object.assign({}, r);
