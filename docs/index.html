@@ -150,7 +150,16 @@ async function fetchData(sh){
   }
   return data;
 }
-function nav(){var h="";for(var i=0;i<SH.length;i++){var d=SH[i];h+='<button class="db'+(d===AS?" active":"")+'" onclick="sw(\'"+d+"\')">'+d+"</button>";}document.getElementById("dn").innerHTML=h;}
+function nav(){
+  var h="";
+  for(var i=0;i<SH.length;i++){
+    var d=SH[i];
+    var cls="db"+(d===AS?" active":"");
+    h+="<button class=\""+cls+"\" onclick=\"sw('"+d+"')\">"+d+"</button>";
+  }
+  document.getElementById("dn").innerHTML=h;
+}
+
 async function sw(d){AS=d;nav();document.getElementById("tb").innerHTML='<tr><td colspan="8"><div class="loading"><div class="spinner"></div></div></td></tr>';D=await fetchData(d);renderAll();}
 function rStats(data){
   var pos=0,neg=0,hi=0,pl=[];
