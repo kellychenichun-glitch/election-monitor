@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>選情雷達｜彰化選情監控</title>
+<title>é¸æé·éï½å½°åé¸æç£æ§</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f8f9fa;--sf:#fff;--sf2:#f1f3f5;--bd:#dee2e6;--tx:#212529;--mu:#6c757d;--ac:#16a34a;--al:#dcfce7;--da:#dc2626;--dl:#fee2e2;--ne:#64748b;--go:#d97706;--gl:#fef3c7;--bl:#2563eb;--bll:#dbeafe;--hu:#059669;--hl:#d1fae5;--ch:#7c3aed;--cl:#ede9fe}
@@ -129,8 +129,7 @@ async function getSheets(){
     try{
       var r=await fetch('https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+ds[i]);
       var t=await r.text();
-      var errChk='status":"error';
-      if(t.indexOf(errChk)>-1)continue;
+      if(t.indexOf('"status":"error"')>-1)continue;
       var s=t.indexOf('{'),e=t.lastIndexOf('}');
       if(s<0||e<0)continue;
       var j=JSON.parse(t.substring(s,e+1));
@@ -141,10 +140,8 @@ async function getSheets(){
 }
 async function fetchData(sh){
   var r=await fetch('https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+sh+'&ts='+Date.now());
-  var t=await r.text();
-  var s=t.indexOf('{'),e=t.lastIndexOf('}');
-  var j=JSON.parse(t.substring(s,e+1));
-  var data=[];
+  var t=await r.text();var s=t.indexOf('{'),e=t.lastIndexOf('}');
+  var j=JSON.parse(t.substring(s,e+1));var data=[];
   for(var i=0;i<j.table.rows.length;i++){
     var rw=j.table.rows[i];
     var c=rw.c.map(function(x){return x?(x.v||''):'';});
@@ -174,8 +171,8 @@ function rTable(data){
   if(!data.length){document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">目前沒有資料</div></td></tr>';return;}
   var h='';
   for(var i=0;i<data.length;i++){
-    var r=data[i],sb=r.sentiment==='正面'?'bpos2':r.sentiment==='負面'?'bneg2':'bneu2',se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪',pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo',pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低',cc=r.candidate==='黃柏瑜'?'bhu':'bch',pi=ICO[r.source]||'🌐',ts=r.time.length>5?r.time.substring(0,5):r.time;
-    h+='<tr class="fi" style="animation-delay:'+(i*0.02)+'s"><td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--mu)">'+ts+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span style="font-size:14px;color:var(--mu)">'+pi+' '+r.source+'</span></td><td><span style="font-size:13px">'+r.topic+'</span></td><td class="tce"><div class="ttx">'+r.title+'</div>'+(r.summary?'<div class="smy">'+r.summary+'</div>':'')+'</td><td><span class="badge '+sb+'">'+se+' '+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="lnk" href="'+r.url+'" target="_blank">查看 →</a>':'-')+'</td></tr>';
+    var r=data[i],sb=r.sentiment==='正面'?'bpos2':r.sentiment==='負面'?'bneg2':'bneu2',se=r.sentiment==='正面'?'●':r.sentiment==='負面'?'●':'○',pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo',pt=r.priority==='high'?'重要':r.priority==='medium'?'中':'低',cc=r.candidate==='黃柏瑜'?'bhu':'bch',pi=ICO[r.source]||'*',ts=r.time.length>5?r.time.substring(0,5):r.time;
+    h+='<tr class="fi" style="animation-delay:'+(i*0.02)+'s"><td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--mu)">'+ts+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span style="font-size:14px;color:var(--mu)">'+pi+' '+r.source+'</span></td><td><span style="font-size:13px">'+r.topic+'</span></td><td class="tce"><div class="ttx">'+r.title+'</div>'+(r.summary?'<div class="smy">'+r.summary+'</div>':'')+'</td><td><span class="badge '+sb+'">&nbsp;'+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="lnk" href="'+r.url+'" target="_blank">查看</a>':'-')+'</td></tr>';
   }
   document.getElementById('tb').innerHTML=h;
 }
@@ -186,7 +183,7 @@ async function init(){
   document.getElementById('lup').textContent='掃描資料中...';
   try{
     SH=await getSheets();
-    if(!SH.length){document.getElementById('sg').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料</div>';document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';document.getElementById('lup').textContent='尚無資料';return;}
+    if(!SH.length){document.getElementById('sg').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有資料</div>';document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';document.getElementById('lup').textContent='尚無資料';return;}
     AS=SH[0];nav();D=await fetchData(AS);renderAll();
     setInterval(async function(){D=await fetchData(AS);renderAll();},5*60*1000);
   }catch(ex){document.getElementById('lup').textContent='載入失敗：'+ex.message;}
