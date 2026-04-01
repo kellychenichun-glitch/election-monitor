@@ -24,7 +24,7 @@ h1{font-size:28px;font-weight:900;color:var(--tx)}h1 span{color:var(--ac)}
 .main{padding:24px 0}
 .dn{display:flex;align-items:center;gap:10px;margin-bottom:24px;overflow-x:auto}
 .db{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:14px;cursor:pointer;font-weight:500;font-family:'DM Mono',monospace}
-.db:hover{border-color:var(--ac);color:var(--ac)}.db.active{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.db:hover,.db.active{border-color:var(--ac);color:var(--ac)}.db.active{background:var(--ac);color:#fff;font-weight:700}
 .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
 .sc{background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden}
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--ac))}
@@ -44,7 +44,7 @@ h1{font-size:28px;font-weight:900;color:var(--tx)}h1 span{color:var(--ac)}
 .cnum{font-size:22px;font-weight:900}.clb{font-size:11px;color:var(--mu);text-transform:uppercase;font-weight:600}
 .fl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .fb{padding:7px 16px;border-radius:8px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:13px;cursor:pointer;font-weight:500;font-family:'Noto Sans TC',sans-serif}
-.fb:hover{border-color:var(--ac);color:var(--ac)}.fb.active{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.fb:hover,.fb.active{border-color:var(--ac);color:var(--ac)}.fb.active{background:var(--ac);color:#fff;font-weight:700}
 .tw{background:var(--sf);border:1.5px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:32px}
 .th{padding:18px 22px;border-bottom:1.5px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf2)}
 .tt{font-size:15px;font-weight:800}.tc{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace}
@@ -53,12 +53,12 @@ thead th{padding:12px 18px;text-align:left;font-size:11px;color:var(--mu);text-t
 td{padding:14px 18px;font-size:14px;border-top:1px solid var(--bd);vertical-align:middle}
 tr:hover td{background:#f8f9fa}
 .badge{display:inline-block;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:700;white-space:nowrap}
-.bp2{background:var(--al);color:var(--ac);border:1px solid #86efac}
-.bn2{background:var(--dl);color:var(--da);border:1px solid #fca5a5}
-.bnu2{background:#f1f5f9;color:var(--ne);border:1px solid #cbd5e1}
+.bpos2{background:var(--al);color:var(--ac);border:1px solid #86efac}
+.bneg2{background:var(--dl);color:var(--da);border:1px solid #fca5a5}
+.bneu2{background:#f1f5f9;color:var(--ne);border:1px solid #cbd5e1}
 .bhi{background:var(--gl);color:var(--go);border:1px solid #fcd34d}
 .bmd{background:var(--bll);color:var(--bl);border:1px solid #93c5fd}
-.blo2{background:#f1f5f9;color:var(--mu);border:1px solid var(--bd)}
+.blo{background:#f1f5f9;color:var(--mu);border:1px solid var(--bd)}
 .bhu{background:var(--hl);color:var(--hu);border:1px solid #6ee7b7}
 .bch{background:var(--cl);color:var(--ch);border:1px solid #c4b5fd}
 .tce{max-width:300px}
@@ -76,53 +76,61 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
 .sb{height:100%;border-radius:3px;transition:width .8s}
 .fi{animation:fi .3s ease both}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-</style></head>
+</style>
+</head>
 <body>
 <div class="hdr"><div class="wrap"><div class="hrow">
-<div class="logo"><div class="icon">📡</div>
-<div><h1>選情<span>雷達</span></h1><div class="sub">彰化縣市選情即時監控系統 &middot; v5.3</div></div></div>
-<div class="hr2"><div class="lb"><div class="ld"></div> LIVE DATA</div><div class="lup" id="lup">載入中...</div></div>
+  <div class="logo">
+    <div class="icon">&#x1F4E1;</div>
+    <div><h1>&#x9078;&#x60C5;<span>&#x96F7;&#x9054;</span></h1><div class="sub">&#x5F70;&#x5316;&#x7E23;&#x5E02;&#x9078;&#x60C5;&#x5373;&#x6642;&#x76E3;&#x63A7;&#x7CFB;&#x7D71; &middot; v5.3</div></div>
+  </div>
+  <div class="hr2">
+    <div class="lb"><div class="ld"></div> LIVE DATA</div>
+    <div class="lup" id="lup">&#x8F09;&#x5165;&#x4E2D;...</div>
+  </div>
 </div></div></div>
 <div class="wrap main">
-<div class="dn" id="dn"></div>
-<div class="sg" id="sg"><div class="loading"><div class="spinner"></div></div></div>
-<div class="cg" id="cg"></div>
-<div class="fl">
-<button class="fb active" data-f="all">全部</button>
-<button class="fb" data-f="黃柏瑜">黃柏瑜</button>
-<button class="fb" data-f="陳素月">陳素月</button>
-<button class="fb" data-f="正面">🟢 正面</button>
-<button class="fb" data-f="負面">🔴 負面</button>
-<button class="fb" data-f="high">🔥 重要</button>
-<button class="fb" data-f="Google News">Google News</button>
-<button class="fb" data-f="FB">Facebook</button>
-<button class="fb" data-f="IG">Instagram</button>
-<button class="fb" data-f="Threads">Threads</button>
-<button class="fb" data-f="PTT">PTT</button>
+  <div class="dn" id="dn"></div>
+  <div class="sg" id="sg"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="cg" id="cg"></div>
+  <div class="fl">
+    <button class="fb active" data-f="all">&#x5168;&#x90E8;</button>
+    <button class="fb" data-f="&#x9EC3;&#x67CF;&#x745C;">&#x9EC3;&#x67CF;&#x745C;</button>
+    <button class="fb" data-f="&#x9673;&#x7D20;&#x6708;">&#x9673;&#x7D20;&#x6708;</button>
+    <button class="fb" data-f="&#x6B63;&#x9762;">&#x1F7E2; &#x6B63;&#x9762;</button>
+    <button class="fb" data-f="&#x8CA0;&#x9762;">&#x1F534; &#x8CA0;&#x9762;</button>
+    <button class="fb" data-f="high">&#x1F525; &#x91CD;&#x8981;</button>
+    <button class="fb" data-f="Google News">Google News</button>
+    <button class="fb" data-f="FB">Facebook</button>
+    <button class="fb" data-f="IG">Instagram</button>
+    <button class="fb" data-f="Threads">Threads</button>
+    <button class="fb" data-f="PTT">PTT</button>
+  </div>
+  <div class="tw">
+    <div class="th"><div class="tt">&#x1F4CB; &#x4ECA;&#x65E5;&#x5831;&#x544A;</div><div class="tc" id="tc"></div></div>
+    <div class="tsx"><table>
+      <thead><tr><th>&#x6642;&#x9593;</th><th>&#x5019;&#x9078;&#x4EBA;</th><th>&#x5E73;&#x53F0;</th><th>&#x8B70;&#x984C;</th><th>&#x6A19;&#x984C;/&#x6458;&#x8981;</th><th>&#x60C5;&#x7DD2;</th><th>&#x91CD;&#x8981;&#x5EA6;</th><th>&#x9023;&#x7D50;</th></tr></thead>
+      <tbody id="tb"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>&#x8F09;&#x5165;&#x8CC7;&#x6599;&#x4E2D;...</span></div></td></tr></tbody>
+    </table></div>
+  </div>
 </div>
-<div class="tw">
-<div class="th"><div class="tt">📋 今日報告</div><div class="tc" id="tc"></div></div>
-<div class="tsx"><table>
-<thead><tr><th>時間</th><th>候選人</th><th>平台</th><th>議題</th><th>標題/摘要</th><th>情緒</th><th>重要度</th><th>連結</th></tr></thead>
-<tbody id="tb"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入資料中...</span></div></td></tr></tbody>
-</table></div></div></div>
 <div class="wrap"><div class="ft">
-<div>選情雷達 &middot; 資料來源：Serper.dev + Google News RSS</div>
-<div>資料每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
+  <div>&#x9078;&#x60C5;&#x96F7;&#x9054; &middot; &#x8CC7;&#x6599;&#x4F86;&#x6E90;&#xFF1ASerper.dev + Google News RSS</div>
+  <div>&#x8CC7;&#x6599;&#x6BCF;&#x65E5; 08:00 / 14:00 / 20:00&#xFF08;&#x53F0;&#x7063;&#x6642;&#x9593;&#xFF09;&#x81EA;&#x52D5;&#x66F4;&#x65B0;</div>
 </div></div>
 <script>
 var SID='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
 var ICO={'Google':'🔍','Google News':'📰','FB':'📘','IG':'📸','Threads':'🧵','PTT':'💬'};
 var D=[],AF='all',SH=[],AS='';
 function dlist(){var t=new Date(),r=[];for(var i=0;i<7;i++){var d=new Date(t);d.setDate(t.getDate()-i);r.push(d.toISOString().split('T')[0]);}return r;}
-function chkErr(txt){return txt.indexOf('tatus":"erro')>-1;}
 async function getSheets(){
   var ds=dlist(),res=[];
   for(var i=0;i<ds.length;i++){
     try{
       var r=await fetch('https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+ds[i]);
       var t=await r.text();
-      if(chkErr(t))continue;
+      var errChk='status":"error';
+      if(t.indexOf(errChk)>-1)continue;
       var s=t.indexOf('{'),e=t.lastIndexOf('}');
       if(s<0||e<0)continue;
       var j=JSON.parse(t.substring(s,e+1));
@@ -145,49 +153,19 @@ async function fetchData(sh){
   }
   return data;
 }
-function nav(){
-  var h='';
-  for(var i=0;i<SH.length;i++){var d=SH[i];h+='<button class="db'+(d===AS?' active':'')+'" onclick="sw(''+d+'')">'+d+'</button>';}
-  document.getElementById('dn').innerHTML=h;
-}
+function nav(){var h='';for(var i=0;i<SH.length;i++){var d=SH[i];h+='<button class="db'+(d===AS?' active':'')+'" onclick="sw(''+d+'')">'+d+'</button>';}document.getElementById('dn').innerHTML=h;}
 async function sw(d){AS=d;nav();document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="loading"><div class="spinner"></div></div></td></tr>';D=await fetchData(d);renderAll();}
 function rStats(data){
   var pos=0,neg=0,hi=0,pl=[];
-  for(var i=0;i<data.length;i++){
-    if(data[i].sentiment==='正面')pos++;
-    if(data[i].sentiment==='負面')neg++;
-    if(data[i].priority==='high')hi++;
-    if(pl.indexOf(data[i].source)<0)pl.push(data[i].source);
-  }
-  var n=data.length,sc=n?Math.round((pos-neg)/n*100):0;
-  var col=sc>=0?'var(--ac)':'var(--da)',ss=(sc>0?'+':'')+sc;
-  document.getElementById('sg').innerHTML=
-    '<div class="sc" style="--ca:var(--bl)"><div class="sl">今日聲量</div><div class="sv" style="color:var(--bl)">'+n+'</div><div class="ss">'+pl.length+' 個平台</div></div>'+
-    '<div class="sc" style="--ca:var(--ac)"><div class="sl">正面報導</div><div class="sv" style="color:var(--ac)">'+pos+'</div><div class="ss">'+(n?Math.round(pos/n*100):0)+'%</div></div>'+
-    '<div class="sc" style="--ca:var(--da)"><div class="sl">負面報導</div><div class="sv" style="color:var(--da)">'+neg+'</div><div class="ss">'+(n?Math.round(neg/n*100):0)+'%</div></div>'+
-    '<div class="sc" style="--ca:var(--go)"><div class="sl">重要事件</div><div class="sv" style="color:var(--go)">'+hi+'</div><div class="ss">high priority</div></div>'+
-    '<div class="sc" style="--ca:'+col+'"><div class="sl">情緒指數</div><div class="sv" style="color:'+col+'">'+ss+'</div><div class="sbw"><div class="sb" style="width:'+Math.min(100,Math.abs(sc))+'%;background:'+col+'"></div></div></div>';
+  for(var i=0;i<data.length;i++){if(data[i].sentiment==='正面')pos++;if(data[i].sentiment==='負面')neg++;if(data[i].priority==='high')hi++;if(pl.indexOf(data[i].source)<0)pl.push(data[i].source);}
+  var n=data.length,sc=n?Math.round((pos-neg)/n*100):0,col=sc>=0?'var(--ac)':'var(--da)',ss=(sc>0?'+':'')+sc,pp=n?Math.round(pos/n*100):0,np=n?Math.round(neg/n*100):0;
+  document.getElementById('sg').innerHTML='<div class="sc" style="--ca:var(--bl)"><div class="sl">今日聲量</div><div class="sv" style="color:var(--bl)">'+n+'</div><div class="ss">'+pl.length+' 個平台</div></div><div class="sc" style="--ca:var(--ac)"><div class="sl">正面報導</div><div class="sv" style="color:var(--ac)">'+pos+'</div><div class="ss">'+pp+'%</div></div><div class="sc" style="--ca:var(--da)"><div class="sl">負面報導</div><div class="sv" style="color:var(--da)">'+neg+'</div><div class="ss">'+np+'%</div></div><div class="sc" style="--ca:var(--go)"><div class="sl">重要事件</div><div class="sv" style="color:var(--go)">'+hi+'</div><div class="ss">high priority</div></div><div class="sc" style="--ca:'+col+'"><div class="sl">情緒指數</div><div class="sv" style="color:'+col+'">'+ss+'</div><div class="sbw"><div class="sb" style="width:'+Math.min(100,Math.abs(sc))+'%;background:'+col+'"></div></div></div>';
 }
 function rCands(data){
-  var ca=[{k:'黃柏瑜',c:'huang',l:'彰化市'},{k:'陳素月',c:'chen',l:'彰化縣'}];
-  var h='';
-  for(var i=0;i<ca.length;i++){
-    var c=ca[i];
-    var rows=data.filter(function(r){return r.candidate===c.k;});
-    var pos=rows.filter(function(r){return r.sentiment==='正面';}).length;
-    var neg=rows.filter(function(r){return r.sentiment==='負面';}).length;
-    var neu=rows.filter(function(r){return r.sentiment==='中立';}).length;
-    var n=rows.length,sc=n?Math.round((pos-neg)/n*100):0;
-    var pw=n?Math.round(pos/n*100):33,nuw=n?Math.round(neu/n*100):34,ngw=n?100-pw-nuw:33;
-    var col=sc>=0?'var(--ac)':'var(--da)';
-    h+='<div class="cc '+c.c+'"><div class="ch"><div class="cn"><span>'+c.k+'</span></div><div class="clo">'+c.l+'</div></div>'+
-       '<div class="cbar"><div class="bpos" style="width:'+pw+'%"></div><div class="bneu" style="width:'+nuw+'%"></div><div class="bneg" style="width:'+ngw+'%"></div></div>'+
-       '<div class="cst">'+
-       '<div class="ci"><div class="cnum" style="color:var(--ac)">'+pos+'</div><div class="clb">正面</div></div>'+
-       '<div class="ci"><div class="cnum" style="color:var(--ne)">'+neu+'</div><div class="clb">中立</div></div>'+
-       '<div class="ci"><div class="cnum" style="color:var(--da)">'+neg+'</div><div class="clb">負面</div></div>'+
-       '<div class="ci"><div class="cnum" style="color:'+col+'">'+(sc>0?'+':'')+sc+'</div><div class="clb">指數</div></div>'+
-       '</div></div>';
+  var cands=[{k:'黃柏瑜',c:'huang',l:'彰化市'},{k:'陳素月',c:'chen',l:'彰化縣'}],h='';
+  for(var i=0;i<cands.length;i++){
+    var c=cands[i],rows=data.filter(function(r){return r.candidate===c.k;}),pos=rows.filter(function(r){return r.sentiment==='正面';}).length,neg=rows.filter(function(r){return r.sentiment==='負面';}).length,neu=rows.filter(function(r){return r.sentiment==='中立';}).length,n=rows.length,sc=n?Math.round((pos-neg)/n*100):0,posW=n?Math.round(pos/n*100):33,neuW=n?Math.round(neu/n*100):34,negW=n?100-posW-neuW:33,col=sc>=0?'var(--ac)':'var(--da)';
+    h+='<div class="cc '+c.c+'"><div class="ch"><div class="cn"><span>'+c.k+'</span></div><div class="clo">'+c.l+'</div></div><div class="cbar"><div class="bpos" style="width:'+posW+'%"></div><div class="bneu" style="width:'+neuW+'%"></div><div class="bneg" style="width:'+negW+'%"></div></div><div class="cst"><div class="ci"><div class="cnum" style="color:var(--ac)">'+pos+'</div><div class="clb">正面</div></div><div class="ci"><div class="cnum" style="color:var(--ne)">'+neu+'</div><div class="clb">中立</div></div><div class="ci"><div class="cnum" style="color:var(--da)">'+neg+'</div><div class="clb">負面</div></div><div class="ci"><div class="cnum" style="color:'+col+'">'+(sc>0?'+':'')+sc+'</div><div class="clb">指數</div></div></div></div>';
   }
   document.getElementById('cg').innerHTML=h;
 }
@@ -196,51 +174,24 @@ function rTable(data){
   if(!data.length){document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">目前沒有資料</div></td></tr>';return;}
   var h='';
   for(var i=0;i<data.length;i++){
-    var r=data[i];
-    var sb=r.sentiment==='正面'?'bp2':r.sentiment==='負面'?'bn2':'bnu2';
-    var se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪';
-    var pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo2';
-    var pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低';
-    var cc=r.candidate==='黃柏瑜'?'bhu':'bch';
-    var pi=ICO[r.source]||'🌐';
-    var ts=r.time.length>5?r.time.substring(0,5):r.time;
-    h+='<tr class="fi" style="animation-delay:'+(i*0.02)+'s">'+
-       '<td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--mu)">'+ts+'</span></td>'+
-       '<td><span class="badge '+cc+'">'+r.candidate+'</span></td>'+
-       '<td><span style="font-size:14px;color:var(--mu)">'+pi+' '+r.source+'</span></td>'+
-       '<td><span style="font-size:13px">'+r.topic+'</span></td>'+
-       '<td class="tce"><div class="ttx">'+r.title+'</div>'+(r.summary?'<div class="smy">'+r.summary+'</div>':'')+'</td>'+
-       '<td><span class="badge '+sb+'">'+se+' '+r.sentiment+'</span></td>'+
-       '<td><span class="badge '+pb+'">'+pt+'</span></td>'+
-       '<td>'+(r.url?'<a class="lnk" href="'+r.url+'" target="_blank">查看 →</a>':'-')+'</td>'+
-       '</tr>';
+    var r=data[i],sb=r.sentiment==='正面'?'bpos2':r.sentiment==='負面'?'bneg2':'bneu2',se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪',pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo',pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低',cc=r.candidate==='黃柏瑜'?'bhu':'bch',pi=ICO[r.source]||'🌐',ts=r.time.length>5?r.time.substring(0,5):r.time;
+    h+='<tr class="fi" style="animation-delay:'+(i*0.02)+'s"><td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--mu)">'+ts+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span style="font-size:14px;color:var(--mu)">'+pi+' '+r.source+'</span></td><td><span style="font-size:13px">'+r.topic+'</span></td><td class="tce"><div class="ttx">'+r.title+'</div>'+(r.summary?'<div class="smy">'+r.summary+'</div>':'')+'</td><td><span class="badge '+sb+'">'+se+' '+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="lnk" href="'+r.url+'" target="_blank">查看 →</a>':'-')+'</td></tr>';
   }
   document.getElementById('tb').innerHTML=h;
 }
-function applyF(f){
-  AF=f;
-  document.querySelectorAll('.fb').forEach(function(b){b.classList.toggle('active',b.dataset.f===f);});
-  var fd=D;
-  if(f!=='all')fd=D.filter(function(r){return r.candidate===f||r.sentiment===f||r.priority===f||r.source===f;});
-  rTable(fd);
-}
+function applyF(f){AF=f;document.querySelectorAll('.fb').forEach(function(b){b.classList.toggle('active',b.dataset.f===f);});var fd=D;if(f!=='all')fd=D.filter(function(r){return r.candidate===f||r.sentiment===f||r.priority===f||r.source===f;});rTable(fd);}
 document.querySelectorAll('.fb').forEach(function(b){b.addEventListener('click',function(){applyF(b.dataset.f);});});
 function renderAll(){rStats(D);rCands(D);applyF(AF);var now=new Date();document.getElementById('lup').textContent='最後更新：'+now.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
 async function init(){
   document.getElementById('lup').textContent='掃描資料中...';
   try{
     SH=await getSheets();
-    if(!SH.length){
-      document.getElementById('sg').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料</div>';
-      document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';
-      document.getElementById('lup').textContent='尚無資料';
-      return;
-    }
-    AS=SH[0];nav();
-    D=await fetchData(AS);renderAll();
+    if(!SH.length){document.getElementById('sg').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料</div>';document.getElementById('tb').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';document.getElementById('lup').textContent='尚無資料';return;}
+    AS=SH[0];nav();D=await fetchData(AS);renderAll();
     setInterval(async function(){D=await fetchData(AS);renderAll();},5*60*1000);
   }catch(ex){document.getElementById('lup').textContent='載入失敗：'+ex.message;}
 }
 init();
 </script>
-</body></html>
+</body>
+</html>
