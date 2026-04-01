@@ -3,90 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>選情雷達｜彰化選情監控</title>
+<title>選情訊號｜彰化選情監控 v6</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f8f9fa;--surface:#ffffff;--surface2:#f1f3f5;--border:#dee2e6;--text:#212529;--muted:#6c757d;--accent:#16a34a;--accent-light:#dcfce7;--danger:#dc2626;--danger-light:#fee2e2;--neutral:#64748b;--gold:#d97706;--gold-light:#fef3c7;--blue:#2563eb;--blue-light:#dbeafe;--huang:#059669;--huang-light:#d1fae5;--chen:#7c3aed;--chen-light:#ede9fe}
+:root{
+  --bg:#f4f6f8;--surface:#fff;--surface2:#f1f3f5;--border:#e2e8f0;
+  --text:#1a202c;--muted:#64748b;
+  --accent:#16a34a;--accent-light:#dcfce7;
+  --harmful:#dc2626;--harmful-light:#fee2e2;
+  --beneficial:#16a34a;--beneficial-light:#dcfce7;
+  --neutral:#64748b;--neutral-light:#f1f5f9;
+  --unclear:#d97706;--unclear-light:#fef3c7;
+  --high:#dc2626;--high-light:#fee2e2;
+  --med:#2563eb;--med-light:#dbeafe;
+  --low:#94a3b8;--low-light:#f8fafc;
+  --huang:#059669;--huang-light:#d1fae5;
+  --chen:#7c3aed;--chen-light:#ede9fe;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh}
+.site-header{background:var(--surface);border-bottom:1.5px solid var(--border);padding:22px 0 18px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
 .container{max-width:1400px;margin:0 auto;padding:0 28px}
-.site-header{background:var(--surface);border-bottom:1.5px solid var(--border);padding:28px 0 20px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-.logo-area{display:flex;align-items:center;gap:16px}
-.radar-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),#15803d);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px}
-h1{font-size:28px;font-weight:900;color:var(--text)}
+.header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo-area{display:flex;align-items:center;gap:14px}
+.radar-icon{width:48px;height:48px;background:linear-gradient(135deg,#16a34a,#15803d);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+h1{font-size:26px;font-weight:900;color:var(--text)}
 h1 span{color:var(--accent)}
-.subtitle{font-size:14px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px}
-.header-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
-.header-right{text-align:right}
-.last-update{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace}
-.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1px solid #86efac;border-radius:20px;padding:5px 14px;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:5px}
-.live-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+.subtitle{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1px solid #86efac;border-radius:20px;padding:4px 12px;font-size:12px;color:var(--accent);font-weight:600}
+.live-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-.main-wrap{padding:24px 0}
-.date-nav{display:flex;align-items:center;gap:10px;margin-bottom:24px;overflow-x:auto}
-.date-btn{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:14px;cursor:pointer;font-weight:500}
+.last-update{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px;text-align:right}
+.main-wrap{padding:20px 0}
+
+/* 統計卡片 */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,#16a34a)}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;font-weight:600}
+.stat-value{font-size:34px;font-weight:900;line-height:1}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* 候選人卡片 */
+.candidates-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:720px){.candidates-grid{grid-template-columns:1fr}}
+.candidate-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.candidate-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--cc)}
+.candidate-card.huang{--cc:var(--huang)}
+.candidate-card.chen{--cc:var(--chen)}
+.cc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cc-name{font-size:18px;font-weight:900}
+.cc-name span{color:var(--cc)}
+.cc-role{font-size:11px;color:var(--muted);background:var(--surface2);border-radius:6px;padding:3px 8px;font-family:'DM Mono',monospace}
+.cc-signals{display:flex;gap:10px}
+.cc-sig{text-align:center;flex:1;background:var(--surface2);border-radius:8px;padding:10px 6px}
+.cc-sig-num{font-size:20px;font-weight:900}
+.cc-sig-label{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-top:2px}
+
+/* 日期切換 */
+.date-nav{display:flex;align-items:center;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.date-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;font-family:'DM Mono',monospace;cursor:pointer;font-weight:500;transition:all 0.15s}
 .date-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .date-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent,var(--accent))}
-.stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
-.stat-value{font-size:36px;font-weight:900;line-height:1}
-.stat-sub{font-size:13px;color:var(--muted);margin-top:5px}
-.candidates-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
-@media(max-width:768px){.candidates-grid{grid-template-columns:1fr}}
-.candidate-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden}
-.candidate-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--cand-color)}
-.candidate-card.huang{--cand-color:var(--huang)}
-.candidate-card.chen{--cand-color:var(--chen)}
-.cand-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.cand-name{font-size:20px;font-weight:900}
-.cand-name span{color:var(--cand-color)}
-.cand-location{font-size:12px;color:var(--muted);background:var(--surface2);border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace}
-.cand-bar{display:flex;gap:4px;margin-bottom:18px;border-radius:6px;overflow:hidden;height:10px}
-.bar-pos{background:var(--accent);transition:width 0.8s}
-.bar-neu{background:#cbd5e1;transition:width 0.8s}
-.bar-neg{background:var(--danger);transition:width 0.8s}
-.cand-stats{display:flex;gap:14px}
-.cand-stat{text-align:center;flex:1}
-.cand-stat-num{font-size:22px;font-weight:900}
-.cand-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600}
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-.filter-btn{padding:7px 16px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:13px;cursor:pointer;font-weight:500}
-.filter-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
-.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
-.table-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:32px}
-.table-header{padding:18px 22px;border-bottom:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface2)}
-.table-title{font-size:15px;font-weight:800}
-.table-count{font-size:13px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* 篩選器 */
+.filter-section{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:16px}
+.filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.filter-row:last-child{margin-bottom:0}
+.filter-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;min-width:60px}
+.filter-btn{padding:4px 11px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;cursor:pointer;font-weight:500;transition:all 0.12s;font-family:'Noto Sans TC',sans-serif}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{border-color:var(--accent);background:var(--accent);color:#fff;font-weight:700}
+
+/* 表格 */
+.table-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:28px}
+.table-header{padding:14px 20px;border-bottom:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface2)}
+.table-title{font-size:14px;font-weight:800}
+.table-meta{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.table-scroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{padding:12px 18px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;background:var(--surface2);font-weight:700;white-space:nowrap;border-bottom:1.5px solid var(--border)}
-td{padding:14px 18px;font-size:14px;border-top:1px solid var(--border);vertical-align:middle}
-tr:hover td{background:#f8f9fa}
-.badge{display:inline-block;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:700;white-space:nowrap}
-.badge-pos{background:var(--accent-light);color:var(--accent);border:1px solid #86efac}
-.badge-neg{background:var(--danger-light);color:var(--danger);border:1px solid #fca5a5}
-.badge-neu{background:#f1f5f9;color:var(--neutral);border:1px solid #cbd5e1}
-.badge-high{background:var(--gold-light);color:var(--gold);border:1px solid #fcd34d}
-.badge-med{background:var(--blue-light);color:var(--blue);border:1px solid #93c5fd}
-.badge-low{background:#f1f5f9;color:var(--muted);border:1px solid var(--border)}
+th{padding:10px 14px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;background:var(--surface2);font-weight:700;white-space:nowrap;border-bottom:1.5px solid var(--border)}
+td{padding:12px 14px;font-size:13px;border-top:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:#fafbfc}
+
+/* Badge */
+.badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;letter-spacing:0.3px}
+.badge-harmful{background:var(--harmful-light);color:var(--harmful);border:1px solid #fca5a5}
+.badge-beneficial{background:var(--beneficial-light);color:var(--beneficial);border:1px solid #86efac}
+.badge-neutral{background:var(--neutral-light);color:var(--neutral);border:1px solid #cbd5e1}
+.badge-unclear{background:var(--unclear-light);color:var(--unclear);border:1px solid #fcd34d}
+.badge-high{background:var(--high-light);color:var(--high);border:1px solid #fca5a5;font-weight:900}
+.badge-med{background:var(--med-light);color:var(--med);border:1px solid #93c5fd}
+.badge-low{background:var(--low-light);color:var(--low);border:1px solid #e2e8f0}
 .badge-huang{background:var(--huang-light);color:var(--huang);border:1px solid #6ee7b7}
 .badge-chen{background:var(--chen-light);color:var(--chen);border:1px solid #c4b5fd}
-.title-cell{max-width:300px}
-.title-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5;font-size:14px}
-.summary-text{font-size:12px;color:var(--muted);margin-top:4px}
-a.link{color:var(--blue);text-decoration:none;font-size:13px;font-weight:600}
+
+/* 事件類型 badge */
+.et-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;white-space:nowrap}
+
+.title-cell{max-width:280px}
+.title-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;font-weight:500;font-size:13px}
+.summary-text{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35}
+a.link{color:var(--med);text-decoration:none;font-size:12px;font-weight:600}
 a.link:hover{color:var(--accent);text-decoration:underline}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;color:var(--muted)}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+
+/* 空/載入 */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:14px;color:var(--muted)}
+.spinner{width:32px;height:32px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:60px;color:var(--muted);font-size:15px}
-.table-scroll{overflow-x:auto}
-.site-footer{padding:28px 0;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap;gap:8px}
-.score-bar-wrap{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:8px}
-.score-bar{height:100%;border-radius:3px;transition:width 0.8s}
-.fade-in{animation:fadeIn 0.3s ease both}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.empty{text-align:center;padding:50px;color:var(--muted);font-size:14px}
+
+/* Footer */
+.site-footer{padding:20px 0;border-top:1.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;flex-wrap:wrap;gap:6px}
+.fade-in{animation:fadeIn 0.25s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* 重要等級視覺強化 */
+tr.row-high td{border-left:3px solid var(--high)}
+tr.row-med td{border-left:3px solid var(--med)}
 </style>
 </head>
 <body>
@@ -95,68 +129,325 @@ a.link:hover{color:var(--accent);text-decoration:underline}
   <div class="header-row">
     <div class="logo-area">
       <div class="radar-icon">📡</div>
-      <div><h1>選情<span>雷達</span></h1><div class="subtitle">彰化縣市選情即時監控系統 · v4</div></div>
+      <div>
+        <h1>選情<span>訊號</span></h1>
+        <div class="subtitle">彰化縣市選情判讀系統 · v6</div>
+      </div>
     </div>
-    <div class="header-right">
-      <div class="live-badge"><div class="live-dot"></div> LIVE DATA</div>
+    <div style="text-align:right">
+      <div class="live-badge"><div class="live-dot"></div> LIVE</div>
       <div class="last-update" id="lastUpdate">載入中...</div>
     </div>
   </div>
 </div>
-</div>
-
-<div class="container main-wrap">
+</div><div class="container main-wrap">
   <div class="date-nav" id="dateNav"></div>
   <div class="stats-grid" id="statsGrid"><div class="loading"><div class="spinner"></div></div></div>
   <div class="candidates-grid" id="candidatesGrid"></div>
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all">全部</button>
-    <button class="filter-btn" data-filter="黃柏瑜">黃柏瑜</button>
-    <button class="filter-btn" data-filter="陳素月">陳素月</button>
-    <button class="filter-btn" data-filter="正面">🟢 正面</button>
-    <button class="filter-btn" data-filter="負面">🔴 負面</button>
-    <button class="filter-btn" data-filter="high">🔥 重要</button>
-    <button class="filter-btn" data-filter="Google News">Google News</button>
-    <button class="filter-btn" data-filter="FB">Facebook</button>
-    <button class="filter-btn" data-filter="IG">Instagram</button>
-    <button class="filter-btn" data-filter="Threads">Threads</button>
-    <button class="filter-btn" data-filter="PTT">PTT</button>
+
+  <!-- 篩選器 -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <span class="filter-label">候選人</span>
+      <button class="filter-btn active" data-group="candidate" data-val="all">全部</button>
+      <button class="filter-btn" data-group="candidate" data-val="黃柏瑜">黃柏瑜</button>
+      <button class="filter-btn" data-group="candidate" data-val="陳素月">陳素月</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">訊號傾向</span>
+      <button class="filter-btn active" data-group="signal" data-val="all">全部</button>
+      <button class="filter-btn" data-group="signal" data-val="harmful">🔴 不利</button>
+      <button class="filter-btn" data-group="signal" data-val="beneficial">🟢 有利</button>
+      <button class="filter-btn" data-group="signal" data-val="neutral">⚪ 中性</button>
+      <button class="filter-btn" data-group="signal" data-val="unclear">🟡 待判讀</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">重要等級</span>
+      <button class="filter-btn active" data-group="priority" data-val="all">全部</button>
+      <button class="filter-btn" data-group="priority" data-val="high">🔥 需關注</button>
+      <button class="filter-btn" data-group="priority" data-val="medium">📌 追蹤</button>
+      <button class="filter-btn" data-group="priority" data-val="low">存檔</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">事件類型</span>
+      <button class="filter-btn active" data-group="event_type" data-val="all">全部</button>
+      <button class="filter-btn" data-group="event_type" data-val="controversy">爭議攻防</button>
+      <button class="filter-btn" data-group="event_type" data-val="policy">政策政見</button>
+      <button class="filter-btn" data-group="event_type" data-val="local_construction">地方建設</button>
+      <button class="filter-btn" data-group="event_type" data-val="mobilization">組織動員</button>
+      <button class="filter-btn" data-group="event_type" data-val="media_exposure">媒體曝光</button>
+      <button class="filter-btn" data-group="event_type" data-val="service_activity">服務行程</button>
+      <button class="filter-btn" data-group="event_type" data-val="public_reaction">民眾反應</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">平台</span>
+      <button class="filter-btn active" data-group="source" data-val="all">全部</button>
+      <button class="filter-btn" data-group="source" data-val="Google">Google</button>
+      <button class="filter-btn" data-group="source" data-val="Google News">Google News</button>
+      <button class="filter-btn" data-group="source" data-val="FB">Facebook</button>
+      <button class="filter-btn" data-group="source" data-val="IG">Instagram</button>
+      <button class="filter-btn" data-group="source" data-val="Threads">Threads</button>
+      <button class="filter-btn" data-group="source" data-val="PTT">PTT</button>
+    </div>
   </div>
+
   <div class="table-wrap">
     <div class="table-header">
-      <div class="table-title">📋 今日報告</div>
-      <div class="table-count" id="tableCount"></div>
+      <div class="table-title">📊 選情訊號列表</div>
+      <div class="table-meta" id="tableCount"></div>
     </div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>時間</th><th>候選人</th><th>平台</th><th>議題</th><th>標題/摘要</th><th>情緒</th><th>重要度</th><th>連結</th></tr></thead>
+        <thead><tr>
+          <th>重要等級</th><th>候選人</th><th>事件類型</th><th>議題</th>
+          <th>標題 / 判讀摘要</th><th>訊號傾向</th><th>平台</th><th>連結</th>
+        </tr></thead>
         <tbody id="tableBody"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入資料中...</span></div></td></tr></tbody>
       </table>
     </div>
   </div>
 </div>
-
 <div class="container"><div class="site-footer">
-  <div>選情雷達 · 資料來源：Serper.dev + Google News RSS</div>
-  <div>資料每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
-</div></div>
+  <div>選情訊號 v6 · Serper.dev + Google News RSS · 彰化縣市選情</div>
+  <div>每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
+</div></div><script>
+var SHEET_ID = '1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
+var ICONS = {'Google':'🔍','Google News':'📰','FB':'📘','IG':'📸','Threads':'🧵','PTT':'💬'};
 
-<script>
-var SHEET_ID='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
-var ICONS={'Google':'🔍','Google News':'📰','FB':'📘','IG':'📸','Threads':'🧵','PTT':'💬'};
-var allData=[],activeFilter='all',sheets=[],activeSheet='';
-function getDateList(){var today=new Date(),dates=[];for(var i=0;i<7;i++){var d=new Date(today);d.setDate(today.getDate()-i);dates.push(d.toISOString().split('T')[0]);}return dates;}
-async function getSheets(){var dates=getDateList(),results=[];for(var i=0;i<dates.length;i++){var date=dates[i];try{var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+date;var res=await fetch(url);var txt=await res.text();if(txt.indexOf('"status":"error"')>-1)continue;var s=txt.indexOf('{'),e=txt.lastIndexOf('}');if(s<0||e<0)continue;var j=JSON.parse(txt.substring(s,e+1));if(j.table&&j.table.rows&&j.table.rows.length>1)results.push(date);}catch(e){}}return results;}
-async function fetchData(sheet){var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+sheet+'&ts='+Date.now();var res=await fetch(url);var txt=await res.text();var s=txt.indexOf('{'),e=txt.lastIndexOf('}');var j=JSON.parse(txt.substring(s,e+1));var data=[];for(var i=0;i<j.table.rows.length;i++){var row=j.table.rows[i];var r=row.c.map(function(c){return c?(c.v||''):'';});if(r[0]==='時間'||r[0]==='測試'||!r[1])continue;data.push({time:String(r[0]||''),candidate:String(r[1]||''),topic:String(r[2]||''),stance:String(r[3]||''),sentiment:String(r[4]||''),priority:String(r[5]||''),summary:String(r[6]||''),source:String(r[7]||''),title:String(r[8]||''),url:String(r[9]||''),date:String(r[10]||sheet)});}return data;}
-function renderDateNav(){var html='';for(var i=0;i<sheets.length;i++){var d=sheets[i];html+='<button class="date-btn '+(d===activeSheet?'active':'')+' " onclick="switchDate(\'' +d+ '\')">' +d+ '</button>';}document.getElementById('dateNav').innerHTML=html;}
-async function switchDate(date){activeSheet=date;renderDateNav();document.getElementById('tableBody').innerHTML='<tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入...</span></div></td></tr>';allData=await fetchData(date);renderAll();}
-function renderStats(data){var pos=0,neg=0,high=0,plats=[];for(var i=0;i<data.length;i++){if(data[i].sentiment==='正面')pos++;if(data[i].sentiment==='負面')neg++;if(data[i].priority==='high')high++;if(plats.indexOf(data[i].source)<0)plats.push(data[i].source);}var total=data.length,score=total?Math.round((pos-neg)/total*100):0,sc=score>=0?'var(--accent)':'var(--danger)',ss=(score>0?'+':'')+score;document.getElementById('statsGrid').innerHTML='<div class="stat-card" style="--card-accent:var(--blue)"><div class="stat-label">今日聲量</div><div class="stat-value" style="color:var(--blue)">'+total+'</div><div class="stat-sub">'+plats.length+' 個平台</div></div><div class="stat-card" style="--card-accent:var(--accent)"><div class="stat-label">正面報導</div><div class="stat-value" style="color:var(--accent)">'+pos+'</div><div class="stat-sub">'+(total?Math.round(pos/total*100):0)+'%</div></div><div class="stat-card" style="--card-accent:var(--danger)"><div class="stat-label">負面報導</div><div class="stat-value" style="color:var(--danger)">'+neg+'</div><div class="stat-sub">'+(total?Math.round(neg/total*100):0)+'%</div></div><div class="stat-card" style="--card-accent:var(--gold)"><div class="stat-label">重要事件</div><div class="stat-value" style="color:var(--gold)">'+high+'</div><div class="stat-sub">high priority</div></div><div class="stat-card" style="--card-accent:'+sc+'"><div class="stat-label">情緒指數</div><div class="stat-value" style="color:'+sc+'">'+ss+'</div><div class="score-bar-wrap"><div class="score-bar" style="width:'+Math.min(100,Math.abs(score))+'%;background:'+sc+'"></div></div></div>';}
-function renderCandidates(data){var cands=[{key:'黃柏瑜',cls:'huang',loc:'彰化市'},{key:'陳素月',cls:'chen',loc:'員林市'}],html='';for(var ci=0;ci<cands.length;ci++){var c=cands[ci],rows=data.filter(function(r){return r.candidate===c.key;}),pos=rows.filter(function(r){return r.sentiment==='正面';}).length,neg=rows.filter(function(r){return r.sentiment==='負面';}).length,neu=rows.filter(function(r){return r.sentiment==='中立';}).length,total=rows.length,score=total?Math.round((pos-neg)/total*100):0,posW=total?Math.round(pos/total*100):33,neuW=total?Math.round(neu/total*100):34,negW=total?100-posW-neuW:33,sc=score>=0?'var(--accent)':'var(--danger)';html+='<div class="candidate-card '+c.cls+'"><div class="cand-header"><div class="cand-name"><span>'+c.key+'</span></div><div class="cand-location">'+c.loc+'</div></div><div class="cand-bar"><div class="bar-pos" style="width:'+posW+'%"></div><div class="bar-neu" style="width:'+neuW+'%"></div><div class="bar-neg" style="width:'+negW+'%"></div></div><div class="cand-stats"><div class="cand-stat"><div class="cand-stat-num" style="color:var(--accent)">'+pos+'</div><div class="cand-stat-label">正面</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:var(--neutral)">'+neu+'</div><div class="cand-stat-label">中立</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:var(--danger)">'+neg+'</div><div class="cand-stat-label">負面</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:'+sc+'">'+(score>0?'+':'')+score+'</div><div class="cand-stat-label">指數</div></div></div></div>';}document.getElementById('candidatesGrid').innerHTML=html;}
-function renderTable(data){document.getElementById('tableCount').textContent=data.length+' 筆';if(!data.length){document.getElementById('tableBody').innerHTML='<tr><td colspan="8"><div class="empty">目前沒有資料</div></td></tr>';return;}var html='';for(var i=0;i<data.length;i++){var r=data[i],sb=r.sentiment==='正面'?'badge-pos':r.sentiment==='負面'?'badge-neg':'badge-neu',se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪',pb=r.priority==='high'?'badge-high':r.priority==='medium'?'badge-med':'badge-low',pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低',cc=r.candidate==='黃柏瑜'?'badge-huang':'badge-chen',pi=ICONS[r.source]||'🌐',ts=r.time.length>5?r.time.substring(0,5):r.time;html+='<tr class="fade-in" style="animation-delay:'+(i*0.02)+'s"><td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--muted)">'+ts+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span style="font-size:14px;color:var(--muted)">'+pi+' '+r.source+'</span></td><td><span style="font-size:13px">'+r.topic+'</span></td><td class="title-cell"><div class="title-text">'+r.title+'</div>'+(r.summary?'<div class="summary-text">'+r.summary+'</div>':'')+'</td><td><span class="badge '+sb+'">'+se+' '+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="link" href="'+r.url+'" target="_blank">查看 →</a>':'-')+'</td></tr>';}document.getElementById('tableBody').innerHTML=html;}
-function applyFilter(filter){activeFilter=filter;document.querySelectorAll('.filter-btn').forEach(function(btn){btn.classList.toggle('active',btn.dataset.filter===filter);});var filtered=allData;if(filter!=='all')filtered=allData.filter(function(r){return r.candidate===filter||r.sentiment===filter||r.priority===filter||r.source===filter;});renderTable(filtered);}
-document.querySelectorAll('.filter-btn').forEach(function(btn){btn.addEventListener('click',function(){applyFilter(btn.dataset.filter);});});
-function renderAll(){renderStats(allData);renderCandidates(allData);applyFilter(activeFilter);var now=new Date();document.getElementById('lastUpdate').textContent='最後更新：'+now.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
-async function init(){document.getElementById('lastUpdate').textContent='掃描資料中...';try{sheets=await getSheets();if(!sheets.length){document.getElementById('statsGrid').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料，請等待排程執行後刷新</div>';document.getElementById('tableBody').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';document.getElementById('lastUpdate').textContent='尚無資料';return;}activeSheet=sheets[0];renderDateNav();allData=await fetchData(activeSheet);renderAll();setInterval(async function(){allData=await fetchData(activeSheet);renderAll();},5*60*1000);}catch(e){document.getElementById('lastUpdate').textContent='載入失敗：'+e.message;}}
+var EVENT_TYPE_ZH = {
+  'policy':'政策政見','local_construction':'地方建設','service_activity':'服務行程',
+  'controversy':'爭議攻防','media_exposure':'媒體曝光','mobilization':'組織動員',
+  'public_reaction':'民眾反應','noise':'雜訊'
+};
+var SIGNAL_ZH = {'beneficial':'🟢 有利','harmful':'🔴 不利','neutral':'⚪ 中性','unclear':'🟡 待判讀'};
+var SIGNAL_BADGE = {'beneficial':'badge-beneficial','harmful':'badge-harmful','neutral':'badge-neutral','unclear':'badge-unclear'};
+var PRIORITY_ZH = {'high':'🔥 需關注','medium':'📌 追蹤','low':'存檔'};
+var PRIORITY_BADGE = {'high':'badge-high','medium':'badge-med','low':'badge-low'};
+
+var allData = [], sheets = [], activeSheet = '';
+var filters = {candidate:'all', signal:'all', priority:'all', event_type:'all', source:'all'};
+
+function getDateList() {
+  var today = new Date(), dates = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(today);
+    d.setDate(today.getDate()-i);
+    dates.push(d.toISOString().split('T')[0]);
+  }
+  return dates;
+}
+
+async function getSheets() {
+  var dates = getDateList(), results = [];
+  for (var i = 0; i < dates.length; i++) {
+    var date = dates[i];
+    try {
+      var res = await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+date);
+      var txt = await res.text();
+      if (txt.indexOf('"status":"error"') > -1) continue;
+      var s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+      if (s < 0 || e < 0) continue;
+      var j = JSON.parse(txt.substring(s, e+1));
+      if (j.table && j.table.rows && j.table.rows.length > 1) results.push(date);
+    } catch(e) {}
+  }
+  return results;
+}
+
+async function fetchData(sheet) {
+  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+sheet+'&ts='+Date.now();
+  var res = await fetch(url);
+  var txt = await res.text();
+  var s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+  var j = JSON.parse(txt.substring(s, e+1));
+  var data = [];
+  for (var i = 0; i < j.table.rows.length; i++) {
+    var row = j.table.rows[i];
+    var r = row.c.map(function(c){ return c ? (c.v||'') : ''; });
+    if (r[0] === '時間' || !r[1]) continue;
+
+    /* v6 欄位：時間/候選人/議題/事件類型/訊號/重要度/摘要/平台/標題/連結/發布日期 */
+    /* 同時相容舊資料：時間/候選人/議題/立場/情緒/重要度/摘要/平台/標題/連結/發布日期 */
+    var isV6 = (r[3] === 'policy' || r[3] === 'controversy' || r[3] === 'local_construction' ||
+                r[3] === 'service_activity' || r[3] === 'media_exposure' ||
+                r[3] === 'mobilization' || r[3] === 'public_reaction' || r[3] === 'noise' ||
+                r[4] === 'beneficial' || r[4] === 'harmful' || r[4] === 'neutral' || r[4] === 'unclear');
+
+    if (isV6) {
+      data.push({
+        time: String(r[0]||''), candidate: String(r[1]||''), topic: String(r[2]||''),
+        event_type: String(r[3]||'media_exposure'), signal: String(r[4]||'neutral'),
+        priority: String(r[5]||'low'), summary: String(r[6]||''),
+        source: String(r[7]||''), title: String(r[8]||''), url: String(r[9]||''),
+        date: String(r[10]||sheet), version: 'v6'
+      });
+    } else {
+      /* 舊資料相容：把 sentiment 對應到 signal */
+      var sentMap = {'正面':'beneficial','負面':'harmful','中立':'neutral'};
+      data.push({
+        time: String(r[0]||''), candidate: String(r[1]||''), topic: String(r[2]||''),
+        event_type: 'media_exposure', signal: sentMap[r[4]] || 'neutral',
+        priority: String(r[5]||'low'), summary: String(r[6]||''),
+        source: String(r[7]||''), title: String(r[8]||''), url: String(r[9]||''),
+        date: String(r[10]||sheet), version: 'v5'
+      });
+    }
+  }
+  return data;
+}
+
+function renderDateNav() {
+  var html = '';
+  for (var i = 0; i < sheets.length; i++) {
+    var d = sheets[i];
+    html += '<button class="date-btn '+(d===activeSheet?'active':'')+'" onclick="switchDate(''+d+'')">'+d+'</button>';
+  }
+  document.getElementById('dateNav').innerHTML = html;
+}
+
+async function switchDate(date) {
+  activeSheet = date; renderDateNav();
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入...</span></div></td></tr>';
+  allData = await fetchData(date); renderAll();
+}
+
+function renderStats(data) {
+  var harmful=0,beneficial=0,neutral=0,unclear=0,high=0,plats=[];
+  for (var i=0;i<data.length;i++) {
+    if (data[i].signal==='harmful') harmful++;
+    else if (data[i].signal==='beneficial') beneficial++;
+    else if (data[i].signal==='unclear') unclear++;
+    else neutral++;
+    if (data[i].priority==='high') high++;
+    if (plats.indexOf(data[i].source)<0) plats.push(data[i].source);
+  }
+  var total = data.length;
+  document.getElementById('statsGrid').innerHTML =
+    '<div class="stat-card" style="--card-accent:#dc2626"><div class="stat-label">🔥 需立即關注</div><div class="stat-value" style="color:#dc2626">'+high+'</div><div class="stat-sub">high priority</div></div>'+
+    '<div class="stat-card" style="--card-accent:#dc2626"><div class="stat-label">🔴 不利訊號</div><div class="stat-value" style="color:#dc2626">'+harmful+'</div><div class="stat-sub">'+(total?Math.round(harmful/total*100):0)+'%</div></div>'+
+    '<div class="stat-card" style="--card-accent:#16a34a"><div class="stat-label">🟢 有利訊號</div><div class="stat-value" style="color:#16a34a">'+beneficial+'</div><div class="stat-sub">'+(total?Math.round(beneficial/total*100):0)+'%</div></div>'+
+    '<div class="stat-card" style="--card-accent:#d97706"><div class="stat-label">🟡 待判讀</div><div class="stat-value" style="color:#d97706">'+unclear+'</div><div class="stat-sub"></div></div>'+
+    '<div class="stat-card" style="--card-accent:#64748b"><div class="stat-label">今日訊號總量</div><div class="stat-value" style="color:#64748b">'+total+'</div><div class="stat-sub">'+plats.length+' 個平台</div></div>';
+}
+
+function renderCandidates(data) {
+  var cands = [{key:'黃柏瑜',cls:'huang',role:'彰化市長候選人'},{key:'陳素月',cls:'chen',role:'彰化縣長候選人'}];
+  var html = '';
+  for (var ci=0;ci<cands.length;ci++) {
+    var c = cands[ci];
+    var rows = data.filter(function(r){return r.candidate===c.key;});
+    var harmful=rows.filter(function(r){return r.signal==='harmful';}).length;
+    var beneficial=rows.filter(function(r){return r.signal==='beneficial';}).length;
+    var neutral=rows.filter(function(r){return r.signal==='neutral';}).length;
+    var unclear=rows.filter(function(r){return r.signal==='unclear';}).length;
+    var high=rows.filter(function(r){return r.priority==='high';}).length;
+    html += '<div class="candidate-card '+c.cls+'">'+
+      '<div class="cc-header"><div class="cc-name"><span>'+c.key+'</span></div><div class="cc-role">'+c.role+'</div></div>'+
+      '<div class="cc-signals">'+
+      '<div class="cc-sig"><div class="cc-sig-num" style="color:#dc2626">'+harmful+'</div><div class="cc-sig-label">🔴不利</div></div>'+
+      '<div class="cc-sig"><div class="cc-sig-num" style="color:#16a34a">'+beneficial+'</div><div class="cc-sig-label">🟢有利</div></div>'+
+      '<div class="cc-sig"><div class="cc-sig-num" style="color:#64748b">'+neutral+'</div><div class="cc-sig-label">⚪中性</div></div>'+
+      '<div class="cc-sig"><div class="cc-sig-num" style="color:#d97706">'+unclear+'</div><div class="cc-sig-label">🟡待判</div></div>'+
+      '<div class="cc-sig"><div class="cc-sig-num" style="color:#dc2626;font-weight:900">'+high+'</div><div class="cc-sig-label">🔥關注</div></div>'+
+      '</div></div>';
+  }
+  document.getElementById('candidatesGrid').innerHTML = html;
+}
+
+function sortData(data) {
+  var pOrder = {'high':0,'medium':1,'low':2};
+  var sOrder = {'harmful':0,'unclear':1,'neutral':2,'beneficial':3};
+  return data.slice().sort(function(a,b){
+    var p = (pOrder[a.priority]||2) - (pOrder[b.priority]||2);
+    if (p !== 0) return p;
+    var s = (sOrder[a.signal]||2) - (sOrder[b.signal]||2);
+    if (s !== 0) return s;
+    return (b.time||'').localeCompare(a.time||'');
+  });
+}
+
+function renderTable(data) {
+  document.getElementById('tableCount').textContent = data.length + ' 筆';
+  if (!data.length) {
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="8"><div class="empty">目前沒有符合條件的資料</div></td></tr>';
+    return;
+  }
+  var sorted = sortData(data);
+  var html = '';
+  for (var i=0;i<sorted.length;i++) {
+    var r = sorted[i];
+    var pi = ICONS[r.source]||'🌐';
+    var ts = r.time.length>5 ? r.time.substring(0,5) : r.time;
+    var et = EVENT_TYPE_ZH[r.event_type] || r.event_type || '-';
+    var sig = SIGNAL_ZH[r.signal] || r.signal;
+    var sigBadge = SIGNAL_BADGE[r.signal] || 'badge-neutral';
+    var pri = PRIORITY_ZH[r.priority] || r.priority;
+    var priBadge = PRIORITY_BADGE[r.priority] || 'badge-low';
+    var cc = r.candidate==='黃柏瑜' ? 'badge-huang' : 'badge-chen';
+    var rowClass = r.priority==='high' ? 'row-high' : r.priority==='medium' ? 'row-med' : '';
+    html += '<tr class="fade-in '+rowClass+'" style="animation-delay:'+(i*0.02)+'s">'+
+      '<td><span class="badge '+priBadge+'">'+pri+'</span></td>'+
+      '<td><span class="badge '+cc+'">'+r.candidate+'</span></td>'+
+      '<td><span class="et-badge">'+et+'</span></td>'+
+      '<td style="font-size:12px;color:'+([r.topic]?'#374151':'#94a3b8')+'">'+r.topic+'</td>'+
+      '<td class="title-cell"><div class="title-text">'+r.title+'</div>'+(r.summary?'<div class="summary-text">'+r.summary+'</div>':'')+'</td>'+
+      '<td><span class="badge '+sigBadge+'">'+sig+'</span></td>'+
+      '<td style="font-size:12px;color:#64748b;white-space:nowrap">'+pi+' '+r.source+'<br><span style="font-size:10px;font-family:DM Mono,monospace">'+ts+'</span></td>'+
+      '<td>'+(r.url?'<a class="link" href="'+r.url+'" target="_blank">查看→</a>':'-')+'</td>'+
+      '</tr>';
+  }
+  document.getElementById('tableBody').innerHTML = html;
+}
+
+function applyFilters() {
+  var filtered = allData.filter(function(r) {
+    if (filters.candidate !== 'all' && r.candidate !== filters.candidate) return false;
+    if (filters.signal !== 'all' && r.signal !== filters.signal) return false;
+    if (filters.priority !== 'all' && r.priority !== filters.priority) return false;
+    if (filters.event_type !== 'all' && r.event_type !== filters.event_type) return false;
+    if (filters.source !== 'all' && r.source !== filters.source) return false;
+    return true;
+  });
+  renderTable(filtered);
+}
+
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var group = btn.dataset.group;
+    var val = btn.dataset.val;
+    filters[group] = val;
+    document.querySelectorAll('.filter-btn[data-group="'+group+'"]').forEach(function(b){
+      b.classList.toggle('active', b.dataset.val === val);
+    });
+    applyFilters();
+  });
+});
+
+function renderAll() {
+  renderStats(allData);
+  renderCandidates(allData);
+  applyFilters();
+  var now = new Date();
+  document.getElementById('lastUpdate').textContent = '更新：'+now.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+async function init() {
+  document.getElementById('lastUpdate').textContent = '掃描資料中...';
+  try {
+    sheets = await getSheets();
+    if (!sheets.length) {
+      document.getElementById('statsGrid').innerHTML = '<div class="empty" style="grid-column:1/-1">目前沒有可用資料，請等待排程執行後刷新</div>';
+      document.getElementById('tableBody').innerHTML = '<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';
+      document.getElementById('lastUpdate').textContent = '尚無資料';
+      return;
+    }
+    activeSheet = sheets[0]; renderDateNav();
+    allData = await fetchData(activeSheet); renderAll();
+    setInterval(async function(){ allData = await fetchData(activeSheet); renderAll(); }, 5*60*1000);
+  } catch(e) {
+    document.getElementById('lastUpdate').textContent = '載入失敗：'+e.message;
+  }
+}
 init();
 </script>
 </body>
