@@ -58,7 +58,7 @@ tr:hover td{background:#f8f9fa}
 .bnu2{background:#f1f5f9;color:var(--ne);border:1px solid #cbd5e1}
 .bhi{background:var(--gl);color:var(--go);border:1px solid #fcd34d}
 .bmd{background:var(--bll);color:var(--bl);border:1px solid #93c5fd}
-.blo{background:#f1f5f9;color:var(--mu);border:1px solid var(--bd)}
+.blo2{background:#f1f5f9;color:var(--mu);border:1px solid var(--bd)}
 .bhu{background:var(--hl);color:var(--hu);border:1px solid #6ee7b7}
 .bch{background:var(--cl);color:var(--ch);border:1px solid #c4b5fd}
 .tce{max-width:300px}
@@ -76,60 +76,53 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
 .sb{height:100%;border-radius:3px;transition:width .8s}
 .fi{animation:fi .3s ease both}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-</style>
-</head>
+</style></head>
 <body>
 <div class="hdr"><div class="wrap"><div class="hrow">
-  <div class="logo">
-    <div class="icon">📡</div>
-    <div><h1>選情<span>雷達</span></h1><div class="sub">彰化縣市選情即時監控系統 &middot; v5.3</div></div>
-  </div>
-  <div class="hr2">
-    <div class="lb"><div class="ld"></div> LIVE DATA</div>
-    <div class="lup" id="lup">載入中...</div>
-  </div>
+<div class="logo"><div class="icon">📡</div>
+<div><h1>選情<span>雷達</span></h1><div class="sub">彰化縣市選情即時監控系統 &middot; v5.3</div></div></div>
+<div class="hr2"><div class="lb"><div class="ld"></div> LIVE DATA</div><div class="lup" id="lup">載入中...</div></div>
 </div></div></div>
 <div class="wrap main">
-  <div class="dn" id="dn"></div>
-  <div class="sg" id="sg"><div class="loading"><div class="spinner"></div></div></div>
-  <div class="cg" id="cg"></div>
-  <div class="fl">
-    <button class="fb active" data-f="all">全部</button>
-    <button class="fb" data-f="黃柏瑜">黃柏瑜</button>
-    <button class="fb" data-f="陳素月">陳素月</button>
-    <button class="fb" data-f="正面">🟢 正面</button>
-    <button class="fb" data-f="負面">🔴 負面</button>
-    <button class="fb" data-f="high">🔥 重要</button>
-    <button class="fb" data-f="Google News">Google News</button>
-    <button class="fb" data-f="FB">Facebook</button>
-    <button class="fb" data-f="IG">Instagram</button>
-    <button class="fb" data-f="Threads">Threads</button>
-    <button class="fb" data-f="PTT">PTT</button>
-  </div>
-  <div class="tw">
-    <div class="th"><div class="tt">📋 今日報告</div><div class="tc" id="tc"></div></div>
-    <div class="tsx"><table>
-      <thead><tr><th>時間</th><th>候選人</th><th>平台</th><th>議題</th><th>標題/摘要</th><th>情緒</th><th>重要度</th><th>連結</th></tr></thead>
-      <tbody id="tb"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入資料中...</span></div></td></tr></tbody>
-    </table></div>
-  </div>
+<div class="dn" id="dn"></div>
+<div class="sg" id="sg"><div class="loading"><div class="spinner"></div></div></div>
+<div class="cg" id="cg"></div>
+<div class="fl">
+<button class="fb active" data-f="all">全部</button>
+<button class="fb" data-f="黃柏瑜">黃柏瑜</button>
+<button class="fb" data-f="陳素月">陳素月</button>
+<button class="fb" data-f="正面">🟢 正面</button>
+<button class="fb" data-f="負面">🔴 負面</button>
+<button class="fb" data-f="high">🔥 重要</button>
+<button class="fb" data-f="Google News">Google News</button>
+<button class="fb" data-f="FB">Facebook</button>
+<button class="fb" data-f="IG">Instagram</button>
+<button class="fb" data-f="Threads">Threads</button>
+<button class="fb" data-f="PTT">PTT</button>
 </div>
+<div class="tw">
+<div class="th"><div class="tt">📋 今日報告</div><div class="tc" id="tc"></div></div>
+<div class="tsx"><table>
+<thead><tr><th>時間</th><th>候選人</th><th>平台</th><th>議題</th><th>標題/摘要</th><th>情緒</th><th>重要度</th><th>連結</th></tr></thead>
+<tbody id="tb"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入資料中...</span></div></td></tr></tbody>
+</table></div></div></div>
 <div class="wrap"><div class="ft">
-  <div>選情雷達 &middot; 資料來源：Serper.dev + Google News RSS</div>
-  <div>資料每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
+<div>選情雷達 &middot; 資料來源：Serper.dev + Google News RSS</div>
+<div>資料每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
 </div></div>
 <script>
 var SID='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
 var ICO={'Google':'🔍','Google News':'📰','FB':'📘','IG':'📸','Threads':'🧵','PTT':'💬'};
 var D=[],AF='all',SH=[],AS='';
 function dlist(){var t=new Date(),r=[];for(var i=0;i<7;i++){var d=new Date(t);d.setDate(t.getDate()-i);r.push(d.toISOString().split('T')[0]);}return r;}
+function chkErr(txt){return txt.indexOf('tatus":"erro')>-1;}
 async function getSheets(){
   var ds=dlist(),res=[];
   for(var i=0;i<ds.length;i++){
     try{
       var r=await fetch('https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:json&sheet='+ds[i]);
       var t=await r.text();
-      if(t.indexOf('status":"error')>-1)continue;
+      if(chkErr(t))continue;
       var s=t.indexOf('{'),e=t.lastIndexOf('}');
       if(s<0||e<0)continue;
       var j=JSON.parse(t.substring(s,e+1));
@@ -176,10 +169,10 @@ function rStats(data){
     '<div class="sc" style="--ca:'+col+'"><div class="sl">情緒指數</div><div class="sv" style="color:'+col+'">'+ss+'</div><div class="sbw"><div class="sb" style="width:'+Math.min(100,Math.abs(sc))+'%;background:'+col+'"></div></div></div>';
 }
 function rCands(data){
-  var cands=[{k:'黃柏瑜',c:'huang',l:'彰化市'},{k:'陳素月',c:'chen',l:'彰化縣'}];
+  var ca=[{k:'黃柏瑜',c:'huang',l:'彰化市'},{k:'陳素月',c:'chen',l:'彰化縣'}];
   var h='';
-  for(var i=0;i<cands.length;i++){
-    var c=cands[i];
+  for(var i=0;i<ca.length;i++){
+    var c=ca[i];
     var rows=data.filter(function(r){return r.candidate===c.k;});
     var pos=rows.filter(function(r){return r.sentiment==='正面';}).length;
     var neg=rows.filter(function(r){return r.sentiment==='負面';}).length;
@@ -206,7 +199,7 @@ function rTable(data){
     var r=data[i];
     var sb=r.sentiment==='正面'?'bp2':r.sentiment==='負面'?'bn2':'bnu2';
     var se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪';
-    var pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo';
+    var pb=r.priority==='high'?'bhi':r.priority==='medium'?'bmd':'blo2';
     var pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低';
     var cc=r.candidate==='黃柏瑜'?'bhu':'bch';
     var pi=ICO[r.source]||'🌐';
@@ -250,5 +243,4 @@ async function init(){
 }
 init();
 </script>
-</body>
-</html>
+</body></html>
