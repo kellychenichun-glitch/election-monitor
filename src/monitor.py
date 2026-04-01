@@ -1,9 +1,10 @@
 """
-選情監控系統 v5
-- 陳素月：民進黨立法委員，彰化縣第4選區（非員林市長）
-- 黃柏瑜：民進黨彰化市長候選人、現任彰化市議員
-- 搜尋關鍵字精確化，避免同名混淆
-- Claude prompt 加入候選人角色說明，提升判斷精準度
+選情監控系統 v5.1
+- 黃柏瑜：1995年生，民進黨，彰化縣議員（第一選區），彰化市長候選人
+  學歷：麻州大學波士頓分校學士、劍橋大學碩士
+  經歷：洪宗熠助理、吳怡農競選助理、彰化市公所專員
+- 陳素月：民進黨立法委員，彰化縣第4選區，2026彰化縣長候選人
+  主攻：交通建設、地方建設、教育、弱勢照顧、青年參與
 """
 
 import os, json, time, datetime, smtplib, requests, hashlib, re, uuid
@@ -26,12 +27,14 @@ RUN_ID = str(uuid.uuid4())[:8]
 CANDIDATES = {
     "黃柏瑜": {
         "description": (
-            "黃柏瑜是民進黨提名的彰化市長候選人，現任彰化市議員，"
-            "參選2026年彰化市長選舉。主要政見包含彰化市地方建設、"
-            "交通改善、社區服務。"
+            "黃柏瑜（1995年2月11日生），民進黨籍，現任彰化縣議員（第20屆，第一選區），"
+            "民進黨提名2026年彰化市長候選人。"
+            "學歷：美國麻州大學波士頓分校學士、英國劍橋大學碩士。"
+            "曾任立法委員洪宗熠國會助理、立委候選人吳怡農競選辦公室助理、"
+            "彰化市公所市長室專員。主要政見聚焦彰化市地方建設、青年政策、城市治理。"
         ),
         "location": "彰化市",
-        "role": "彰化市長候選人／現任彰化市議員",
+        "role": "彰化市長候選人／現任彰化縣議員（第一選區）",
         "keywords": ["黃柏瑜 彰化市"],
         "social_keywords": {
             "FB":      "黃柏瑜 彰化市長",
@@ -40,35 +43,34 @@ CANDIDATES = {
             "PTT":     "黃柏瑜 彰化",
         },
         "relevant_check": (
-            "黃柏瑜是彰化市議員兼市長候選人。"
-            "relevant=true：與黃柏瑜本人直接相關的新聞、貼文、活動。"
-            "relevant=false：同名但不同人（如其他縣市的黃柏瑜）、商業廣告、"
-            "完全無關的政治新聞。"
+            "黃柏瑜是彰化縣議員兼市長候選人，1995年生，民進黨。"
+            "relevant=true：與黃柏瑜本人直接相關，包含選舉活動、議員問政、"
+            "地方建設、媒體採訪、支持者貼文。"
+            "relevant=false：同名但不同人（其他縣市的黃柏瑜）、"
+            "商業廣告、完全無關的政治新聞、只提到彰化但與黃柏瑜本人無關。"
         ),
         "context": [
-            "high: 選舉爭議、負面新聞、民調結果、對手攻擊、重要造勢活動、媒體主動報導",
-            "medium: 地方建設宣傳、一般政見說明、受邀出席活動、支持者背書",
-            "low: 日常社群貼文、例行行程、無直接選舉相關",
+            "high: 選舉爭議、負面新聞、民調結果、對手攻擊、重要媒體報導、造勢活動",
+            "medium: 地方建設宣傳、政見說明、受邀出席活動、重要人士背書、議員問政",
+            "low: 日常社群貼文、例行行程、無直接選舉相關的一般活動",
         ],
         "sentiment_guide": (
-            "正面：民調上升、獲重要人士背書、政績被肯定、活動成功、正面媒體報導
-"
-            "負面：民調下滑、爭議事件、被批評或攻擊、負面新聞曝光
-"
+            "正面：民調上升、獲重要人士背書、政績被肯定、活動成功、正面媒體報導\n"
+            "負面：民調下滑、爭議事件、被批評或攻擊、負面新聞曝光\n"
             "中立：一般政見說明、例行活動宣傳、中性報導（無明顯褒貶）"
         ),
     },
     "陳素月": {
         "description": (
-            "陳素月（Chen Su-Yueh，1966年生）是民進黨籍立法委員，"
+            "陳素月（Chen Su-Yueh，1966年1月18日生），民進黨籍立法委員，"
             "現任彰化縣第4選區立法委員（曾任第8、9、10屆），"
             "民進黨提名2026年彰化縣長候選人。"
-            "主要政策領域：交通建設與公共運輸（長期擔任立法院交通委員會委員，"
-            "第11屆第2會期任召集委員）、彰化地方建設與基層服務、"
-            "教育資源爭取（偏鄉數位學習、融合教育）、"
-            "弱勢照顧與社會福利、青年參與與公共議題。"
-            "注意：台灣有另一位員林市長陳素月（民進黨），兩人不同人，"
-            "搜尋時需區分，本系統監控的是立法委員陳素月。"
+            "學歷：文化大學史學研究所碩士。"
+            "主要政策：交通建設與公共運輸（長期任立法院交通委員會委員，"
+            "第11屆第2會期任召集委員）、彰化地方建設、"
+            "教育資源爭取（偏鄉數位學習、融合教育）、弱勢照顧、青年參與。"
+            "注意：台灣另有員林市長陳素月（民進黨），兩人不同人，"
+            "本系統監控的是立法委員陳素月。"
         ),
         "location": "彰化縣第4選區",
         "role": "立法委員／2026彰化縣長候選人",
@@ -80,31 +82,23 @@ CANDIDATES = {
             "PTT":     "陳素月 彰化縣長",
         },
         "relevant_check": (
-            "本系統監控的陳素月是【立法委員陳素月】，彰化縣第4選區，民進黨，"
+            "本系統監控的是【立法委員陳素月】，彰化縣第4選區，民進黨，"
             "2026彰化縣長候選人。"
-            "relevant=true：與這位立法委員陳素月直接相關的報導、國會質詢、"
-            "交通建設、彰化地方建設、教育、縣長選舉相關新聞。"
-            "relevant=false：員林市長陳素月（不同人）、"
-            "雲林陳素月、其他同名人士、農產包材（若明確是員林市長的業務）、"
-            "無關政治的商業廣告。"
-            "【重要判斷提示】：若新聞提到員林市政、員林農會、員林地方建設，"
-            "很可能是員林市長陳素月，應判為 relevant=false。"
-            "若新聞提到立法院質詢、交通委員會、彰化縣長選舉、彰化縣4選區，"
-            "則為 relevant=true。"
+            "relevant=true：與這位立委陳素月直接相關——國會質詢、交通建設、"
+            "彰化縣長選舉、彰化地方服務、教育資源爭取。"
+            "relevant=false：員林市長陳素月（不同人）——判斷依據："
+            "新聞提到員林市政、員林農會、員林地方建設 → 員林市長，relevant=false。"
+            "新聞提到立法院、交通委員會、彰化縣長選舉、彰化縣4選區 → 立委，relevant=true。"
+            "無法判斷時，若有『立委』或『彰化縣長』等字眼則為true，否則為false。"
         ),
         "context": [
-            "high: 縣長選舉爭議、民調結果、對手攻擊或回應、負面新聞、重大政策宣布",
-            "high: 立法院重要質詢、交通重大建設爭取成功、司法或爭議事件",
-            "medium: 一般立委問政、交通建設考察、教育資源爭取、地方服務",
-            "medium: 縣長選舉造勢活動、支持者背書、一般新聞報導",
-            "low: 例行行程、日常社群貼文、無特殊爭議的一般業務說明",
+            "high: 縣長選舉爭議、民調結果、對手攻擊、負面新聞、重大政策宣布、立院重要質詢",
+            "medium: 一般立委問政、交通建設考察、教育爭取、地方服務、造勢活動、支持者背書",
+            "low: 例行行程、日常社群貼文、無特殊爭議的一般業務",
         ],
         "sentiment_guide": (
-            "正面：民調上升、重要建設爭取成功、獲關鍵人士背書、正面媒體報導、"
-            "問政表現被稱讚、縣長選情看好
-"
-            "負面：民調下滑、爭議事件、被攻擊或批評、負面新聞、問政失誤
-"
+            "正面：民調上升、重要建設成功、獲關鍵人士背書、正面媒體報導、問政被稱讚\n"
+            "負面：民調下滑、爭議事件、被攻擊或批評、負面新聞、問政失誤\n"
             "中立：例行立委問政、一般考察、中性報導（無明顯褒貶）"
         ),
     },
@@ -222,14 +216,12 @@ def process_raw(raw, raw_id):
 
 def analyze_to_report(processed_items, candidate, candidate_info):
     if not processed_items: return []
-
     content_list = "\n".join(
         str(i+1) + ". 標題：" + it["title_clean"] +
         "\n   來源：" + it["source"] +
         "\n   內容：" + it["text_clean"][:250]
         for i, it in enumerate(processed_items)
     )
-
     prompt = (
         "你是台灣選舉專業分析師。\n\n"
         "【監控對象】\n"
@@ -244,16 +236,15 @@ def analyze_to_report(processed_items, candidate, candidate_info):
         + "\n".join(candidate_info.get("context", [])) + "\n\n"
         "【待分析資料】\n" + content_list + "\n\n"
         "請針對每筆資料回答：\n"
-        "1. relevant（true/false）：是否與監控對象【" + candidate + "】本人直接相關？\n"
-        "2. topic：主要議題（10字內，若relevant=false填'無關'）\n"
+        "1. relevant（true/false）：是否與【" + candidate + "】本人直接相關？\n"
+        "2. topic：主要議題（10字內）\n"
         "3. stance：立場（pro/against/neutral）\n"
-        "4. sentiment：對選情實際影響（正面/中立/負面）\n"
+        "4. sentiment：對選情影響（正面/中立/負面）\n"
         "5. priority：重要度（high/medium/low）\n"
         "6. summary：一句話說明對選情影響（20字內）\n\n"
         "以JSON陣列回覆，每元素含：index,relevant,topic,stance,sentiment,priority,summary\n"
         "只回JSON，不要其他文字。"
     )
-
     reports = []
     try:
         r = requests.post(
@@ -264,14 +255,15 @@ def analyze_to_report(processed_items, candidate, candidate_info):
             timeout=30,
         )
         r.raise_for_status()
-        text = r.json()["content"][0]["text"].strip().replace("```json","").replace("```","").strip()
+        text = r.json()["content"][0]["text"].strip()
+        text = text.replace("```json","").replace("```","").strip()
         sent_map = {a["index"]: a for a in json.loads(text)}
         skipped = 0
         for i, item in enumerate(processed_items):
             a = sent_map.get(i + 1, {})
             if not a.get("relevant", True):
                 skipped += 1
-                print("    [過濾] " + item["title_clean"][:50])
+                print("    [過濾] " + item["title_clean"][:60])
                 continue
             reports.append({
                 "keyword": item["keyword"], "candidate": candidate,
@@ -281,8 +273,7 @@ def analyze_to_report(processed_items, candidate, candidate_info):
                 "source": item["source"], "url": item["normalized_url"],
                 "title": item["title_clean"], "published_at": item["fetched_at"][:10],
             })
-        if skipped:
-            print("  過濾無關: " + str(skipped) + "筆")
+        if skipped: print("  過濾無關: " + str(skipped) + "筆")
     except Exception as e:
         print("  [Claude錯誤] " + str(e))
         for item in processed_items:
@@ -360,7 +351,8 @@ def send_email_report(reports, run_time):
             sc = "#16a34a" if r["sentiment"]=="正面" else "#dc2626" if r["sentiment"]=="負面" else "#64748b"
             em = "🟢" if r["sentiment"]=="正面" else "🔴" if r["sentiment"]=="負面" else "⚪"
             flag = "🔥" if r.get("priority")=="high" else "📌" if r.get("priority")=="medium" else ""
-            rows_html += ("<tr style='border-bottom:1px solid #e2e8f0'>"
+            rows_html += (
+                "<tr style='border-bottom:1px solid #e2e8f0'>"
                 "<td style='padding:10px 12px;font-size:12px;color:#6b7280'>"+flag+r["source"]+"</td>"
                 "<td style='padding:10px 12px;font-weight:700;font-size:13px'>"+r["candidate"]+"</td>"
                 "<td style='padding:10px 12px;font-size:12px'>"+r["topic"]+"</td>"
@@ -368,14 +360,15 @@ def send_email_report(reports, run_time):
                 "<td style='padding:10px 12px'><span style='color:"+sc+";font-weight:700;font-size:12px'>"+em+" "+r["sentiment"]+"</span></td>"
                 "<td style='padding:10px 12px;font-size:12px;color:#374151'>"+r.get("summary","")+"</td>"
                 "<td style='padding:10px 12px'><a href='"+r["url"]+"' style='color:#2563eb;font-size:12px'>查看</a></td>"
-                "</tr>")
+                "</tr>"
+            )
         sc_color = "#16a34a" if score>0 else "#dc2626" if score<0 else "#64748b"
-        sc_str = ("+") if score>0 else ""
-        sc_str = sc_str+str(score)
-        html = ("<!DOCTYPE html><html><body style='font-family:Microsoft JhengHei,sans-serif;background:#f8f9fa;padding:20px'>"
+        sc_str = ("+" if score>0 else "")+str(score)
+        html = (
+            "<!DOCTYPE html><html><body style='font-family:Microsoft JhengHei,sans-serif;background:#f8f9fa;padding:20px'>"
             "<div style='max-width:920px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)'>"
             "<div style='background:linear-gradient(135deg,#15803d,#166534);padding:28px;color:white'>"
-            "<h1 style='margin:0;font-size:22px;font-weight:900'>📡 選情雷達日報 v5</h1>"
+            "<h1 style='margin:0;font-size:22px;font-weight:900'>📡 選情雷達日報 v5.1</h1>"
             "<p style='margin:6px 0 0;opacity:0.75;font-size:13px'>"+run_time+"｜黃柏瑜（彰化市長候選人）× 陳素月（彰化縣長候選人）</p>"
             "<p style='margin:4px 0 0;opacity:0.6;font-size:12px'>"+ps+"</p></div>"
             "<div style='padding:16px 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;background:#f1f5f9'>"
@@ -386,17 +379,18 @@ def send_email_report(reports, run_time):
             "<div style='background:white;border-radius:8px;padding:14px;text-align:center;border:1px solid #e2e8f0'><div style='font-size:28px;font-weight:900;color:"+sc_color+"'>"+sc_str+"</div><div style='font-size:11px;color:#6b7280'>情緒指數</div></div></div>"
             "<div style='padding:16px 20px;overflow-x:auto'><table style='width:100%;border-collapse:collapse'>"
             "<thead><tr style='background:#f8f9fa'>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>平台</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>候選人</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>議題</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>標題</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>情緒</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>影響摘要</th>"
-            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;font-weight:700;border-bottom:2px solid #e2e8f0'>連結</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>平台</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>候選人</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>議題</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>標題</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>情緒</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>影響摘要</th>"
+            "<th style='padding:10px 12px;text-align:left;font-size:11px;color:#9ca3af;border-bottom:2px solid #e2e8f0'>連結</th>"
             "</tr></thead><tbody>"+rows_html+"</tbody></table></div>"
             "<div style='padding:14px 20px;background:#f8f9fa;font-size:11px;color:#9ca3af;text-align:center;border-top:1px solid #e2e8f0'>"
-            "選情雷達 v5 · 已修正陳素月身份（立委而非員林市長）</div>"
-            "</div></body></html>")
+            "選情雷達 v5.1 · 黃柏瑜（彰化市長候選人）陳素月（立委/彰化縣長候選人）</div>"
+            "</div></body></html>"
+        )
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "📡 選情日報 "+run_time+"｜"+str(total)+"筆｜🔥"+str(high_count)+"則重要"
         msg["From"] = GMAIL_USER
@@ -412,12 +406,12 @@ def send_email_report(reports, run_time):
 def main():
     run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     print("="*60)
-    print("  選情監控 v5 "+run_time+" Run:"+RUN_ID)
-    print("  陳素月=立委/彰化縣長候選人  黃柏瑜=彰化市長候選人")
+    print("  選情監控 v5.1 "+run_time+" Run:"+RUN_ID)
+    print("  黃柏瑜=彰化市長候選人/縣議員")
+    print("  陳素月=立委(彰化縣第4選區)/彰化縣長候選人")
     print("="*60)
     all_raw,all_processed,all_reports,all_errors=[],[],[],[]
     seen_url_hashes=set()
-
     print("\n[Layer 1] 抓取...")
     for candidate, info in CANDIDATES.items():
         print("\n  ▶ "+candidate+"（"+info["role"]+"）")
@@ -441,9 +435,7 @@ def main():
             ok=sum(1 for r in raw_list if r["fetch_status"]=="ok")
             if ok: print("    "+platform+" ["+social_kw+"]: "+str(ok)+"筆")
             time.sleep(0.3)
-
     print("\n  原始: "+str(len(all_raw))+"筆")
-
     print("\n[Layer 2] 清理（URL去重）...")
     for i,raw in enumerate(all_raw):
         if raw["fetch_status"].startswith("error"):
@@ -456,8 +448,7 @@ def main():
             seen_url_hashes.add(p["url_hash"])
             all_processed.append(p)
     print("  清理後: "+str(len(all_processed))+"筆")
-
-    print("\n[Layer 3] Claude分析（v5精確版）...")
+    print("\n[Layer 3] Claude分析（v5.1精確版）...")
     for candidate,info in CANDIDATES.items():
         group=[p for p in all_processed if p.get("candidate")==candidate]
         if group:
@@ -467,7 +458,6 @@ def main():
             neg=sum(1 for r in rpts if r["sentiment"]=="負面")
             high=sum(1 for r in rpts if r["priority"]=="high")
             print("  "+candidate+": "+str(len(rpts))+"筆 | 正面:"+str(pos)+" 負面:"+str(neg)+" 重要:"+str(high))
-
     print("\n[Layer 4] 寫入Sheets...")
     write_to_sheets(all_reports,all_errors)
     send_email_report(all_reports,run_time)
