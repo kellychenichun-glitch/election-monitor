@@ -4,55 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>選情雷達｜彰化選情監控</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f8f9fa;--sf:#fff;--sf2:#f1f3f5;--bd:#dee2e6;--tx:#212529;--mu:#6c757d;--ac:#16a34a;--al:#dcfce7;--da:#dc2626;--dl:#fee2e2;--ne:#64748b;--go:#d97706;--gl:#fef3c7;--bl:#2563eb;--bll:#dbeafe;--hu:#059669;--hl:#d1fae5;--ch:#7c3aed;--cl:#ede9fe}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:16px}
 .wrap{max-width:1400px;margin:0 auto;padding:0 28px}
-.hdr{background:var(--sf);border-bottom:1.5px solid var(--bd);padding:28px 0 20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.logo{display:flex;align-items:center;gap:16px}
-.icon{width:52px;height:52px;background:linear-gradient(135deg,var(--ac),#15803d);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px}
-h1{font-size:28px;font-weight:900;color:var(--tx)}h1 span{color:var(--ac)}
-.sub{font-size:14px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:3px}
-.hrow{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
+.hdr{background:var(--sf);border-bottom:1.5px solid var(--bd);padding:24px 0 16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;gap:14px}
+.icon{width:48px;height:48px;background:linear-gradient(135deg,var(--ac),#15803d);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+h1{font-size:26px;font-weight:900;color:var(--tx)}
+h1 span{color:var(--ac)}
+.sub{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:2px}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
 .hr2{text-align:right}
 .lup{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace}
-.lb{display:inline-flex;align-items:center;gap:6px;background:var(--al);border:1px solid #86efac;border-radius:20px;padding:5px 14px;font-size:13px;color:var(--ac);font-weight:600;margin-bottom:5px}
-.ld{width:7px;height:7px;background:var(--ac);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+.lb{display:inline-flex;align-items:center;gap:6px;background:var(--al);border:1px solid #86efac;border-radius:20px;padding:4px 12px;font-size:12px;color:var(--ac);font-weight:600;margin-bottom:4px}
+.ld{width:6px;height:6px;background:var(--ac);border-radius:50%;animation:blink 1.5s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.main{padding:24px 0}
-.dn{display:flex;align-items:center;gap:10px;margin-bottom:24px;overflow-x:auto}
-.db{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:14px;cursor:pointer;font-weight:500;font-family:'DM Mono',monospace}
-.db:hover,.db.active{border-color:var(--ac);color:var(--ac)}.db.active{background:var(--ac);color:#fff;font-weight:700}
-.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px}
-.sc{background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden}
+.main{padding:20px 0}
+.dn{display:flex;align-items:center;gap:8px;margin-bottom:20px;overflow-x:auto}
+.db{flex-shrink:0;padding:6px 16px;border-radius:20px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:13px;cursor:pointer;font-weight:500;font-family:'DM Mono',monospace}
+.db.active{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.sc{background:var(--sf);border:1.5px solid var(--bd);border-radius:12px;padding:18px 20px;position:relative;overflow:hidden}
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--ac))}
-.sl{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
-.sv{font-size:36px;font-weight:900;line-height:1}.ss{font-size:13px;color:var(--mu);margin-top:5px}
-.cg{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.sl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.sv{font-size:34px;font-weight:900;line-height:1}
+.ss{font-size:12px;color:var(--mu);margin-top:4px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
 @media(max-width:768px){.cg{grid-template-columns:1fr}}
-.cc{background:var(--sf);border:1.5px solid var(--bd);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+.cc{background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;padding:20px;position:relative;overflow:hidden}
 .cc::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--cc)}
 .cc.huang{--cc:var(--hu)}.cc.chen{--cc:var(--ch)}
-.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.cn{font-size:20px;font-weight:900}.cn span{color:var(--cc)}
-.clo{font-size:12px;color:var(--mu);background:var(--sf2);border-radius:6px;padding:4px 10px;font-family:'DM Mono',monospace}
-.cbar{display:flex;gap:4px;margin-bottom:18px;border-radius:6px;overflow:hidden;height:10px}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.cn{font-size:19px;font-weight:900}.cn span{color:var(--cc)}
+.clo{font-size:11px;color:var(--mu);background:var(--sf2);border-radius:5px;padding:3px 8px;font-family:'DM Mono',monospace}
+.cbar{display:flex;gap:3px;margin-bottom:16px;border-radius:5px;overflow:hidden;height:8px}
 .bpos{background:var(--ac);transition:width .8s}.bneu{background:#cbd5e1;transition:width .8s}.bneg{background:var(--da);transition:width .8s}
-.cst{display:flex;gap:14px}.ci{text-align:center;flex:1}
-.cnum{font-size:22px;font-weight:900}.clb{font-size:11px;color:var(--mu);text-transform:uppercase;font-weight:600}
-.fl{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
-.fb{padding:7px 16px;border-radius:8px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:13px;cursor:pointer;font-weight:500;font-family:'Noto Sans TC',sans-serif}
-.fb:hover,.fb.active{border-color:var(--ac);color:var(--ac)}.fb.active{background:var(--ac);color:#fff;font-weight:700}
-.tw{background:var(--sf);border:1.5px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:32px}
-.th{padding:18px 22px;border-bottom:1.5px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf2)}
-.tt{font-size:15px;font-weight:800}.tc{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace}
+.cst{display:flex;gap:12px}.ci{text-align:center;flex:1}
+.cnum{font-size:20px;font-weight:900}.clb{font-size:10px;color:var(--mu);text-transform:uppercase;font-weight:600}
+.fl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.fb{padding:6px 14px;border-radius:7px;border:1.5px solid var(--bd);background:var(--sf);color:var(--mu);font-size:13px;cursor:pointer;font-weight:500;font-family:'Noto Sans TC',sans-serif}
+.fb.active{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.tw{background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:28px}
+.th{padding:16px 20px;border-bottom:1.5px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf2)}
+.tt{font-size:14px;font-weight:800}.tc{font-size:12px;color:var(--mu);font-family:'DM Mono',monospace}
 table{width:100%;border-collapse:collapse}
-thead th{padding:12px 18px;text-align:left;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;background:var(--sf2);font-weight:700;white-space:nowrap;border-bottom:1.5px solid var(--bd)}
-td{padding:14px 18px;font-size:14px;border-top:1px solid var(--bd);vertical-align:middle}
+thead th{padding:10px 16px;text-align:left;font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;background:var(--sf2);font-weight:700;white-space:nowrap;border-bottom:1.5px solid var(--bd)}
+td{padding:12px 16px;font-size:13px;border-top:1px solid var(--bd);vertical-align:middle}
 tr:hover td{background:#f8f9fa}
-.badge{display:inline-block;padding:3px 10px;border-radius:5px;font-size:12px;font-weight:700;white-space:nowrap}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap}
 .bpos2{background:var(--al);color:var(--ac);border:1px solid #86efac}
 .bneg2{background:var(--dl);color:var(--da);border:1px solid #fca5a5}
 .bneu2{background:#f1f5f9;color:var(--ne);border:1px solid #cbd5e1}
@@ -61,142 +63,261 @@ tr:hover td{background:#f8f9fa}
 .blo{background:#f1f5f9;color:var(--mu);border:1px solid var(--bd)}
 .bhu{background:var(--hl);color:var(--hu);border:1px solid #6ee7b7}
 .bch{background:var(--cl);color:var(--ch);border:1px solid #c4b5fd}
-.tce{max-width:300px}
-.ttx{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5;font-size:14px}
-.smy{font-size:12px;color:var(--mu);margin-top:4px}
-a.lnk{color:var(--bl);text-decoration:none;font-size:13px;font-weight:600}
+.tce{max-width:280px}
+.ttx{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;font-size:13px}
+.smy{font-size:11px;color:var(--mu);margin-top:3px}
+a.lnk{color:var(--bl);text-decoration:none;font-size:12px;font-weight:600}
 a.lnk:hover{color:var(--ac);text-decoration:underline}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;color:var(--mu)}
-.spinner{width:36px;height:36px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:14px;color:var(--mu)}
+.spinner{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:60px;color:var(--mu);font-size:15px}
+.empty{text-align:center;padding:50px;color:var(--mu);font-size:14px}
 .tsx{overflow-x:auto}
-.ft{padding:28px 0;border-top:1.5px solid var(--bd);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mu);flex-wrap:wrap;gap:8px}
-.sbw{height:5px;background:var(--sf2);border-radius:3px;overflow:hidden;margin-top:8px}
-.sb{height:100%;border-radius:3px;transition:width .8s}
-.fi{animation:fi .3s ease both}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ft{padding:24px 0;border-top:1.5px solid var(--bd);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--mu);flex-wrap:wrap;gap:8px}
+.sbw{height:4px;background:var(--sf2);border-radius:2px;overflow:hidden;margin-top:6px}
+.sb{height:100%;border-radius:2px;transition:width .8s}
 </style>
 </head>
 <body>
 <div class="hdr"><div class="wrap"><div class="hrow">
   <div class="logo">
     <div class="icon">&#x1F4E1;</div>
-    <div><h1>&#x9078;&#x60C5;<span>&#x96F7;&#x9054;</span></h1><div class="sub">&#x5F70;&#x5316;&#x7E23;&#x5E02;&#x9078;&#x60C5;&#x5373;&#x6642;&#x76E3;&#x63A7;&#x7CFB;&#x7D71; &middot; v5.3</div></div>
+    <div><h1>&#x9078;&#x60C5;<span>&#x96F7;&#x9054;</span></h1><div class="sub">&#x5F70;&#x5316;&#x7E23;&#x5E02;&#x9078;&#x60C5;&#x5373;&#x6642;&#x76E3;&#x63A7;&#x7CFB;&#x7D71; v5.3</div></div>
   </div>
   <div class="hr2">
     <div class="lb"><div class="ld"></div> LIVE DATA</div>
     <div class="lup" id="lup">&#x8F09;&#x5165;&#x4E2D;...</div>
   </div>
 </div></div></div>
+
 <div class="wrap main">
   <div class="dn" id="dn"></div>
   <div class="sg" id="sg"><div class="loading"><div class="spinner"></div></div></div>
   <div class="cg" id="cg"></div>
   <div class="fl">
     <button class="fb active" data-f="all">&#x5168;&#x90E8;</button>
-    <button class="fb" data-f="&#x9EC3;&#x67CF;&#x745C;">&#x9EC3;&#x67CF;&#x745C;</button>
-    <button class="fb" data-f="&#x9673;&#x7D20;&#x6708;">&#x9673;&#x7D20;&#x6708;</button>
-    <button class="fb" data-f="&#x6B63;&#x9762;">&#x1F7E2; &#x6B63;&#x9762;</button>
-    <button class="fb" data-f="&#x8CA0;&#x9762;">&#x1F534; &#x8CA0;&#x9762;</button>
-    <button class="fb" data-f="high">&#x1F525; &#x91CD;&#x8981;</button>
-    <button class="fb" data-f="Google News">Google News</button>
-    <button class="fb" data-f="FB">Facebook</button>
-    <button class="fb" data-f="IG">Instagram</button>
-    <button class="fb" data-f="Threads">Threads</button>
-    <button class="fb" data-f="PTT">PTT</button>
+    <button class="fb" data-f="HBY">&#x9EC3;&#x67CF;&#x745C;</button>
+    <button class="fb" data-f="CSY">&#x9673;&#x7D20;&#x6708;</button>
+    <button class="fb" data-f="POS">&#x6B63;&#x9762;</button>
+    <button class="fb" data-f="NEG">&#x8CA0;&#x9762;</button>
+    <button class="fb" data-f="HIGH">&#x91CD;&#x8981;</button>
+    <button class="fb" data-f="GN">Google News</button>
+    <button class="fb" data-f="FB2">Facebook</button>
+    <button class="fb" data-f="IG2">Instagram</button>
+    <button class="fb" data-f="TH">Threads</button>
+    <button class="fb" data-f="PT">PTT</button>
   </div>
   <div class="tw">
     <div class="th"><div class="tt">&#x1F4CB; &#x4ECA;&#x65E5;&#x5831;&#x544A;</div><div class="tc" id="tc"></div></div>
     <div class="tsx"><table>
-      <thead><tr><th>&#x6642;&#x9593;</th><th>&#x5019;&#x9078;&#x4EBA;</th><th>&#x5E73;&#x53F0;</th><th>&#x8B70;&#x984C;</th><th>&#x6A19;&#x984C;/&#x6458;&#x8981;</th><th>&#x60C5;&#x7DD2;</th><th>&#x91CD;&#x8981;&#x5EA6;</th><th>&#x9023;&#x7D50;</th></tr></thead>
-      <tbody id="tb"><tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>&#x8F09;&#x5165;&#x8CC7;&#x6599;&#x4E2D;...</span></div></td></tr></tbody>
+      <thead><tr>
+        <th>&#x6642;&#x9593;</th><th>&#x5019;&#x9078;&#x4EBA;</th><th>&#x5E73;&#x53F0;</th><th>&#x8B70;&#x984C;</th>
+        <th>&#x6A19;&#x984C; / &#x6458;&#x8981;</th><th>&#x60C5;&#x7DD2;</th><th>&#x91CD;&#x8981;&#x5EA6;</th><th>&#x9023;&#x7D50;</th>
+      </tr></thead>
+      <tbody id="tb">
+        <tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>&#x8F09;&#x5165;&#x8CC7;&#x6599;&#x4E2D;...</span></div></td></tr>
+      </tbody>
     </table></div>
   </div>
 </div>
+
 <div class="wrap"><div class="ft">
-  <div>&#x9078;&#x60C5;&#x96F7;&#x9054; &middot; &#x8CC7;&#x6599;&#x4F86;&#x6E90;&#xFF1ASerper.dev + Google News RSS</div>
-  <div>&#x8CC7;&#x6599;&#x6BCF;&#x65E5; 08:00/14:00/20:00&#xFF08;&#x53F0;&#x7063;&#x6642;&#x9593;&#xFF09;&#x81EA;&#x52D5;&#x66F4;&#x65B0;</div>
+  <div>&#x9078;&#x60C5;&#x96F7;&#x9054; &middot; Serper.dev + Google News RSS</div>
+  <div>&#x8CC7;&#x6599;&#x6BCF;&#x65E5; 08:00 / 14:00 / 20:00 &#xFF08;&#x53F0;&#x7063;&#x6642;&#x9593;&#xFF09;</div>
 </div></div>
+
 <script>
-var SID="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
-var ICO={"Google":"G","Google News":"N","FB":"FB","IG":"IG","Threads":"T","PTT":"P"};
-var D=[],AF="all",SH=[],AS="";
-function dlist(){var t=new Date(),r=[];for(var i=0;i<7;i++){var d=new Date(t);d.setDate(t.getDate()-i);r.push(d.toISOString().split("T")[0]);}return r;}
-async function getSheets(){
-  var ds=dlist(),res=[];
-  for(var i=0;i<ds.length;i++){
-    try{
-      var r=await fetch("https://docs.google.com/spreadsheets/d/"+SID+"/gviz/tq?tqx=out:json&sheet="+ds[i]);
-      var t=await r.text();
-      if(t.indexOf("status":"error")>-1)continue;
-      var s=t.indexOf("{"),e=t.lastIndexOf("}");
-      if(s<0||e<0)continue;
-      var j=JSON.parse(t.substring(s,e+1));
-      if(j.table&&j.table.rows&&j.table.rows.length>1)res.push(ds[i]);
-    }catch(x){}
+var SID = "1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
+var D = [], AF = "all", SH = [], AS = "";
+var CMAP = {"HBY":"黃柏瑜","CSY":"陳素月","POS":"正面","NEG":"負面","HIGH":"high","GN":"Google News","FB2":"FB","IG2":"IG","TH":"Threads","PT":"PTT"};
+
+function makeUrl(sheet) {
+  return "https://docs.google.com/spreadsheets/d/" + SID + "/gviz/tq?tqx=out:json&sheet=" + sheet + "&ts=" + Date.now();
+}
+
+function dlist() {
+  var t = new Date(), r = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(t);
+    d.setDate(t.getDate() - i);
+    r.push(d.toISOString().split("T")[0]);
+  }
+  return r;
+}
+
+async function getSheets() {
+  var ds = dlist(), res = [];
+  for (var i = 0; i < ds.length; i++) {
+    try {
+      var url = "https://docs.google.com/spreadsheets/d/" + SID + "/gviz/tq?tqx=out:json&sheet=" + ds[i];
+      var r = await fetch(url);
+      var t = await r.text();
+      var errStr = "status" + String.fromCharCode(34) + ":" + String.fromCharCode(34) + "error";
+      if (t.indexOf(errStr) > -1) continue;
+      var s = t.indexOf("{"), e = t.lastIndexOf("}");
+      if (s < 0 || e < 0) continue;
+      var j = JSON.parse(t.substring(s, e + 1));
+      if (j.table && j.table.rows && j.table.rows.length > 1) res.push(ds[i]);
+    } catch (x) {}
   }
   return res;
 }
-async function fetchData(sh){
-  var r=await fetch("https://docs.google.com/spreadsheets/d/"+SID+"/gviz/tq?tqx=out:json&sheet="+sh+"&ts="+Date.now());
-  var t=await r.text();var s=t.indexOf("{"),e=t.lastIndexOf("}");
-  var j=JSON.parse(t.substring(s,e+1));var data=[];
-  for(var i=0;i<j.table.rows.length;i++){
-    var rw=j.table.rows[i];
-    var c=rw.c.map(function(x){return x?(x.v||""):"";});
-    if(c[0]==="時間"||c[0]==="測試"||!c[1])continue;
-    data.push({time:String(c[0]||""),candidate:String(c[1]||""),topic:String(c[2]||""),stance:String(c[3]||""),sentiment:String(c[4]||""),priority:String(c[5]||""),summary:String(c[6]||""),source:String(c[7]||""),title:String(c[8]||""),url:String(c[9]||""),date:String(c[10]||sh)});
+
+async function fetchData(sheet) {
+  var r = await fetch(makeUrl(sheet));
+  var t = await r.text();
+  var s = t.indexOf("{"), e = t.lastIndexOf("}");
+  var j = JSON.parse(t.substring(s, e + 1));
+  var data = [];
+  for (var i = 0; i < j.table.rows.length; i++) {
+    var rw = j.table.rows[i];
+    var c = rw.c.map(function(x) { return x ? (x.v || "") : ""; });
+    var timeVal = String(c[0] || "");
+    var candVal = String(c[1] || "");
+    if (timeVal === "時間" || timeVal === "測試" || !candVal) continue;
+    data.push({time:timeVal,candidate:candVal,topic:String(c[2]||""),stance:String(c[3]||""),sentiment:String(c[4]||""),priority:String(c[5]||""),summary:String(c[6]||""),source:String(c[7]||""),title:String(c[8]||""),url:String(c[9]||""),date:String(c[10]||sheet)});
   }
   return data;
 }
-function nav(){
-  var h="";
-  for(var i=0;i<SH.length;i++){
-    var d=SH[i];
-    var cls="db"+(d===AS?" active":"");
-    h+="<button class=\""+cls+"\" onclick=\"sw('"+d+"')\">"+d+"</button>";
+
+function renderNav() {
+  var h = "";
+  for (var i = 0; i < SH.length; i++) {
+    var d = SH[i];
+    var cls = "db" + (d === AS ? " active" : "");
+    h += "<button class=" + String.fromCharCode(34) + cls + String.fromCharCode(34) + " onclick=" + String.fromCharCode(34) + "switchDate('" + d + "')" + String.fromCharCode(34) + ">" + d + "</button>";
   }
-  document.getElementById("dn").innerHTML=h;
+  document.getElementById("dn").innerHTML = h;
 }
 
-async function sw(d){AS=d;nav();document.getElementById("tb").innerHTML='<tr><td colspan="8"><div class="loading"><div class="spinner"></div></div></td></tr>';D=await fetchData(d);renderAll();}
-function rStats(data){
+async function switchDate(d) {
+  AS = d;
+  renderNav();
+  document.getElementById("tb").innerHTML = "<tr><td colspan=" + String.fromCharCode(34) + "8" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "loading" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "spinner" + String.fromCharCode(34) + "></div></div></td></tr>";
+  D = await fetchData(d);
+  renderAll();
+}
+
+function rStat(n,pos,neg,hi,pl) {
+  var sc = n ? Math.round((pos-neg)/n*100) : 0;
+  var col = sc>=0 ? "var(--ac)" : "var(--da)";
+  var ss = (sc>0?"+":"")+sc;
+  var pp = n?Math.round(pos/n*100):0, np = n?Math.round(neg/n*100):0;
+  var h = "";
+  h += "<div class=" + String.fromCharCode(34) + "sc" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "--ca:var(--bl)" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sl" + String.fromCharCode(34) + ">今日聲量</div><div class=" + String.fromCharCode(34) + "sv" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--bl)" + String.fromCharCode(34) + ">" + n + "</div><div class=" + String.fromCharCode(34) + "ss" + String.fromCharCode(34) + ">" + pl + " 個平台</div></div>";
+  h += "<div class=" + String.fromCharCode(34) + "sc" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "--ca:var(--ac)" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sl" + String.fromCharCode(34) + ">正面報導</div><div class=" + String.fromCharCode(34) + "sv" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--ac)" + String.fromCharCode(34) + ">" + pos + "</div><div class=" + String.fromCharCode(34) + "ss" + String.fromCharCode(34) + ">" + pp + "%</div></div>";
+  h += "<div class=" + String.fromCharCode(34) + "sc" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "--ca:var(--da)" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sl" + String.fromCharCode(34) + ">負面報導</div><div class=" + String.fromCharCode(34) + "sv" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--da)" + String.fromCharCode(34) + ">" + neg + "</div><div class=" + String.fromCharCode(34) + "ss" + String.fromCharCode(34) + ">" + np + "%</div></div>";
+  h += "<div class=" + String.fromCharCode(34) + "sc" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "--ca:var(--go)" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sl" + String.fromCharCode(34) + ">重要事件</div><div class=" + String.fromCharCode(34) + "sv" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--go)" + String.fromCharCode(34) + ">" + hi + "</div><div class=" + String.fromCharCode(34) + "ss" + String.fromCharCode(34) + ">high priority</div></div>";
+  h += "<div class=" + String.fromCharCode(34) + "sc" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "--ca:" + col + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sl" + String.fromCharCode(34) + ">情緒指數</div><div class=" + String.fromCharCode(34) + "sv" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:" + col + String.fromCharCode(34) + ">" + ss + "</div><div class=" + String.fromCharCode(34) + "sbw" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "sb" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "width:" + Math.min(100,Math.abs(sc)) + "%;background:" + col + String.fromCharCode(34) + "></div></div></div>";
+  document.getElementById("sg").innerHTML = h;
+}
+
+function renderStats(data) {
   var pos=0,neg=0,hi=0,pl=[];
-  for(var i=0;i<data.length;i++){if(data[i].sentiment==="正面")pos++;if(data[i].sentiment==="負面")neg++;if(data[i].priority==="high")hi++;if(pl.indexOf(data[i].source)<0)pl.push(data[i].source);}
-  var n=data.length,sc=n?Math.round((pos-neg)/n*100):0,col=sc>=0?"var(--ac)":"var(--da)",ss=(sc>0?"+":"")+sc,pp=n?Math.round(pos/n*100):0,np=n?Math.round(neg/n*100):0;
-  document.getElementById("sg").innerHTML='<div class="sc" style="--ca:var(--bl)"><div class="sl">今日聲量</div><div class="sv" style="color:var(--bl)">'+n+'</div><div class="ss">'+pl.length+' 個平台</div></div><div class="sc" style="--ca:var(--ac)"><div class="sl">正面報導</div><div class="sv" style="color:var(--ac)">'+pos+'</div><div class="ss">'+pp+'%</div></div><div class="sc" style="--ca:var(--da)"><div class="sl">負面報導</div><div class="sv" style="color:var(--da)">'+neg+'</div><div class="ss">'+np+'%</div></div><div class="sc" style="--ca:var(--go)"><div class="sl">重要事件</div><div class="sv" style="color:var(--go)">'+hi+'</div><div class="ss">high priority</div></div><div class="sc" style="--ca:'+col+'"><div class="sl">情緒指數</div><div class="sv" style="color:'+col+'">'+ss+'</div><div class="sbw"><div class="sb" style="width:'+Math.min(100,Math.abs(sc))+'%;background:'+col+'"></div></div></div>';
-}
-function rCands(data){
-  var cands=[{k:"黃柏瑜",c:"huang",l:"彰化市"},{k:"陳素月",c:"chen",l:"彰化縣"}],h="";
-  for(var i=0;i<cands.length;i++){
-    var c=cands[i],rows=data.filter(function(r){return r.candidate===c.k;}),pos=rows.filter(function(r){return r.sentiment==="正面";}).length,neg=rows.filter(function(r){return r.sentiment==="負面";}).length,neu=rows.filter(function(r){return r.sentiment==="中立";}).length,n=rows.length,sc=n?Math.round((pos-neg)/n*100):0,posW=n?Math.round(pos/n*100):33,neuW=n?Math.round(neu/n*100):34,negW=n?100-posW-neuW:33,col=sc>=0?"var(--ac)":"var(--da)";
-    h+='<div class="cc '+c.c+'"><div class="ch"><div class="cn"><span>'+c.k+'</span></div><div class="clo">'+c.l+'</div></div><div class="cbar"><div class="bpos" style="width:'+posW+'%"></div><div class="bneu" style="width:'+neuW+'%"></div><div class="bneg" style="width:'+negW+'%"></div></div><div class="cst"><div class="ci"><div class="cnum" style="color:var(--ac)">'+pos+'</div><div class="clb">正面</div></div><div class="ci"><div class="cnum" style="color:var(--ne)">'+neu+'</div><div class="clb">中立</div></div><div class="ci"><div class="cnum" style="color:var(--da)">'+neg+'</div><div class="clb">負面</div></div><div class="ci"><div class="cnum" style="color:'+col+'">'+( sc>0?"+":"")+sc+'</div><div class="clb">指數</div></div></div></div>';
-  }
-  document.getElementById("cg").innerHTML=h;
-}
-function rTable(data){
-  document.getElementById("tc").textContent=data.length+" 筆";
-  if(!data.length){document.getElementById("tb").innerHTML='<tr><td colspan="8"><div class="empty">目前沒有資料</div></td></tr>';return;}
-  var h="";
   for(var i=0;i<data.length;i++){
-    var r=data[i],sb=r.sentiment==="正面"?"bpos2":r.sentiment==="負面"?"bneg2":"bneu2",pb=r.priority==="high"?"bhi":r.priority==="medium"?"bmd":"blo",pt=r.priority==="high"?"重要":r.priority==="medium"?"中":"低",cc=r.candidate==="黃柏瑜"?"bhu":"bch",pi=ICO[r.source]||"*",ts=r.time.length>5?r.time.substring(0,5):r.time;
-    h+='<tr class="fi" style="animation-delay:'+(i*0.02)+'s"><td><span style="font-family:DM Mono,monospace;font-size:13px;color:var(--mu)">'+ts+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span style="font-size:14px;color:var(--mu)">'+pi+" "+r.source+'</span></td><td><span style="font-size:13px">'+r.topic+'</span></td><td class="tce"><div class="ttx">'+r.title+'</div>'+(r.summary?'<div class="smy">'+r.summary+"</div>":"")+'</td><td><span class="badge '+sb+'">'+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="lnk" href="'+r.url+'" target="_blank">查看</a>':"-")+'</td></tr>';
+    if(data[i].sentiment==="正面")pos++;
+    if(data[i].sentiment==="負面")neg++;
+    if(data[i].priority==="high")hi++;
+    if(pl.indexOf(data[i].source)<0)pl.push(data[i].source);
   }
-  document.getElementById("tb").innerHTML=h;
+  rStat(data.length,pos,neg,hi,pl.length);
 }
-function applyF(f){AF=f;document.querySelectorAll(".fb").forEach(function(b){b.classList.toggle("active",b.dataset.f===f);});var fd=D;if(f!=="all")fd=D.filter(function(r){return r.candidate===f||r.sentiment===f||r.priority===f||r.source===f;});rTable(fd);}
-document.querySelectorAll(".fb").forEach(function(b){b.addEventListener("click",function(){applyF(b.dataset.f);});});
-function renderAll(){rStats(D);rCands(D);applyF(AF);var now=new Date();document.getElementById("lup").textContent="最後更新："+now.toLocaleString("zh-TW",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});}
-async function init(){
-  document.getElementById("lup").textContent="掃描資料中...";
-  try{
-    SH=await getSheets();
-    if(!SH.length){document.getElementById("sg").innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料</div>';document.getElementById("tb").innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';document.getElementById("lup").textContent="尚無資料";return;}
-    AS=SH[0];nav();D=await fetchData(AS);renderAll();
-    setInterval(async function(){D=await fetchData(AS);renderAll();},5*60*1000);
-  }catch(ex){document.getElementById("lup").textContent="載入失敗："+ex.message;}
+
+function renderCands(data) {
+  var cands = [{k:"黃柏瑜",c:"huang",l:"彰化市"},{k:"陳素月",c:"chen",l:"彰化縣"}];
+  var html = "";
+  for(var i=0;i<cands.length;i++){
+    var cd=cands[i];
+    var rows=data.filter(function(r){return r.candidate===cd.k;});
+    var pos=rows.filter(function(r){return r.sentiment==="正面";}).length;
+    var neg=rows.filter(function(r){return r.sentiment==="負面";}).length;
+    var neu=rows.filter(function(r){return r.sentiment==="中立";}).length;
+    var n=rows.length,sc=n?Math.round((pos-neg)/n*100):0;
+    var posW=n?Math.round(pos/n*100):33,neuW=n?Math.round(neu/n*100):34,negW=n?100-posW-neuW:33;
+    var col=sc>=0?"var(--ac)":"var(--da)";
+    html += "<div class=" + String.fromCharCode(34) + "cc "+cd.c + String.fromCharCode(34) + ">";
+    html += "<div class=" + String.fromCharCode(34) + "ch" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "cn" + String.fromCharCode(34) + "><span>" + cd.k + "</span></div><div class=" + String.fromCharCode(34) + "clo" + String.fromCharCode(34) + ">" + cd.l + "</div></div>";
+    html += "<div class=" + String.fromCharCode(34) + "cbar" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "bpos" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "width:"+posW+"%" + String.fromCharCode(34) + "></div><div class=" + String.fromCharCode(34) + "bneu" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "width:"+neuW+"%" + String.fromCharCode(34) + "></div><div class=" + String.fromCharCode(34) + "bneg" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "width:"+negW+"%" + String.fromCharCode(34) + "></div></div>";
+    html += "<div class=" + String.fromCharCode(34) + "cst" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "ci" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "cnum" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--ac)" + String.fromCharCode(34) + ">"+pos+"</div><div class=" + String.fromCharCode(34) + "clb" + String.fromCharCode(34) + ">正面</div></div><div class=" + String.fromCharCode(34) + "ci" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "cnum" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--ne)" + String.fromCharCode(34) + ">"+neu+"</div><div class=" + String.fromCharCode(34) + "clb" + String.fromCharCode(34) + ">中立</div></div><div class=" + String.fromCharCode(34) + "ci" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "cnum" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:var(--da)" + String.fromCharCode(34) + ">"+neg+"</div><div class=" + String.fromCharCode(34) + "clb" + String.fromCharCode(34) + ">負面</div></div><div class=" + String.fromCharCode(34) + "ci" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "cnum" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "color:"+col + String.fromCharCode(34) + ">"+( sc>0?"+":"")+sc+"</div><div class=" + String.fromCharCode(34) + "clb" + String.fromCharCode(34) + ">指數</div></div></div></div>";
+  }
+  document.getElementById("cg").innerHTML = html;
 }
+
+function renderTable(data) {
+  document.getElementById("tc").textContent = data.length + " 筆";
+  if (!data.length) {
+    document.getElementById("tb").innerHTML = "<tr><td colspan=" + String.fromCharCode(34) + "8" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "empty" + String.fromCharCode(34) + ">目前沒有資料</div></td></tr>";
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    var sb = r.sentiment==="正面"?"bpos2":r.sentiment==="負面"?"bneg2":"bneu2";
+    var pb = r.priority==="high"?"bhi":r.priority==="medium"?"bmd":"blo";
+    var pt = r.priority==="high"?"重要":r.priority==="medium"?"中":"低";
+    var cc = r.candidate==="黃柏瑜"?"bhu":"bch";
+    var ts = r.time.length>5?r.time.substring(0,5):r.time;
+    html += "<tr>";
+    html += "<td><span style=" + String.fromCharCode(34) + "font-family:'DM Mono',monospace;font-size:12px;color:var(--mu)" + String.fromCharCode(34) + ">" + ts + "</span></td>";
+    html += "<td><span class=" + String.fromCharCode(34) + "badge "+cc + String.fromCharCode(34) + ">" + r.candidate + "</span></td>";
+    html += "<td><span style=" + String.fromCharCode(34) + "font-size:13px;color:var(--mu)" + String.fromCharCode(34) + ">" + r.source + "</span></td>";
+    html += "<td><span style=" + String.fromCharCode(34) + "font-size:12px" + String.fromCharCode(34) + ">" + r.topic + "</span></td>";
+    html += "<td class=" + String.fromCharCode(34) + "tce" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "ttx" + String.fromCharCode(34) + ">" + r.title + "</div>" + (r.summary ? "<div class=" + String.fromCharCode(34) + "smy" + String.fromCharCode(34) + ">" + r.summary + "</div>" : "") + "</td>";
+    html += "<td><span class=" + String.fromCharCode(34) + "badge "+sb + String.fromCharCode(34) + ">" + r.sentiment + "</span></td>";
+    html += "<td><span class=" + String.fromCharCode(34) + "badge "+pb + String.fromCharCode(34) + ">" + pt + "</span></td>";
+    html += "<td>" + (r.url ? "<a class=" + String.fromCharCode(34) + "lnk" + String.fromCharCode(34) + " href=" + String.fromCharCode(34) + r.url + String.fromCharCode(34) + " target=" + String.fromCharCode(34) + "_blank" + String.fromCharCode(34) + ">查看</a>" : "-") + "</td>";
+    html += "</tr>";
+  }
+  document.getElementById("tb").innerHTML = html;
+}
+
+function applyFilter(f) {
+  AF = f;
+  document.querySelectorAll(".fb").forEach(function(b) {
+    b.classList.toggle("active", b.dataset.f === f);
+  });
+  var fd = D;
+  if (f !== "all") {
+    var target = CMAP[f] || f;
+    fd = D.filter(function(r) {
+      return r.candidate===target||r.sentiment===target||r.priority===target||r.source===target;
+    });
+  }
+  renderTable(fd);
+}
+
+document.querySelectorAll(".fb").forEach(function(b) {
+  b.addEventListener("click", function() { applyFilter(b.dataset.f); });
+});
+
+function renderAll() {
+  renderStats(D);
+  renderCands(D);
+  applyFilter(AF);
+  var now = new Date();
+  document.getElementById("lup").textContent = "最後更新：" + now.toLocaleString("zh-TW", {month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+}
+
+async function init() {
+  document.getElementById("lup").textContent = "掃描資料中...";
+  try {
+    SH = await getSheets();
+    if (!SH.length) {
+      document.getElementById("sg").innerHTML = "<div class=" + String.fromCharCode(34) + "empty" + String.fromCharCode(34) + " style=" + String.fromCharCode(34) + "grid-column:1/-1" + String.fromCharCode(34) + ">目前沒有可用資料</div>";
+      document.getElementById("tb").innerHTML = "<tr><td colspan=" + String.fromCharCode(34) + "8" + String.fromCharCode(34) + "><div class=" + String.fromCharCode(34) + "empty" + String.fromCharCode(34) + ">暫無資料</div></td></tr>";
+      document.getElementById("lup").textContent = "尚無資料";
+      return;
+    }
+    AS = SH[0];
+    renderNav();
+    D = await fetchData(AS);
+    renderAll();
+    setInterval(async function() { D = await fetchData(AS); renderAll(); }, 300000);
+  } catch (ex) {
+    document.getElementById("lup").textContent = "載入失敗：" + ex.message;
+  }
+}
+
 init();
 </script>
 </body>
