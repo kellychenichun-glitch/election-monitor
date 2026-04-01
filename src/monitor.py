@@ -40,7 +40,7 @@ CANDIDATES = {
         "social_keywords": {
             "FB":      "黃柏瑜 彰化市長",
             "IG":      "黃柏瑜 彰化",
-            "Threads": "黃柏瑜 彰化市",
+            "Threads": "黃柏瑜 彰化",
             "PTT":     "黃柏瑜 彰化",
         },
         "relevant_check": (
@@ -148,22 +148,36 @@ def url_hash(url):
     return hashlib.md5(normalize_url(url).encode()).hexdigest()[:12]
 
 def is_recent(date_str):
-    """接受今日或昨日的資料，解析失敗預設保留"""
+    """接受今日、昨日或前天的資料，解析失敗預設保留"""
     if not date_str:
         return True
+    # 計算允許的日期範圍
+    allowed = set()
+    for i in range(3):  # 今天、昨天、前天
+        allowed.add((datetime.date.today() - datetime.timedelta(days=i)).isoformat())
     try:
         from email.utils import parsedate_to_datetime
         parsed = parsedate_to_datetime(date_str).date().isoformat()
-        return parsed == TODAY or parsed == YESTERDAY
+        return parsed in allowed
     except Exception:
         pass
     try:
         m = re.search(r'(\d{4}-\d{2}-\d{2})', str(date_str))
         if m:
-            return m.group(1) == TODAY or m.group(1) == YESTERDAY
+            return m.group(1) in allowed
     except Exception:
         pass
-    return True  # 無法解析預設保留
+    # 嘗試解析月日格式如 "Apr 1" 或 "01 Apr 2026"
+    try:
+        import email.utils
+        ts = email.utils.parsedate(str(date_str))
+        if ts:
+            import time
+            d = datetime.date(*ts[:3])
+            return d.isoformat() in allowed
+    except Exception:
+        pass
+    return True  # 無法解析一律保留，讓 Claude 判斷相關性
 
 def fetch_serper(keyword, site_prefix, platform):
     query = (site_prefix + " " + keyword).strip() if site_prefix else keyword
@@ -215,7 +229,12 @@ def fetch_google_news_rss(keyword):
                 "fetch_status": "ok",
             })
             kept += 1
-        print("    RSS [" + keyword + "]: 掃描" + str(len(items)) + "筆，保留" + str(kept) + "筆（今日+昨日）")
+        print("    RSS [" + keyword + "]: 掃描" + str(len(items)) + "筆，保留" + str(kept) + "筆（今+昨+前天）")
+        if kept == 0 and len(items) > 0:
+            # debug: 印出前3筆的日期
+            for dbg_item in root.findall(".//item")[:3]:
+                dbg_date = dbg_item.findtext("pubDate", "NO_DATE")
+                print("      [RSS debug] pubDate=" + dbg_date[:50])
     except Exception as e:
         raw_results.append({
             "run_id": RUN_ID, "fetched_at": datetime.datetime.now().isoformat(),
