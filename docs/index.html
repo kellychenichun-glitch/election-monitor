@@ -133,7 +133,7 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
     <div class="flt-row">
       <span class="flt-lbl">&#x5E73;&#x53F0;</span>
       <button class="fb active" data-g="src" data-f="all">&#x5168;&#x90E8;</button>
-      <button class="fb" data-g="src" data-f="GN">Google News</button>
+  
       <button class="fb" data-g="src" data-f="FB2">Facebook</button>
       <button class="fb" data-g="src" data-f="IG2">Instagram</button>
       <button class="fb" data-g="src" data-f="TH">Threads</button>
@@ -174,6 +174,34 @@ var SRCMAP = {"GN":"Google News","FB2":"FB","IG2":"IG","TH":"Threads","PT":"PTT"
 var CANDMAP = {"HBY":"黃柏瑜","CSY":"陳素月"};
 
 // === 第二優先：判讀逻輯 ===
+
+function getRelevanceLevel(r) {
+  // high: 候選人是主角，有明確政治/選情判讀價值
+  // medium: 有關聯但非主體
+  // low: 只是路過提及
+  var t = (r.topic || "").toLowerCase();
+  var ttl = (r.title || "").toLowerCase();
+  var sum = (r.summary || "").toLowerCase();
+  var cand = r.candidate || "";
+  
+  // high 判斷：候選人明確是主角
+  var highWords = ["選舉","提名","候選","立委","質詢","交通委員會","建設","政見","守護區","彰化市長","彰化縣長","大選","選民","議員","官幺","造勴","講座"];
+  for (var i = 0; i < highWords.length; i++) {
+    if (ttl.indexOf(highWords[i]) > -1 || t.indexOf(highWords[i]) > -1) return "high";
+  }
+  
+  // 若候選人名字在標題最前面，也算 high
+  var candShort = cand.substring(0,2);
+  if (ttl.indexOf(candShort) === 0 || ttl.indexOf(candShort) < 5) return "high";
+  
+  // medium: 有提到候選人相關脈絡
+  var medWords = ["彰化","彰化市","彰化縣","地方","居民","民發","民進黨","國民黨"];
+  for (var i = 0; i < medWords.length; i++) {
+    if (ttl.indexOf(medWords[i]) > -1 || sum.indexOf(medWords[i]) > -1) return "medium";
+  }
+  
+  return "low";
+}
 
 function getSignalDirection(r) {
   // 根據 sentiment + topic + priority 判斷訊號傾向
@@ -263,9 +291,9 @@ function getImportanceScore(r) {
 }
 
 function getImportanceLevel(score) {
-  if (score >= 13) return "S";
-  if (score >= 10) return "A";
-  if (score >= 7) return "B";
+  if (score >= 11) return "S";
+  if (score >= 9) return "A";
+  if (score >= 6) return "B";
   return "C";
 }
 
@@ -296,11 +324,20 @@ function enrichData(data) {
     }
     return true;
   });
+  // low relevance 不進主表（先計算 relevance，再過濾）
+  data = data.map(function(r) {
+    var copy2 = Object.assign({}, r);
+    copy2._relevance = getRelevanceLevel(r);
+    return copy2;
+  }).filter(function(r) {
+    return r._relevance !== "low";
+  });
   // === 過濾結束 ===
   // 為每筆資料加上計算屬性
   return data.map(function(r) {
     var copy = Object.assign({}, r);
     copy._signal = getSignalDirection(r);
+    copy._relevance = getRelevanceLevel(r);
     copy._eventType = getEventType(r);
     copy._score = getImportanceScore(copy);
     copy._level = getImportanceLevel(copy._score);
@@ -393,7 +430,8 @@ function renderStats(data) {
     else if (sig === "har") har++;
     else if (sig === "unc") unc++;
     else neu++;
-    if (data[i]._level === "S" || data[i]._level === "A") hi++;
+    if (data[i]._level === "S") { hi++; window._sCount = (window._sCount||0)+1; }
+    if (data[i]._level === "A") hi++;
     if (pl.indexOf(data[i].source) < 0) pl.push(data[i].source);
   }
   var n = data.length;
