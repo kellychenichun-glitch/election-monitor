@@ -1,6 +1,10 @@
 """
-選情監控系統 v2 - 4層資料架構
-Sheets：每天一個分頁，按時間排序（最新在最上面）
+選情監控系統 v3
+改善：
+1. 搜尋關鍵字加地名（彰化/員林），減少無關結果
+2. URL 去重（同一篇文章只保留一筆）
+3. Claude 分析前加候選人背景，並過濾無關資料
+4. Sheets：每天一個分頁，按時間排序（最新在最上面）
 """
 
 import os, json, time, datetime, smtplib, requests, hashlib, re, uuid
@@ -20,8 +24,21 @@ SHEET_ID       = os.environ["GOOGLE_SHEET_ID"].strip()
 TODAY  = datetime.date.today().isoformat()
 RUN_ID = str(uuid.uuid4())[:8]
 
-CANDIDATES = ["黃柏瑜", "陳素月"]
-DIMENSIONS  = ["政見", "爭議", "支持", "批評"]
+CANDIDATES = {
+    "黃柏瑜": {
+        "description": "黃柏瑜是台灣民進黨彰化市長候選人，現任彰化市議員",
+        "location": "彰化",
+        "keywords": ["黃柏瑜 彰化"],
+    },
+    "陳素月": {
+        "description": "陳素月是台灣民進黨員林市長候選人，現任員林市長",
+        "location": "員林",
+        "keywords": ["陳素月 員林"],
+    },
+}
+
+DIMENSIONS = ["政見", "爭議", "支持", "批評"]
+
 PLATFORMS = {
     "Google":  "",
     "FB":      "site:facebook.com",
@@ -53,10 +70,11 @@ def strip_html(text):
 def normalize_url(url):
     url = url.strip()
     url = re.sub(r'[?&](utm_[^&]+|oc=\d+)', '', url)
+    url = re.sub(r'[?&]$', '', url)
     return url
 
-def text_hash(text):
-    return hashlib.md5(text.encode()).hexdigest()[:12]
+def url_hash(url):
+    return hashlib.md5(normalize_url(url).encode()).hexdigest()[:12]
 
 def fetch_serper(keyword, site_prefix, platform):
     query = (site_prefix + " " + keyword).strip() if site_prefix else keyword
@@ -73,8 +91,7 @@ def fetch_serper(keyword, site_prefix, platform):
             raw_results.append({
                 "run_id": RUN_ID,
                 "fetched_at": datetime.datetime.now().isoformat(),
-                "keyword": keyword,
-                "source": platform,
+                "keyword": keyword, "source": platform,
                 "title_raw": item.get("title", ""),
                 "snippet_raw": item.get("snippet", ""),
                 "url_raw": item.get("link", ""),
@@ -137,32 +154,37 @@ def process_raw(raw, raw_id):
         "raw_id": raw_id,
         "source": raw.get("source", ""),
         "keyword": raw.get("keyword", ""),
+        "candidate": raw.get("candidate", ""),
         "fetched_at": raw.get("fetched_at", ""),
         "normalized_url": normalize_url(raw.get("url_raw", "")),
+        "url_hash": url_hash(raw.get("url_raw", "")),
         "title_clean": title_clean,
         "text_clean": text_clean,
         "text_len": len(text_clean),
-        "hash": text_hash(text_clean),
         "parser_status": "ok",
     }
 
-def analyze_to_report(processed_items, candidate):
+def analyze_to_report(processed_items, candidate, candidate_info):
     if not processed_items:
         return []
+    description = candidate_info.get("description", "")
     content_list = "\n".join(
-        str(i+1) + ". 標題：" + it["title_clean"] + "\n   摘要：" + it["text_clean"][:200]
+        str(i+1) + ". 標題：" + it["title_clean"] + "\n   來源：" + it["source"] + "\n   摘要：" + it["text_clean"][:200]
         for i, it in enumerate(processed_items)
     )
     prompt = (
-        "你是台灣選情分析專家，請分析以下關於候選人「" + candidate + "」的資料。\n\n"
+        "你是台灣選情分析專家。\n"
+        "候選人背景：" + description + "\n\n"
+        "以下是搜尋到的資料，請先判斷每筆是否與此候選人直接相關：\n\n"
         + content_list
-        + "\n\n針對每筆資料：\n"
-        "1. topic：主要議題（10字內）\n"
-        "2. stance：對" + candidate + "立場（pro/against/neutral）\n"
-        "3. sentiment：對" + candidate + "影響（正面/中立/負面）\n"
-        "4. priority：重要度（high/medium/low）\n"
-        "5. summary：一句話摘要（20字內）\n\n"
-        "JSON陣列回覆，每元素含：index,topic,stance,sentiment,priority,summary\n只回JSON。"
+        + "\n\n針對每筆資料回答：\n"
+        "1. relevant：是否與「" + candidate + "」直接相關（true/false）。若是同名不同人、商品廣告、無關政治內容，標為 false\n"
+        "2. topic：主要議題（10字內，若 relevant=false 填 '無關'）\n"
+        "3. stance：對" + candidate + "的立場（pro=支持、against=反對、neutral=中立）\n"
+        "4. sentiment：對" + candidate + "的影響（正面/中立/負面）\n"
+        "5. priority：重要度（high/medium/low）\n"
+        "6. summary：一句話摘要（20字內）\n\n"
+        "JSON陣列回覆，每元素含：index, relevant, topic, stance, sentiment, priority, summary\n只回JSON。"
     )
     reports = []
     try:
@@ -175,23 +197,31 @@ def analyze_to_report(processed_items, candidate):
         r.raise_for_status()
         text = r.json()["content"][0]["text"].strip().replace("```json","").replace("```","").strip()
         sent_map = {a["index"]: a for a in json.loads(text)}
+        skipped = 0
         for i, item in enumerate(processed_items):
             a = sent_map.get(i + 1, {})
+            if not a.get("relevant", True):
+                skipped += 1
+                continue
             reports.append({
-                "keyword": item["keyword"], "topic": a.get("topic",""),
-                "stance": a.get("stance","neutral"), "sentiment": a.get("sentiment","中立"),
-                "summary": a.get("summary",""), "priority": a.get("priority","low"),
-                "source": item["source"], "url": item["normalized_url"],
-                "title": item["title_clean"], "published_at": item["fetched_at"][:10],
+                "keyword": item["keyword"], "candidate": candidate,
+                "topic": a.get("topic",""), "stance": a.get("stance","neutral"),
+                "sentiment": a.get("sentiment","中立"), "summary": a.get("summary",""),
+                "priority": a.get("priority","low"), "source": item["source"],
+                "url": item["normalized_url"], "title": item["title_clean"],
+                "published_at": item["fetched_at"][:10],
             })
+        if skipped:
+            print("  過濾無關: " + str(skipped) + "筆")
     except Exception as e:
         print("  [Claude錯誤] " + str(e))
         for item in processed_items:
             reports.append({
-                "keyword": item["keyword"], "topic": "", "stance": "neutral",
-                "sentiment": "中立", "summary": "", "priority": "low",
-                "source": item["source"], "url": item["normalized_url"],
-                "title": item["title_clean"], "published_at": item["fetched_at"][:10],
+                "keyword": item["keyword"], "candidate": candidate,
+                "topic": "", "stance": "neutral", "sentiment": "中立",
+                "summary": "", "priority": "low", "source": item["source"],
+                "url": item["normalized_url"], "title": item["title_clean"],
+                "published_at": item["fetched_at"][:10],
             })
     return reports
 
@@ -221,7 +251,7 @@ def write_to_sheets(reports, error_logs):
             sorted_reports = sorted(reports, key=lambda x: x.get("published_at",""), reverse=True)
             now_time = datetime.datetime.now().strftime("%H:%M:%S")
             report_rows = [[
-                now_time, r["keyword"], r["topic"], r["stance"], r["sentiment"],
+                now_time, r["candidate"], r["topic"], r["stance"], r["sentiment"],
                 r["priority"], r["summary"], r["source"], r["title"],
                 r["url"], r["published_at"],
             ] for r in sorted_reports]
@@ -234,12 +264,13 @@ def write_to_sheets(reports, error_logs):
                     ws_err = wb.add_worksheet("ErrorLog", 500, 8)
                     ws_err.append_row(["run_id","stage","source","keyword","error_code","error_message","raw_payload","時間"])
                 ws_err.append_rows([[e["run_id"],e["stage"],e["source"],e["keyword"],e["error_code"],e["error_message"],e["raw_payload"],TODAY] for e in error_logs])
-            print("[Sheets] 成功！[" + sheet_name + "] 寫入 " + str(len(report_rows)) + " 筆")
+            print("[Sheets] 成功！[" + sheet_name + "] 寫入 " + str(len(report_rows)) + "筆")
             return True
         except Exception as e:
             print("[Sheets錯誤] 第" + str(attempt+1) + "次: " + str(e))
             if attempt < 2:
                 time.sleep(5)
+    print("[Sheets] 3次失敗")
     return False
 
 def send_email_report(reports, run_time):
@@ -252,15 +283,17 @@ def send_email_report(reports, run_time):
         for r in reports: pc[r["source"]] = pc.get(r["source"],0)+1
         ps = " | ".join(k+" "+str(v)+"筆" for k,v in sorted(pc.items()))
         rows_html = ""
-        for r in sorted(reports, key=lambda x: x.get("priority","")=="high", reverse=True)[:20]:
+        for r in sorted(reports, key=lambda x: (x.get("priority","")=="high", x.get("sentiment","")=="正面"), reverse=True)[:25]:
             sc = "#22c55e" if r["sentiment"]=="正面" else "#ef4444" if r["sentiment"]=="負面" else "#94a3b8"
             em = "🟢" if r["sentiment"]=="正面" else "🔴" if r["sentiment"]=="負面" else "⚪"
-            rows_html += "<tr><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>" + r["source"] + "</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-weight:600'>" + r["keyword"] + "</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>" + r["topic"] + "</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px'>" + r["title"][:50] + "...</td><td style='padding:8px;border-bottom:1px solid #e2e8f0'><span style='color:" + sc + ";font-weight:700'>" + em + " " + r["sentiment"] + "</span></td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>" + r.get("summary","") + "</td><td style='padding:8px;border-bottom:1px solid #e2e8f0'><a href='" + r["url"] + "' style='color:#3b82f6'>查看</a></td></tr>"
+            flag = "🔥" if r.get("priority")=="high" else ""
+            rows_html += "<tr><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>"+flag+r["source"]+"</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-weight:600'>"+r["candidate"]+"</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>"+r["topic"]+"</td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px'>"+r["title"][:50]+"...</td><td style='padding:8px;border-bottom:1px solid #e2e8f0'><span style='color:"+sc+";font-weight:700'>"+em+" "+r["sentiment"]+"</span></td><td style='padding:8px;border-bottom:1px solid #e2e8f0;font-size:11px'>"+r.get("summary","")+"</td><td style='padding:8px;border-bottom:1px solid #e2e8f0'><a href='"+r["url"]+"' style='color:#3b82f6'>查看</a></td></tr>"
         sc_color = "#22c55e" if score>0 else "#ef4444" if score<0 else "#94a3b8"
-        sc_str = ("+" if score>0 else "")+str(score)
-        html = "<!DOCTYPE html><html><body style='font-family:Microsoft JhengHei,sans-serif;background:#f8fafc;padding:20px'><div style='max-width:900px;margin:0 auto;background:white;border-radius:12px;overflow:hidden'><div style='background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:28px;color:white'><h1 style='margin:0'>📡 選情監控日報</h1><p style='margin:6px 0 0;opacity:0.6'>" + run_time + " | 黃柏瑜、陳素月</p><p style='margin:4px 0 0;opacity:0.5;font-size:11px'>" + ps + "</p></div><div style='padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#f1f5f9'><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#3b82f6'>" + str(total) + "</div><div style='font-size:11px;color:#64748b'>今日聲量</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#22c55e'>" + str(pos) + "</div><div style='font-size:11px'>🟢 正面</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#ef4444'>" + str(neg) + "</div><div style='font-size:11px'>🔴 負面</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:" + sc_color + "'>" + sc_str + "</div><div style='font-size:11px'>情緒指數</div></div></div><div style='padding:16px;overflow-x:auto'><table style='width:100%;border-collapse:collapse'><thead><tr style='background:#f8fafc'><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>平台</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>候選人</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>議題</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>標題</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>情緒</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>摘要</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>連結</th></tr></thead><tbody>" + rows_html + "</tbody></table></div><div style='padding:14px;background:#f8fafc;font-size:11px;color:#94a3b8;text-align:center'>選情雷達 v2 · Serper.dev + Google News</div></div></body></html>"
+        sc_str = ("+") if score>0 else ""
+        sc_str = sc_str + str(score)
+        html = "<!DOCTYPE html><html><body style='font-family:Microsoft JhengHei,sans-serif;background:#f8fafc;padding:20px'><div style='max-width:900px;margin:0 auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1)'><div style='background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:28px;color:white'><h1 style='margin:0;font-size:22px'>📡 選情監控日報</h1><p style='margin:6px 0 0;opacity:0.6;font-size:12px'>"+run_time+" | 黃柏瑜（彰化）、陳素月（員林）</p><p style='margin:4px 0 0;opacity:0.5;font-size:11px'>"+ps+"</p></div><div style='padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:#f1f5f9'><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#3b82f6'>"+str(total)+"</div><div style='font-size:11px;color:#64748b'>今日聲量</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#22c55e'>"+str(pos)+"</div><div style='font-size:11px'>🟢 正面</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:#ef4444'>"+str(neg)+"</div><div style='font-size:11px'>🔴 負面</div></div><div style='background:white;border-radius:8px;padding:14px;text-align:center'><div style='font-size:28px;font-weight:900;color:"+sc_color+"'>"+sc_str+"</div><div style='font-size:11px'>情緒指數</div></div></div><div style='padding:16px;overflow-x:auto'><table style='width:100%;border-collapse:collapse'><thead><tr style='background:#f8fafc'><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>平台</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>候選人</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>議題</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>標題</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>情緒</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>摘要</th><th style='padding:10px;text-align:left;font-size:10px;color:#94a3b8;border-bottom:2px solid #e2e8f0'>連結</th></tr></thead><tbody>"+rows_html+"</tbody></table></div><div style='padding:14px;background:#f8fafc;font-size:11px;color:#94a3b8;text-align:center'>選情雷達 v3 · Serper.dev + Google News · 已過濾無關資料</div></div></body></html>"
         msg = MIMEMultipart("alternative")
-        msg["Subject"] = "📡 選情日報 " + run_time + "｜" + str(total) + "筆"
+        msg["Subject"] = "📡 選情日報 "+run_time+"｜"+str(total)+"筆｜黃柏瑜+陳素月"
         msg["From"] = GMAIL_USER
         msg["To"] = NOTIFY_EMAIL
         msg.attach(MIMEText(html, "html", "utf-8"))
@@ -274,46 +307,56 @@ def send_email_report(reports, run_time):
 def main():
     run_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     print("="*60)
-    print("  選情監控 v2 " + run_time + " Run:" + RUN_ID)
+    print("  選情監控 v3 " + run_time)
     print("="*60)
-    all_raw, all_processed, all_reports, all_errors, seen_hashes = [], [], [], [], set()
+    all_raw, all_processed, all_reports, all_errors = [], [], [], []
+    seen_url_hashes = set()
+
     print("\n[Layer 1] 抓取...")
-    for candidate in CANDIDATES:
-        print("\n  ▶ " + candidate)
-        for dimension in DIMENSIONS:
-            keyword = candidate + " " + dimension
-            for platform, prefix in PLATFORMS.items():
-                raw_list = fetch_serper(keyword, prefix, platform)
-                all_raw.extend(raw_list)
-                ok = sum(1 for r in raw_list if r["fetch_status"] == "ok")
-                if ok: print("    " + platform + ": " + str(ok) + "筆")
-                time.sleep(0.2)
-            rss_list = fetch_google_news_rss(keyword)
-            all_raw.extend(rss_list)
-            ok = sum(1 for r in rss_list if r["fetch_status"] == "ok")
-            if ok: print("    Google News: " + str(ok) + "筆")
-    print("\n  原始: " + str(len(all_raw)) + "筆")
-    print("\n[Layer 2] 清理...")
+    for candidate, info in CANDIDATES.items():
+        print("\n  ▶ " + candidate + "（" + info["location"] + "）")
+        for base_kw in info["keywords"]:
+            for dimension in DIMENSIONS:
+                keyword = base_kw + " " + dimension
+                for platform, prefix in PLATFORMS.items():
+                    raw_list = fetch_serper(keyword, prefix, platform)
+                    for rr in raw_list: rr["candidate"] = candidate
+                    all_raw.extend(raw_list)
+                    ok = sum(1 for r in raw_list if r["fetch_status"]=="ok")
+                    if ok: print("    "+platform+" ["+keyword+"]: "+str(ok)+"筆")
+                    time.sleep(0.2)
+                rss_list = fetch_google_news_rss(keyword)
+                for rr in rss_list: rr["candidate"] = candidate
+                all_raw.extend(rss_list)
+                ok = sum(1 for r in rss_list if r["fetch_status"]=="ok")
+                if ok: print("    Google News ["+keyword+"]: "+str(ok)+"筆")
+
+    print("\n  原始: "+str(len(all_raw))+"筆")
+
+    print("\n[Layer 2] 清理（URL去重）...")
     for i, raw in enumerate(all_raw):
         if raw["fetch_status"].startswith("error"):
             all_errors.append({"run_id":RUN_ID,"stage":"fetch","source":raw["source"],"keyword":raw["keyword"],"error_code":raw["fetch_status"],"error_message":raw["fetch_status"],"raw_payload":""})
             continue
         p = process_raw(raw, i)
-        if p and p["hash"] not in seen_hashes:
-            seen_hashes.add(p["hash"])
+        if p and p["url_hash"] not in seen_url_hashes:
+            seen_url_hashes.add(p["url_hash"])
             all_processed.append(p)
-    print("  清理後: " + str(len(all_processed)) + "筆")
+    print("  清理後: "+str(len(all_processed))+"筆")
+
     print("\n[Layer 3] Claude分析...")
-    for candidate in CANDIDATES:
-        group = [p for p in all_processed if candidate in p["keyword"]]
+    for candidate, info in CANDIDATES.items():
+        group = [p for p in all_processed if p.get("candidate")==candidate]
         if group:
-            rpts = analyze_to_report(group, candidate)
+            rpts = analyze_to_report(group, candidate, info)
             all_reports.extend(rpts)
-            print("  " + candidate + ": " + str(len(rpts)) + "筆")
+            print("  "+candidate+": "+str(len(rpts))+"筆（過濾後）")
+    print("  報告: "+str(len(all_reports))+"筆")
+
     print("\n[Layer 4] 寫入Sheets...")
     write_to_sheets(all_reports, all_errors)
     send_email_report(all_reports, run_time)
-    print("\n完成！原始:" + str(len(all_raw)) + " 清理:" + str(len(all_processed)) + " 報告:" + str(len(all_reports)))
+    print("\n完成！原始:"+str(len(all_raw))+" 清理:"+str(len(all_processed))+" 報告:"+str(len(all_reports)))
 
 if __name__ == "__main__":
     main()
