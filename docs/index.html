@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>選情雷達｜彰化選情監控</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #1a1d24;
+    --border: #252830;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4ade80;
+    --danger: #f87171;
+    --neutral: #94a3b8;
+    --gold: #fbbf24;
+    --blue: #60a5fa;
+    --huang: #34d399;
+    --chen: #a78bfa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(74,222,128,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,0.03) 1px,transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  header { padding: 32px 0 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .radar-icon { width: 48px; height: 48px; background: linear-gradient(135deg,var(--accent),#16a34a); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; animation: pulse-glow 2s ease-in-out infinite; }
+  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4)} 50%{box-shadow:0 0 0 12px rgba(74,222,128,0)} }
+  h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 12px; color: var(--muted); font-family: 'DM Mono',monospace; margin-top: 2px; }
+  .header-right { text-align: right; }
+  .last-update { font-size: 11px; color: var(--muted); font-family: 'DM Mono',monospace; }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--accent); font-weight: 500; margin-bottom: 4px; }
+  .live-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .date-nav { display: flex; align-items: center; gap: 8px; padding: 20px 0; overflow-x: auto; }
+  .date-btn { flex-shrink: 0; padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 12px; font-family: 'DM Mono',monospace; cursor: pointer; transition: all 0.2s; }
+  .date-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .date-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0c10; font-weight: 700; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 12px; margin: 8px 0 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; position: relative; overflow: hidden; transition: border-color 0.2s; }
+  .stat-card:hover { border-color: rgba(74,222,128,0.3); }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-accent,var(--accent)); }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-value { font-size: 32px; font-weight: 900; line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .candidates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media(max-width:768px){.candidates-grid{grid-template-columns:1fr}}
+  .candidate-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: relative; overflow: hidden; }
+  .candidate-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--cand-color); }
+  .candidate-card.huang { --cand-color: var(--huang); }
+  .candidate-card.chen { --cand-color: var(--chen); }
+  .cand-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cand-name { font-size: 18px; font-weight: 900; }
+  .cand-name span { color: var(--cand-color); }
+  .cand-location { font-size: 10px; color: var(--muted); background: var(--surface2); border-radius: 6px; padding: 3px 8px; font-family: 'DM Mono',monospace; }
+  .cand-sentiment-bar { display: flex; gap: 4px; margin-bottom: 16px; border-radius: 6px; overflow: hidden; height: 8px; }
+  .bar-pos { background: var(--accent); transition: width 0.8s ease; }
+  .bar-neu { background: var(--neutral); transition: width 0.8s ease; }
+  .bar-neg { background: var(--danger); transition: width 0.8s ease; }
+  .cand-stats { display: flex; gap: 12px; }
+  .cand-stat { text-align: center; flex: 1; }
+  .cand-stat-num { font-size: 20px; font-weight: 900; }
+  .cand-stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.15s; font-family: 'Noto Sans TC',sans-serif; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 32px; }
+  .table-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .table-title { font-size: 13px; font-weight: 700; }
+  .table-count { font-size: 11px; color: var(--muted); font-family: 'DM Mono',monospace; }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 10px 16px; text-align: left; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; background: var(--surface2); font-weight: 500; white-space: nowrap; }
+  td { padding: 12px 16px; font-size: 12px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .badge-pos { background: rgba(74,222,128,0.15); color: var(--accent); }
+  .badge-neg { background: rgba(248,113,113,0.15); color: var(--danger); }
+  .badge-neu { background: rgba(148,163,184,0.15); color: var(--neutral); }
+  .badge-high { background: rgba(251,191,36,0.15); color: var(--gold); }
+  .badge-med { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .badge-low { background: rgba(107,114,128,0.15); color: var(--muted); }
+  .badge-huang { background: rgba(52,211,153,0.15); color: var(--huang); }
+  .badge-chen { background: rgba(167,139,250,0.15); color: var(--chen); }
+  .platform-icon { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+  .title-cell { max-width: 280px; }
+  .title-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+  .summary-text { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  a.link { color: var(--blue); text-decoration: none; font-size: 11px; }
+  a.link:hover { color: var(--accent); }
+  .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px; gap: 16px; color: var(--muted); }
+  .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .empty { text-align: center; padding: 60px; color: var(--muted); font-size: 13px; }
+  .table-scroll { overflow-x: auto; }
+  footer { padding: 24px 0; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); font-family: 'DM Mono',monospace; flex-wrap: wrap; gap: 8px; }
+  .score-gauge { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .score-bar-wrap { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+  .fade-in { animation: fadeIn 0.4s ease both; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <div class="radar-icon">📡</div>
+      <div>
+        <h1>選情<span>雷達</span></h1>
+        <div class="subtitle">彰化縣市選情即時監控系統 · v3</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div> LIVE DATA</div>
+      <div class="last-update" id="lastUpdate">載入中...</div>
+    </div>
+  </header>
+  <div class="date-nav" id="dateNav"></div>
+  <div class="stats-grid" id="statsGrid"><div class="loading"><div class="spinner"></div></div></div>
+  <div class="candidates-grid" id="candidatesGrid"></div>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">全部</button>
+    <button class="filter-btn" data-filter="黃柏瑜">黃柏瑜</button>
+    <button class="filter-btn" data-filter="陳素月">陳素月</button>
+    <button class="filter-btn" data-filter="正面">🟢 正面</button>
+    <button class="filter-btn" data-filter="負面">🔴 負面</button>
+    <button class="filter-btn" data-filter="high">🔥 重要</button>
+    <button class="filter-btn" data-filter="Google News">Google News</button>
+    <button class="filter-btn" data-filter="FB">Facebook</button>
+    <button class="filter-btn" data-filter="IG">Instagram</button>
+    <button class="filter-btn" data-filter="Threads">Threads</button>
+    <button class="filter-btn" data-filter="PTT">PTT</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="table-title">📋 今日報告</div>
+      <div class="table-count" id="tableCount"></div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>時間</th><th>候選人</th><th>平台</th><th>議題</th>
+          <th>標題 / 摘要</th><th>情緒</th><th>重要度</th><th>連結</th>
+        </tr></thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入資料中...</span></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <footer>
+    <div>選情雷達 · 資料來源：Serper.dev + Google News RSS</div>
+    <div>資料每日 08:00 / 14:00 / 20:00（台灣時間）自動更新</div>
+  </footer>
+</div>
+<script>
+const SHEET_ID='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
+const PLATFORM_ICONS={'Google':'🔍','Google News':'📰','FB':'📘','IG':'📸','Threads':'🧵','PTT':'💬'};
+let allData=[],activeFilter='all',availableSheets=[],activeSheet='';
+
+async function getAvailableSheets(){
+  const today=new Date(),dates=[];
+  for(let i=0;i<7;i++){const d=new Date(today);d.setDate(today.getDate()-i);dates.push(d.toISOString().split('T')[0]);}
+  const results=[];
+  for(const date of dates){
+    try{
+      const res=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+date);
+      const text=await res.text();
+      if(text.includes('"status":"error"'))continue;
+      const json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1));
+      if(json.table&&json.table.rows&&json.table.rows.length>1)results.push(date);
+    }catch(e){}
+  }
+  return results;
+}
+
+async function fetchSheetData(sheetName){
+  const res=await fetch('https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet='+sheetName+'&_='+Date.now());
+  const text=await res.text();
+  const json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1));
+  const data=[];
+  for(const row of json.table.rows){
+    const r=row.c.map(c=>c?(c.v||'):'');
+    if(r[0]==='時間'||r[0]==='測試'||!r[1])continue;
+    data.push({time:r[0]||'',candidate:r[1]||'',topic:r[2]||'',stance:r[3]||'',sentiment:r[4]||'',priority:r[5]||'',summary:r[6]||'',source:r[7]||'',title:r[8]||'',url:r[9]||'',date:r[10]||sheetName});
+  }
+  return data;
+}
+
+function renderDateNav(){
+  document.getElementById('dateNav').innerHTML=availableSheets.map(d=>'<button class="date-btn '+(d===activeSheet?'active':'')+'" onclick="switchDate(''+d+'')">'+d+'</button>').join('');
+}
+
+async function switchDate(date){
+  activeSheet=date;renderDateNav();
+  document.getElementById('tableBody').innerHTML='<tr><td colspan="8"><div class="loading"><div class="spinner"></div><span>載入...</span></div></td></tr>';
+  allData=await fetchSheetData(date);renderAll();
+}
+
+function renderStats(data){
+  const pos=data.filter(r=>r.sentiment==='正面').length;
+  const neg=data.filter(r=>r.sentiment==='負面').length;
+  const total=data.length;
+  const score=total?Math.round((pos-neg)/total*100):0;
+  const high=data.filter(r=>r.priority==='high').length;
+  const platforms=[...new Set(data.map(r=>r.source))].length;
+  document.getElementById('statsGrid').innerHTML=
+    '<div class="stat-card" style="--card-accent:var(--blue)"><div class="stat-label">今日聲量</div><div class="stat-value" style="color:var(--blue)">'+total+'</div><div class="stat-sub">'+platforms+' 個平台</div></div>'+
+    '<div class="stat-card" style="--card-accent:var(--accent)"><div class="stat-label">正面報導</div><div class="stat-value" style="color:var(--accent)">'+pos+'</div><div class="stat-sub">'+(total?Math.round(pos/total*100):0)+'%</div></div>'+
+    '<div class="stat-card" style="--card-accent:var(--danger)"><div class="stat-label">負面報導</div><div class="stat-value" style="color:var(--danger)">'+neg+'</div><div class="stat-sub">'+(total?Math.round(neg/total*100):0)+'%</div></div>'+
+    '<div class="stat-card" style="--card-accent:var(--gold)"><div class="stat-label">重要事件</div><div class="stat-value" style="color:var(--gold)">'+high+'</div><div class="stat-sub">high priority</div></div>'+
+    '<div class="stat-card" style="--card-accent:'+(score>=0?'var(--accent)':'var(--danger)')+'"><div class="stat-label">情緒指數</div><div class="stat-value" style="color:'+(score>=0?'var(--accent)':'var(--danger)')+'">'+(score>0?'+':'')+score+'</div><div class="score-gauge"><div class="score-bar-wrap"><div class="score-bar" style="width:'+Math.abs(score)+'%;background:'+(score>=0?'var(--accent)':'var(--danger)')+'"></div></div></div></div>';
+}
+
+function renderCandidates(data){
+  const cands=[{key:'黃柏瑜',cls:'huang',loc:'彰化市'},{key:'陳素月',cls:'chen',loc:'員林市'}];
+  document.getElementById('candidatesGrid').innerHTML=cands.map(c=>{
+    const rows=data.filter(r=>r.candidate===c.key);
+    const pos=rows.filter(r=>r.sentiment==='正面').length;
+    const neg=rows.filter(r=>r.sentiment==='負面').length;
+    const neu=rows.filter(r=>r.sentiment==='中立').length;
+    const total=rows.length;
+    const score=total?Math.round((pos-neg)/total*100):0;
+    const posW=total?Math.round(pos/total*100):33;
+    const neuW=total?Math.round(neu/total*100):34;
+    const negW=total?100-posW-neuW:33;
+    return '<div class="candidate-card '+c.cls+'"><div class="cand-header"><div class="cand-name"><span>'+c.key+'</span></div><div class="cand-location">'+c.loc+'</div></div><div class="cand-sentiment-bar"><div class="bar-pos" style="width:'+posW+'%"></div><div class="bar-neu" style="width:'+neuW+'%"></div><div class="bar-neg" style="width:'+negW+'%"></div></div><div class="cand-stats"><div class="cand-stat"><div class="cand-stat-num" style="color:var(--accent)">'+pos+'</div><div class="cand-stat-label">正面</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:var(--neutral)">'+neu+'</div><div class="cand-stat-label">中立</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:var(--danger)">'+neg+'</div><div class="cand-stat-label">負面</div></div><div class="cand-stat"><div class="cand-stat-num" style="color:'+(score>=0?'var(--accent)':'var(--danger)')+'">'+(score>0?'+':'')+score+'</div><div class="cand-stat-label">指數</div></div></div></div>';
+  }).join('');
+}
+
+function renderTable(data){
+  const body=document.getElementById('tableBody');
+  document.getElementById('tableCount').textContent=data.length+' 筆';
+  if(!data.length){body.innerHTML='<tr><td colspan="8"><div class="empty">目前沒有資料</div></td></tr>';return;}
+  body.innerHTML=data.map((r,i)=>{
+    const sb=r.sentiment==='正面'?'badge-pos':r.sentiment==='負面'?'badge-neg':'badge-neu';
+    const se=r.sentiment==='正面'?'🟢':r.sentiment==='負面'?'🔴':'⚪';
+    const pb=r.priority==='high'?'badge-high':r.priority==='medium'?'badge-med':'badge-low';
+    const pt=r.priority==='high'?'🔥 重要':r.priority==='medium'?'中':'低';
+    const cc=r.candidate==='黃柏瑜'?'badge-huang':'badge-chen';
+    const pi=PLATFORM_ICONS[r.source]||'🌐';
+    return '<tr class="fade-in" style="animation-delay:'+(i*0.03)+'s"><td><span style="font-family:DM Mono,monospace;font-size:10px;color:var(--muted)">'+r.time.substring(0,5)+'</span></td><td><span class="badge '+cc+'">'+r.candidate+'</span></td><td><span class="platform-icon">'+pi+' '+r.source+'</span></td><td><span style="font-size:11px">'+r.topic+'</span></td><td class="title-cell"><div class="title-text">'+r.title+'</div>'+(r.summary?'<div class="summary-text">'+r.summary+'</div>':'')+'</td><td><span class="badge '+sb+'">'+se+' '+r.sentiment+'</span></td><td><span class="badge '+pb+'">'+pt+'</span></td><td>'+(r.url?'<a class="link" href="'+r.url+'" target="_blank">查看 →</a>':'-')+'</td></tr>';
+  }).join('');
+}
+
+function applyFilter(filter){
+  activeFilter=filter;
+  document.querySelectorAll('.filter-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.filter===filter));
+  let filtered=allData;
+  if(filter!=='all')filtered=allData.filter(r=>r.candidate===filter||r.sentiment===filter||r.priority===filter||r.source===filter);
+  renderTable(filtered);
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
+
+function renderAll(){
+  renderStats(allData);renderCandidates(allData);applyFilter(activeFilter);
+  const now=new Date();
+  document.getElementById('lastUpdate').textContent='最後更新：'+now.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+async function init(){
+  document.getElementById('lastUpdate').textContent='掃描可用資料中...';
+  availableSheets=await getAvailableSheets();
+  if(!availableSheets.length){
+    document.getElementById('statsGrid').innerHTML='<div class="empty" style="grid-column:1/-1">目前沒有可用資料</div>';
+    document.getElementById('tableBody').innerHTML='<tr><td colspan="8"><div class="empty">暫無資料</div></td></tr>';
+    return;
+  }
+  activeSheet=availableSheets[0];
+  renderDateNav();
+  allData=await fetchSheetData(activeSheet);
+  renderAll();
+  setInterval(async()=>{allData=await fetchSheetData(activeSheet);renderAll();},5*60*1000);
+}
+init();
+</script>
+</body>
+</html>
