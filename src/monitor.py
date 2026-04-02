@@ -39,7 +39,7 @@ CANDIDATES = {
         "keywords": ["黃柏瑜 彰化市"],
         "social_keywords": {
             "FB":      "黃柏瑜 彰化市長",
-            "IG":      "黃柏瑜 彰化",
+            "IG":      "黃柏瑜 彰化市長候選人",
             "Threads": "黃柏瑜 彰化",
             "PTT":     "黃柏瑜 彰化",
         },
@@ -186,7 +186,7 @@ def fetch_serper(keyword, site_prefix, platform):
         r = requests.post(
             "https://google.serper.dev/search",
             headers={"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"},
-            json={"q": query, "num": 5, "gl": "tw", "hl": "zh-tw", "tbs": "qdr:d"},
+            json={"q": query, "num": 8, "gl": "tw", "hl": "zh-tw", "tbs": "qdr:d"},
             timeout=10,
         )
         r.raise_for_status()
@@ -270,7 +270,11 @@ def analyze_to_report(processed_items, candidate, candidate_info):
         for i, it in enumerate(processed_items)
     )
     prompt = (
-        "你是台灣選舉專業分析師，判斷標準要嚴格。\n\n"
+        "你是台灣選舉專業分析師，判斷標準要嚴格。\n"
+        "【候選人帳號白名單】以下帳號是候選人本人的社群媒體，只要帳號匹配，relevant必須=true：\n"
+        "- 陳素月：Facebook/IG帳號『陳素月SayYes』『陳素月委員』『Chen Su-Yueh』\n"
+        "- 黃柏瑜：Facebook/IG帳號『黃柏瑜』『Po-Yu Huang』\n"
+        "白名單帳號的貼文內容，不論是立法院照片、日常貼文，都算relevant=true。\n\n"
         "【監控對象】\n姓名：" + candidate + "\n"
         "身份：" + candidate_info.get("role", "") + "\n"
         "背景：" + candidate_info.get("description", "") + "\n\n"
@@ -463,9 +467,8 @@ def main():
             ok=sum(1 for r in raw_list if r["fetch_status"]=="ok")
             if ok: print("    Google ["+base_kw+"]: "+str(ok)+"筆")
             time.sleep(0.3)
-            rss_list = fetch_google_news_rss(base_kw)
-            for rr in rss_list: rr["candidate"]=candidate
-            all_raw.extend(rss_list)
+            # Google News RSS 停用：RSS 資料長期無當日資料，改完全依賴 Serper
+            # rss_list = fetch_google_news_rss(base_kw)
         for platform,prefix in SOCIAL_PLATFORMS.items():
             social_kw=info["social_keywords"].get(platform,info["keywords"][0])
             raw_list=fetch_serper(social_kw,prefix,platform)
