@@ -79,12 +79,12 @@ CANDIDATES = {
         ),
         "location": "彰化縣第4選區",
         "role": "立法委員／2026彰化縣長候選人",
-        "keywords": ["陳素月 立委 彰化", "陳素月 彰化縣長"],
+        "keywords": ["陳素月 彰化縣長候選", "陳素月 立委 彰化縣"],
         "social_keywords": {
-            "FB":      "陳素月 立委員 彰化",
-            "IG":      "陳素月 立委 彰化縣長候選",
+            "FB":      "陳素月 SayYes 彰化",
+            "IG":      "陳素月 SayYes 彰化",
             "Threads": "陳素月 立委 彰化",
-            "PTT":     "陳素月 彰化縣長候選",
+            "PTT":     "陳素月 彰化 2026",
         },
         "relevant_check": (
             "\u672C\u7CFB\u7D71\u76E3\u63A7\u7684\u662F\u3010\u7ACB\u6CD5\u59D4\u9673\u7D20\u6708\u3011\uFF0C\u5F70\u5316\u7E23\u7B2C4\u9078\u5340\uFF0C\u6C11\u9032\u9EE8\uFF0C2026\u5F70\u5316\u7E23\u9577\u5019\u9078\u4EBA\u3002"
