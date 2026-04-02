@@ -170,7 +170,7 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
 var SID = "1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
 var D = [], FD = [], SH = [], AS = "";
 var FILTERS = {cand:"all", sig:"all", lev:"all", src:"all"};
-var SRCMAP = {"GN":"Google News","FB2":"FB","IG2":"IG","TH":"Threads","PT":"PTT","GO":"Google"};
+var SRCMAP = {"FB2":"FB","IG2":"IG","TH":"Threads","PT":"PTT","GO":"Google"};
 var CANDMAP = {"HBY":"黃柏瑜","CSY":"陳素月"};
 
 // === 第二優先：判讀逻輯 ===
@@ -301,6 +301,12 @@ function enrichData(data) {
   // === 陳素月硬過濾：排除員林市長業務 ===
   data = data.filter(function(r) {
     if (r.candidate !== "陳素月") return true;
+    // 白名單：陳素月本人帳號，不過濾
+    var titleLow = (r.title || "").toLowerCase();
+    var whiteAccounts = ["sayyse", "say yes", "陳素月sayyse", "陳素月 say"];
+    for (var wi = 0; wi < whiteAccounts.length; wi++) {
+      if (titleLow.indexOf(whiteAccounts[wi]) > -1) return true;
+    }
     // 員林市長陳素月的業務（我們監控的是立協陳素月）
     var noWords = [
       "員林市","員林市長","員林農會","農產包材","白米","包材","漲價","稻米","自備袋",
