@@ -176,31 +176,35 @@ var CANDMAP = {"HBY":"黃柏瑜","CSY":"陳素月"};
 // === 第二優先：判讀逻輯 ===
 
 function getRelevanceLevel(r) {
-  // high: 候選人是主角，有明確政治/選情判讀價值
-  // medium: 有關聯但非主體
-  // low: 只是路過提及
-  var t = (r.topic || "").toLowerCase();
   var ttl = (r.title || "").toLowerCase();
+  var t = (r.topic || "").toLowerCase();
   var sum = (r.summary || "").toLowerCase();
   var cand = r.candidate || "";
+  var candShort = cand.substring(0,2); // 陳素 / 黃柏
+
+  // 必要條件：標題或摘要必須含候選人名字，才可能是 high
+  var hasCandName = ttl.indexOf(candShort) > -1 || sum.indexOf(candShort) > -1 ||
+                    ttl.indexOf(cand) > -1 || sum.indexOf(cand) > -1 ||
+                    ttl.indexOf("素月") > -1 || ttl.indexOf("柏瑜") > -1; // 素月/柏瑜
   
-  // high 判斷：候選人明確是主角
-  var highWords = ["選舉","提名","候選","立委","質詢","交通委員會","建設","政見","守護區","彰化市長","彰化縣長","大選","選民","議員","官幺","造勴","講座"];
+  if (!hasCandName) {
+    // 沒有候選人名字 → 最多是 medium（透過彰化地區相關性）
+    var midWords = ["彰化縣長","彰化市長","彰化選舉","2026彰化"];
+    for (var i = 0; i < midWords.length; i++) {
+      if (ttl.indexOf(midWords[i]) > -1) return "medium";
+    }
+    return "low";
+  }
+
+  // 有候選人名字 → 判斷是 high 還是 medium
+  var highWords = ["選舉","提名","候選","立委","質詢","交通委員會","建設","政見","彰化市長","彰化縣長","大選","造勴","議員","問政","備選"];
   for (var i = 0; i < highWords.length; i++) {
     if (ttl.indexOf(highWords[i]) > -1 || t.indexOf(highWords[i]) > -1) return "high";
   }
+  // 候選人名字在標題前5字
+  if (ttl.indexOf(candShort) < 5 || ttl.indexOf('素月') < 5 || ttl.indexOf('柏瑜') < 5) return "high";
   
-  // 若候選人名字在標題最前面，也算 high
-  var candShort = cand.substring(0,2);
-  if (ttl.indexOf(candShort) === 0 || ttl.indexOf(candShort) < 5) return "high";
-  
-  // medium: 有提到候選人相關脈絡
-  var medWords = ["彰化","彰化市","彰化縣","地方","居民","民發","民進黨","國民黨"];
-  for (var i = 0; i < medWords.length; i++) {
-    if (ttl.indexOf(medWords[i]) > -1 || sum.indexOf(medWords[i]) > -1) return "medium";
-  }
-  
-  return "low";
+  return "medium";
 }
 
 function getSignalDirection(r) {
