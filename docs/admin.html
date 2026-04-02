@@ -9,358 +9,267 @@
 :root{--bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--sf3:#2a2f45;--bd:#333856;--tx:#e8eaf6;--mu:#8892b0;--ac:#64ffda;--ac2:#7c83ff;--da:#ff6b6b;--go:#ffd166;--gr:#06d6a0;--pu:#c77dff}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
-.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.sidebar{background:var(--sf);border-right:1px solid var(--bd);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--bd)}
-.sidebar-logo h1{font-size:16px;font-weight:900;color:var(--tx)}
-.sidebar-logo h1 span{color:var(--ac)}
-.sidebar-logo .ver{font-size:11px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:3px}
-.nav-section{padding:12px 0}
-.nav-label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;padding:6px 20px;font-weight:700}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--mu);font-size:13px;transition:all .15s}
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--sf);border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:20px 18px 14px;border-bottom:1px solid var(--bd)}
+.logo h1{font-size:15px;font-weight:900}.logo h1 span{color:var(--ac)}
+.logo .ver{font-size:11px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:2px}
+.nav-sec{padding:10px 0}
+.nav-lbl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;padding:5px 18px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--mu);font-size:13px}
 .nav-item:hover{color:var(--tx);background:var(--sf2)}
 .nav-item.active{color:var(--ac);background:var(--sf2);border-left:2px solid var(--ac)}
-.nav-item .icon{font-size:16px;width:20px;text-align:center}
-.main{padding:32px 40px;max-width:1100px}
-.page-header{margin-bottom:28px}
-.page-header h2{font-size:22px;font-weight:900;color:var(--tx)}
-.page-header p{font-size:13px;color:var(--mu);margin-top:5px}
-.section{background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:20px;overflow:hidden}
-.section-header{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf2)}
-.section-title{font-size:14px;font-weight:700;color:var(--tx)}
-.section-desc{font-size:12px;color:var(--mu);margin-top:2px}
-.section-body{padding:20px}
-.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-.field-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
-.field input[type=number],.field input[type=text],.field select,.field textarea{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:8px 12px;color:var(--tx);font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .15s;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ac)}
-.field textarea{resize:vertical;min-height:80px;font-family:'DM Mono',monospace;font-size:12px}
-.field .hint{font-size:11px;color:var(--mu)}
-.range-wrap{display:flex;align-items:center;gap:10px}
-.range-wrap input[type=range]{flex:1;accent-color:var(--ac)}
-.range-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--ac);min-width:28px;text-align:right}
-.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--sf3)}
-.toggle-row:last-child{border-bottom:none}
-.toggle-label{font-size:13px;color:var(--tx)}
-.toggle-sub{font-size:11px;color:var(--mu);margin-top:2px}
-.toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--sf3);border-radius:22px;transition:.2s}
-.toggle-slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:var(--mu);border-radius:50%;transition:.2s}
-.toggle input:checked+.toggle-slider{background:var(--ac)}
-.toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#000}
-.kw-editor{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:12px}
-.kw-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:30px}
-.kw-tag{display:inline-flex;align-items:center;gap:5px;background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:3px 8px;font-size:12px;font-family:'DM Mono',monospace}
-.kw-tag.harm{border-color:var(--da);color:var(--da)}.kw-tag.ben{border-color:var(--gr);color:var(--gr)}.kw-tag.evt{border-color:var(--ac2);color:var(--ac2)}.kw-tag.excl{border-color:var(--go);color:var(--go)}
-.kw-x{cursor:pointer;opacity:.6;font-size:14px;line-height:1}.kw-x:hover{opacity:1}
-.kw-add{display:flex;gap:8px}
-.kw-add input{flex:1;background:var(--sf3);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;color:var(--tx);font-size:12px;font-family:'DM Mono',monospace;outline:none}
-.kw-add input:focus{border-color:var(--ac)}
-.kw-add button{background:var(--sf3);border:1px solid var(--bd);border-radius:6px;padding:6px 12px;color:var(--ac);font-size:12px;cursor:pointer}
-.kw-add button:hover{background:var(--ac);color:#000}
-.btn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.btn-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
-.btn-card-hd{display:flex;justify-content:space-between;align-items:center}
-.btn-card-name{font-size:12px;font-family:'DM Mono',monospace;color:var(--mu)}
-.btn-card input{background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--tx);font-size:12px;width:100%;outline:none}
-.btn-card input:focus{border-color:var(--ac)}
-.action-bar{position:fixed;bottom:0;right:0;left:240px;background:var(--sf);border-top:1px solid var(--bd);padding:14px 40px;display:flex;justify-content:space-between;align-items:center;z-index:100}
-.save-status{font-size:13px;font-family:'DM Mono',monospace}
-.save-status.saved{color:var(--gr)}.save-status.unsaved{color:var(--go)}
-.btn-row{display:flex;gap:10px}
-.btn{padding:8px 20px;border-radius:7px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s}
+.ni{font-size:15px;width:18px;text-align:center}
+.main{padding:28px 36px 80px;max-width:980px}
+.ph{margin-bottom:24px}.ph h2{font-size:20px;font-weight:900}.ph p{font-size:13px;color:var(--mu);margin-top:4px}
+.sec{background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.sh{padding:13px 18px;border-bottom:1px solid var(--bd);background:var(--sf2)}
+.st{font-size:13px;font-weight:700}.sd{font-size:11px;color:var(--mu);margin-top:2px}
+.sb{padding:18px}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.fld input,.fld select,.fld textarea{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;color:var(--tx);font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;width:100%}
+.fld input:focus,.fld select:focus{border-color:var(--ac)}
+.fld textarea{resize:vertical;min-height:70px;font-family:'DM Mono',monospace;font-size:11px}
+.hint{font-size:11px;color:var(--mu)}
+.rw{display:flex;align-items:center;gap:8px}
+.rw input[type=range]{flex:1;accent-color:var(--ac)}
+.rv{font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);min-width:24px;text-align:right}
+.tr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--sf3)}
+.tr:last-child{border-bottom:none}
+.tl{font-size:13px}.ts{font-size:11px;color:var(--mu);margin-top:1px}
+.tog{position:relative;display:inline-block;width:38px;height:21px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tgs{position:absolute;cursor:pointer;inset:0;background:var(--sf3);border-radius:21px;transition:.2s}
+.tgs:before{position:absolute;content:"";height:15px;width:15px;left:3px;bottom:3px;background:var(--mu);border-radius:50%;transition:.2s}
+.tog input:checked+.tgs{background:var(--ac)}
+.tog input:checked+.tgs:before{transform:translateX(17px);background:#000}
+.ke{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px}
+.kl{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:26px}
+.kt{display:inline-flex;align-items:center;gap:4px;background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;font-size:11px;font-family:'DM Mono',monospace}
+.kt.harm{border-color:var(--da);color:var(--da)}.kt.ben{border-color:var(--gr);color:var(--gr)}
+.kt.evt{border-color:var(--ac2);color:var(--ac2)}.kt.exc{border-color:var(--go);color:var(--go)}
+.kr{cursor:pointer;opacity:.6;line-height:1}.kr:hover{opacity:1}
+.ka{display:flex;gap:7px}
+.ka input{flex:1;background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--tx);font-size:11px;font-family:'DM Mono',monospace;outline:none}
+.ka input:focus{border-color:var(--ac)}
+.ka button{background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 10px;color:var(--ac);font-size:11px;cursor:pointer}
+.ka button:hover{background:var(--ac);color:#000}
+.bg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}
+.bc{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px;display:flex;flex-direction:column;gap:7px}
+.bch{display:flex;justify-content:space-between;align-items:center}
+.bcn{font-size:11px;font-family:'DM Mono',monospace;color:var(--mu)}
+.bc input[type=text]{background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--tx);font-size:12px;width:100%;outline:none;font-family:'Noto Sans TC',sans-serif}
+.bc input[type=text]:focus{border-color:var(--ac)}
+.sep{height:1px;background:var(--bd);margin:14px 0}
+.scp{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+.scc{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px;text-align:center}
+.scv{font-size:18px;font-weight:900;font-family:'DM Mono',monospace}
+.scv.S{color:#ff6b6b}.scv.A{color:#ffa94d}.scv.B{color:#74c0fc}.scv.C{color:var(--mu)}
+.scr{font-size:10px;color:var(--mu);margin-top:2px;font-family:'DM Mono',monospace}
+.pr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--sf3)}
+.pr:last-child{border-bottom:none}
+.pi{font-size:16px;width:24px;text-align:center}
+.pn{min-width:80px;font-size:13px;font-weight:600}
+.pu{flex:1}.pu input{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--mu);font-size:10px;font-family:'DM Mono',monospace;outline:none}
+.pu input:focus{border-color:var(--ac);color:var(--tx)}
+.pb{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ac);max-height:180px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.ab{position:fixed;bottom:0;right:0;left:220px;background:var(--sf);border-top:1px solid var(--bd);padding:12px 36px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.ss{font-size:12px;font-family:'DM Mono',monospace}
+.ss.ok{color:var(--gr)}.ss.ng{color:var(--go)}
+.br2{display:flex;gap:8px}
+.btn{padding:7px 18px;border-radius:6px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
 .btn-p{background:var(--ac);color:#000}.btn-p:hover{background:#4dd8bb}
 .btn-s{background:var(--sf2);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
-.preview-box{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);max-height:200px;overflow-y:auto;white-space:pre-wrap}
-.score-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.score-card{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px;text-align:center}
-.score-card .lv{font-size:20px;font-weight:900;font-family:'DM Mono',monospace}
-.lv.S{color:#ff6b6b}.lv.A{color:#ffa94d}.lv.B{color:#74c0fc}.lv.C{color:var(--mu)}
-.score-card .range{font-size:11px;color:var(--mu);margin-top:3px;font-family:'DM Mono',monospace}
-.sep{height:1px;background:var(--bd);margin:16px 0}
-.platform-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--sf3)}
-.platform-row:last-child{border-bottom:none}
-.picon{font-size:18px;width:28px;text-align:center}
-.pname{flex:1;font-size:13px;font-weight:600}
-.purl{flex:2}
-.purl input{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--mu);font-size:11px;font-family:'DM Mono',monospace;outline:none}
-.purl input:focus{border-color:var(--ac);color:var(--tx)}
-.toast{position:fixed;top:20px;right:20px;background:var(--gr);color:#000;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;transform:translateY(-60px);opacity:0;transition:all .3s;z-index:1000}
-.toast.show{transform:translateY(0);opacity:1}
-</style>
-</head>
-<body>
+.btn-d{background:rgba(255,107,107,.15);color:var(--da);border:1px solid rgba(255,107,107,.3)}
+.tst{position:fixed;top:16px;right:16px;background:var(--gr);color:#000;padding:9px 18px;border-radius:7px;font-weight:700;font-size:12px;transform:translateY(-50px);opacity:0;transition:all .3s;z-index:999}
+.tst.show{transform:none;opacity:1}
+</style></head><body>
 <div class="layout">
 <div class="sidebar">
-  <div class="sidebar-logo">
-    <h1>&#x9078;&#x60C5;<span>&#x96F7;&#x9054;</span> &#x2699;&#xFE0F;</h1>
-    <div class="ver">Admin Panel v1.0</div>
+  <div class="logo"><h1>選情<span>雷達</span> ⚙️</h1><div class="ver">Admin Panel v1.1</div></div>
+  <div class="nav-sec">
+    <div class="nav-lbl">判讀設定</div>
+    <div class="nav-item active" data-pg="scoring"><span class="ni">📊</span>評分權重</div>
+    <div class="nav-item" data-pg="keywords"><span class="ni">🔑</span>關鍵字規則</div>
+    <div class="nav-item" data-pg="filters"><span class="ni">🚫</span>過濾設定</div>
   </div>
-  <div class="nav-section">
-    <div class="nav-label">&#x5224;&#x8B80;&#x8A2D;&#x5B9A;</div>
-    <div class="nav-item active" onclick="go('scoring')" id="nav-scoring"><span class="icon">&#x1F4CA;</span>&#x8A55;&#x5206;&#x6B0A;&#x91CD;</div>
-    <div class="nav-item" onclick="go('keywords')" id="nav-keywords"><span class="icon">&#x1F511;</span>&#x95DC;&#x9375;&#x5B57;&#x898F;&#x5247;</div>
-    <div class="nav-item" onclick="go('filters')" id="nav-filters"><span class="icon">&#x1F6AB;</span>&#x904E;&#x6FFE;&#x8A2D;&#x5B9A;</div>
+  <div class="nav-sec">
+    <div class="nav-lbl">前台設定</div>
+    <div class="nav-item" data-pg="buttons"><span class="ni">🎛️</span>篩選按鈕</div>
+    <div class="nav-item" data-pg="platforms"><span class="ni">📡</span>平台設定</div>
+    <div class="nav-item" data-pg="display"><span class="ni">🖥️</span>顯示設定</div>
   </div>
-  <div class="nav-section">
-    <div class="nav-label">&#x524D;&#x53F0;&#x8A2D;&#x5B9A;</div>
-    <div class="nav-item" onclick="go('buttons')" id="nav-buttons"><span class="icon">&#x1F39B;&#xFE0F;</span>&#x7BE9;&#x9078;&#x6309;&#x9215;</div>
-    <div class="nav-item" onclick="go('platforms')" id="nav-platforms"><span class="icon">&#x1F4E1;</span>&#x5E73;&#x53F0;&#x8A2D;&#x5B9A;</div>
-    <div class="nav-item" onclick="go('display')" id="nav-display"><span class="icon">&#x1F5A5;&#xFE0F;</span>&#x986F;&#x793A;&#x8A2D;&#x5B9A;</div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">&#x7CFB;&#x7D71;</div>
-    <div class="nav-item" onclick="go('health')" id="nav-health"><span class="icon">&#x1F50D;</span>&#x7CFB;&#x7D71;&#x5065;&#x5EB7;</div>
-    <div class="nav-item" onclick="go('export')" id="nav-export"><span class="icon">&#x1F4BE;</span>&#x5302;&#x51FA;/&#x5302;&#x5165;</div>
+  <div class="nav-sec">
+    <div class="nav-lbl">系統</div>
+    <div class="nav-item" data-pg="health"><span class="ni">🔍</span>系統健康</div>
+    <div class="nav-item" data-pg="export"><span class="ni">💾</span>匙出/匙入</div>
   </div>
 </div>
-<div class="main" id="mc"></div>
+<div class="main" id="main"></div>
 </div>
-<div class="action-bar">
-  <div class="save-status" id="ss">&#x26A1; &#x8A2D;&#x5B9A;&#x5DF2;&#x8F09;&#x5165;</div>
-  <div class="btn-row">
-    <button class="btn btn-s" onclick="resetDef()">&#x91CD;&#x7F6E;&#x9810;&#x8A2D;&#x5024;</button>
-    <button class="btn btn-s" onclick="window.open('/election-monitor/','_blank')">&#x958B;&#x555F;&#x524D;&#x53F0; &#x2197;</button>
-    <button class="btn btn-p" onclick="saveAll()">&#x1F4BE; &#x5132;&#x5B58;&#x8A2D;&#x5B9A;</button>
+<div class="ab">
+  <div class="ss ok" id="ss">⚡ 設定已載入</div>
+  <div class="br2">
+    <button class="btn btn-d" id="btn-reset">重置預設値</button>
+    <button class="btn btn-s" id="btn-open">開啟前台 ↗</button>
+    <button class="btn btn-p" id="btn-save">💾 儲存設定</button>
   </div>
 </div>
-<div class="toast" id="toast"></div>
-<script>
-var DEF={
-  scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2,recency_stale:0},
-  thresholds:{S:11,A:9,B:6},
-  signal_harmful:["\u722D\u8B70","\u6279\u8A55","\u653B\u64CA","\u6307\u63A7","\u8CA0\u9762","\u554F\u984C","\u5931\u8A00","\u5371\u6A5F","\u8CEA\u8A62","\u8CE3","\u5F0A","\u9192\u8036"],
-  signal_beneficial:["\u5B8C\u5DE5","\u722D\u53D6","\u652F\u6301","\u80CC\u66F8","\u7576\u9078","\u529B\u633A","\u63A8\u85A6","\u8087\u5B9A","\u6210\u529F","\u901A\u904E"],
-  signal_unclear:["\u8FF7\u56E0","\u8B1B\u523A","\uFF1F","\u75C5","\u50B3\u8AAA","\u64DA\u8AAA"],
-  event_controversy:["\u722D\u8B70","\u653B\u6253","\u88AB\u6279","\u8CEA\u7591","\u6307\u63A7","\u5931\u8A00","\u5371\u6A5F"],
-  event_election:["\u63D0\u540D","\u5019\u9078","\u9078\u8209","\u5927\u9078","\u9078\u5340","\u7576\u9078","\u521D\u9078"],
-  event_construction:["\u5EFA\u8A2D","\u5DE5\u7A0B","\u9053\u8DEF","\u6A4B\u6A11","\u516C\u5712","\u5B78\u6821","\u4EA4\u901A","\u9AD8\u67B6"],
-  event_mobilization:["\u9020\u52F4","\u52D5\u54E1","\u5BA3\u50B3","\u6D3B\u52D5","\u52DF\u6B3E","\u5FD7\u5DE5"],
-  event_policy:["\u653F\u7B56","\u653F\u898B","\u63D0\u6848","\u8CEA\u8A62","\u4EA4\u901A\u59D4\u54E1","\u5BE9\u67E5"],
-  event_service:["\u670D\u52D9","\u62DC\u8A2A","\u8003\u5BDF","\u884C\u7A0B","\u9673\u60C5","\u6703\u52D8"],
-  event_media:["\u5C08\u8A2A","\u5A92\u9AD4","\u63A1\u8A2A","\u7BC0\u76EE","\u5831\u5C0E"],
-  relevance_high:["\u9078\u8209","\u63D0\u540D","\u7ACB\u59D4","\u7E23\u9577","\u5E02\u9577","\u554F\u653F","\u8CEA\u8A62","\u4EA4\u901A\u59D4\u54E1","\u5F70\u5316\u7E23\u9577","\u5F70\u5316\u5E02\u9577"],
-  relevance_must_have_name:true,
-  filter_csy_exclude:["\u767D\u7C73","\u5305\u6750","\u8FB2\u7522\u5305\u6750","\u8FB2\u6703","\u7A3B\u7C73","\u81EA\u5099\u888B","\u54E1\u6797\u5E02","\u54E1\u6797\u8FB2\u6703","\u5927\u5CE6\u5DEB","\u5317\u6E9D\u6392\u6C34","\u6C38\u5B89\u5340","\u516B\u5366\u5C71","\u6B65\u9053","\u74B0\u4FDD\u8003\u5BDF","\u5A92\u7956","\u5B97\u6559\u6D3B\u52D5","\u8001\u4EBA\u7167\u8B77","\u9577\u7167","\u6A02\u9F4A"],
-  filter_hby_exclude:["\u5176\u4ED6\u7E23\u5E02\u7684\u9EC3\u67CF\u745C"],
-  filter_whitelist:["SayYes","\u9673\u7D20\u6708\u59D4\u54E1","Chen Su-Yueh"],
-  filter_ig_threads_strict:true,
-  filter_buttons:[
-    {group:"cand",filter:"all",label:"\u5168\u90E8",enabled:true},
-    {group:"cand",filter:"HBY",label:"\u9EC3\u67CF\u745C",enabled:true},
-    {group:"cand",filter:"CSY",label:"\u9673\u7D20\u6708",enabled:true},
-    {group:"sig",filter:"all",label:"\u5168\u90E8",enabled:true},
-    {group:"sig",filter:"ben",label:"\u2705 \u6709\u5229",enabled:true},
-    {group:"sig",filter:"har",label:"\u274C \u4E0D\u5229",enabled:true},
-    {group:"sig",filter:"neu",label:"\u26AA \u4E2D\u6027",enabled:true},
-    {group:"sig",filter:"unc",label:"\u26A0 \u5F85\u5224\u8B80",enabled:true},
-    {group:"lev",filter:"all",label:"\u5168\u90E8",enabled:true},
-    {group:"lev",filter:"S",label:"S \u7ACB\u5373",enabled:true},
-    {group:"lev",filter:"A",label:"A \u9AD8\u5EA6",enabled:true},
-    {group:"lev",filter:"B",label:"B \u8FFD\u8E64",enabled:true},
-    {group:"lev",filter:"C",label:"C \u5B58\u6A94",enabled:false},
-    {group:"src",filter:"all",label:"\u5168\u90E8",enabled:true},
-    {group:"src",filter:"FB2",label:"Facebook",enabled:true},
-    {group:"src",filter:"IG2",label:"Instagram",enabled:true},
-    {group:"src",filter:"TH",label:"Threads",enabled:true},
-    {group:"src",filter:"PT",label:"PTT",enabled:true},
-    {group:"src",filter:"GO",label:"Google",enabled:true}
-  ],
-  display:{show_score_points:true,show_relevance_badge:false,default_sort:"level",items_per_page:100,auto_refresh_minutes:5,low_relevance_visible:false},
-  platforms:[
-    {id:"FB",name:"Facebook",icon:"\uD83D\uDCD8",enabled:true,search_prefix:"site:facebook.com",cred:"medium"},
-    {id:"IG",name:"Instagram",icon:"\uD83D\uDCF8",enabled:true,search_prefix:"site:instagram.com",cred:"medium"},
-    {id:"Threads",name:"Threads",icon:"\uD83E\uDDF5",enabled:true,search_prefix:"site:threads.net",cred:"medium"},
-    {id:"PTT",name:"PTT",icon:"\uD83D\uDCAC",enabled:true,search_prefix:"site:ptt.cc",cred:"low"},
-    {id:"Google",name:"Google Search",icon:"\uD83D\uDD0D",enabled:true,search_prefix:"",cred:"high"}
-  ]
-};
-
-var C={};
-var dirty=false;
-var curPage="scoring";
-
-function loadC(){var s=localStorage.getItem("emcfg");if(s){try{C=JSON.parse(s);merge(C,DEF);}catch(e){C=JSON.parse(JSON.stringify(DEF));}}else{C=JSON.parse(JSON.stringify(DEF));}}
-function merge(t,s){for(var k in s){if(!(k in t))t[k]=JSON.parse(JSON.stringify(s[k]));else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=="object")t[k]={};merge(t[k],s[k]);}}}
-function mark(){dirty=true;var el=document.getElementById("ss");el.textContent="\u26A0 \u6709\u672A\u5132\u5B58\u7684\u8B8A\u66F4";el.className="save-status unsaved";}
-function saveAll(){localStorage.setItem("emcfg",JSON.stringify(C));dirty=false;var el=document.getElementById("ss");el.textContent="\u2705 \u8A2D\u5B9A\u5DF2\u5132\u5B58";el.className="save-status saved";toast("\u8A2D\u5B9A\u5DF2\u5132\u5B58\uFF01\u524D\u53F0\u91CD\u6574\u5F8C\u751F\u6548");}
-function resetDef(){if(!confirm("\u78BA\u5B9A\u8981\u91CD\u7F6E\u6240\u6709\u8A2D\u5B9A\u70BA\u9810\u8A2D\u5024\u55CE\uFF1F"))return;C=JSON.parse(JSON.stringify(DEF));go(curPage);mark();toast("\u5DF2\u91CD\u7F6E\u70BA\u9810\u8A2D\u5024");}
-function toast(msg){var t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
-
-function go(page){
-  curPage=page;
-  document.querySelectorAll(".nav-item").forEach(function(n){n.classList.remove("active");});
-  document.getElementById("nav-"+page).classList.add("active");
-  var mc=document.getElementById("mc");
-  if(page==="scoring")mc.innerHTML=renderScoring();
-  else if(page==="keywords")mc.innerHTML=renderKW();
-  else if(page==="filters")mc.innerHTML=renderFilters();
-  else if(page==="buttons")mc.innerHTML=renderButtons();
-  else if(page==="platforms")mc.innerHTML=renderPlatforms();
-  else if(page==="display")mc.innerHTML=renderDisplay();
-  else if(page==="health")mc.innerHTML=renderHealth();
-  else if(page==="export")mc.innerHTML=renderExport();
+<div class="tst" id="tst"></div><script>
+var DF={scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2},thresholds:{S:11,A:9,B:6},signal_harmful:["爭議","批評","攻擊","指控","負面","失言","危機","質詢","弊釜賣"],signal_beneficial:["完工","第取","支持","背書","當選","力挺","推薦","備選","通過","争取到"],signal_unclear:["迷因","諌刺","傳說","據說"],event_controversy:["爭議","攻打","被批","躨指","失言","危機"],event_election:["提名","備選","選舉","大選","選區","初選"],event_construction:["建設","工程","道路","橋樑","公園","交通","高架"],event_mobilization:["造勴","動員","宣傳","受氾"],event_policy:["政策","政見","提案","質詢","交通委員"],event_service:["服務","拜訪","考察","行程","陳情"],relevance_high:["選舉","提名","立委","縣長","市長","問政","質詢","交通委員","彰化縣長","彰化市長"],filter_csy_exclude:["白米","包材","農產包材","農會","稻米","自備袋","員林市","員林農會","大峦巫步道","北溝排水","八卦山","步道","環保考察","媒祖","宗教活動","樂齊","長照"],filter_hby_exclude:["劇橋非彰化"],filter_whitelist:["SayYes","陳素月委員","Chen Su-Yueh"],filter_ig_threads_strict:true,filter_relevance_must_name:true,filter_buttons:[{g:"cand",f:"all",l:"全部",on:true},{g:"cand",f:"HBY",l:"黃柏瑜",on:true},{g:"cand",f:"CSY",l:"陳素月",on:true},{g:"sig",f:"all",l:"全部",on:true},{g:"sig",f:"ben",l:"✅ 有利",on:true},{g:"sig",f:"har",l:"❌ 不利",on:true},{g:"sig",f:"neu",l:"⚪ 中性",on:true},{g:"sig",f:"unc",l:"⚠ 待判讀",on:true},{g:"lev",f:"all",l:"全部",on:true},{g:"lev",f:"S",l:"S 立即",on:true},{g:"lev",f:"A",l:"A 高度",on:true},{g:"lev",f:"B",l:"B 追蹤",on:true},{g:"lev",f:"C",l:"C 存檔",on:false},{g:"src",f:"all",l:"全部",on:true},{g:"src",f:"FB2",l:"Facebook",on:true},{g:"src",f:"IG2",l:"Instagram",on:true},{g:"src",f:"TH",l:"Threads",on:true},{g:"src",f:"PT",l:"PTT",on:true},{g:"src",f:"GO",l:"Google",on:true}],display:{show_score:true,show_rel:false,sort:"level",per_page:100,refresh:5,show_low:false},platforms:[{id:"FB",nm:"Facebook",ic:"📘",on:true,sp:"site:facebook.com",cr:"medium"},{id:"IG",nm:"Instagram",ic:"📸",on:true,sp:"site:instagram.com",cr:"medium"},{id:"Threads",nm:"Threads",ic:"🧵",on:true,sp:"site:threads.net",cr:"medium"},{id:"PTT",nm:"PTT",ic:"💬",on:true,sp:"site:ptt.cc",cr:"low"},{id:"Google",nm:"Google",ic:"🔍",on:true,sp:"",cr:"high"}]};
+var C={},dirty=false,pg="scoring";
+function cl(o){return JSON.parse(JSON.stringify(o));}
+function mg(t,s){for(var k in s){if(!(k in t))t[k]=cl(s[k]);else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=="object")t[k]={};mg(t[k],s[k]);}}}
+function load(){var s=localStorage.getItem("emcfg");if(s){try{C=JSON.parse(s);mg(C,DF);}catch(e){C=cl(DF);}}else{C=cl(DF);}render();}
+function mkd(){dirty=true;var e=document.getElementById("ss");e.textContent="⚠ 有未儲存的變更";e.className="ss ng";}
+function save(){localStorage.setItem("emcfg",JSON.stringify(C));dirty=false;var e=document.getElementById("ss");e.textContent="✅ 設定已儲存";e.className="ss ok";tst("設定已儲存！前台重整後生效");}
+function tst(m){var t=document.getElementById("tst");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function go(p){pg=p;document.querySelectorAll(".nav-item").forEach(function(n){n.classList.toggle("active",n.dataset.pg===p);});render();}
+function render(){
+  var h="";
+  if(pg==="scoring")h=rSc();
+  else if(pg==="keywords")h=rKw();
+  else if(pg==="filters")h=rFl();
+  else if(pg==="buttons")h=rBt();
+  else if(pg==="platforms")h=rPl();
+  else if(pg==="display")h=rDp();
+  else if(pg==="health")h=rHl();
+  else if(pg==="export")h=rEx();
+  document.getElementById("main").innerHTML=h;
+  bind();
 }
-
-// ---- SCORING ----
-function sl(key,lbl,hint,max){
-  var v=C.scoring[key]||0;
-  return '<div class="field"><label>'+lbl+'</label><div class="range-wrap"><input type="range" min="0" max="'+max+'" value="'+v+'" oninput="C.scoring[\''+key+'\']=parseFloat(this.value);this.nextElementSibling.textContent=this.value;mark()"><span class="range-val">'+v+'</span></div>'+(hint?'<div class="hint">'+hint+'</div>':'')+'</div>';
-}
-function renderScoring(){
-  var t=C.thresholds,s=C.scoring;
-  var mx=s.subject_main+s.evt_controversy+s.spread_multi+s.cred_media+s.impact_critical+s.recency_active;
-  return '<div class="page-header"><h2>&#x1F4CA; &#x8A55;&#x5206;&#x6B0A;&#x91CD;&#x8A2D;&#x5B9A;</h2><p>&#x8ABF;&#x6574;&#x5404;&#x56E0;&#x5B50;&#x7684;&#x5206;&#x6578;&#x6B0A;&#x91CD;&#xFF0C;&#x5F71;&#x97FF; S/A/B/C &#x7B49;&#x7D1A;&#x5224;&#x65B7;</p></div>'+
-  '<div class="section"><div class="section-header"><div><div class="section-title">&#x7B49;&#x7D1A;&#x95A8;&#x5024;&#xFF08;&#x76EE;&#x524D;&#x6700;&#x9AD8;&#x5206;&#xFF1A;'+mx+'&#xFF09;</div></div></div><div class="section-body"><div class="field-grid-3">'+
-  '<div class="field"><label>S &#x7D1A; &#x2265;</label><input type="number" value="'+t.S+'" min="1" max="20" onchange="C.thresholds.S=parseInt(this.value);mark();updateSC()"></div>'+
-  '<div class="field"><label>A &#x7D1A; &#x2265;</label><input type="number" value="'+t.A+'" min="1" max="20" onchange="C.thresholds.A=parseInt(this.value);mark();updateSC()"></div>'+
-  '<div class="field"><label>B &#x7D1A; &#x2265;</label><input type="number" value="'+t.B+'" min="1" max="20" onchange="C.thresholds.B=parseInt(this.value);mark();updateSC()"></div>'+
-  '</div><div class="score-preview" id="scprev">'+scCards()+'</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x4E3B;&#x9AD4;&#x6027;</div></div><div class="section-body"><div class="field-grid">'+sl("subject_main","&#x5019;&#x9078;&#x4EBA;&#x662F;&#x4E3B;&#x89D2;","&#x65B0;&#x805E;&#x4E3B;&#x89D2;&#x662F;&#x5019;&#x9078;&#x4EBA;",5)+sl("subject_mention","&#x5019;&#x9078;&#x4EBA;&#x88AB;&#x63D0;&#x53CA;","&#x53EA;&#x662F;&#x9806;&#x5E36;&#x63D0;&#x53CA;",3)+'</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x4E8B;&#x4EF6;&#x985E;&#x578B;&#x52A0;&#x5206;</div></div><div class="section-body"><div class="field-grid">'+sl("evt_controversy","&#x722D;&#x8B70;/&#x91CD;&#x5927;&#x653B;&#x9632;","&#x6700;&#x9AD8;&#x52A0;&#x5206;",5)+sl("evt_election","&#x9078;&#x8209;/&#x63D0;&#x540D;","",4)+sl("evt_construction","&#x5730;&#x65B9;&#x5EFA;&#x8A2D;","",4)+sl("evt_mobilization","&#x7D44;&#x7E54;&#x52D5;&#x54E1;","",4)+sl("evt_policy","&#x653F;&#x7B56;/&#x8CEA;&#x8A62;","",4)+sl("evt_service","&#x670D;&#x52D9;&#x884C;&#x7A0B;","",3)+sl("evt_media","&#x5A92;&#x9AD4;&#x66DD;&#x5149;","",3)+sl("evt_general","&#x4E00;&#x822C;&#x5831;&#x5C0E;","",2)+'</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x64F4;&#x6563;&#x6027;</div></div><div class="section-body"><div class="field-grid">'+sl("spread_multi","&#x591A;&#x5E73;&#x53F0;&#x540C;&#x6B65;","",5)+sl("spread_single_high","&#x55AE;&#x5E73;&#x53F0;&#x9AD8;&#x4E92;&#x52D5;","",3)+sl("spread_single_low","&#x55AE;&#x7BC7;&#x4F4E;&#x4E92;&#x52D5;","",2)+'</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x4F86;&#x6E90;&#x53EF;&#x4FE1;&#x5EA6;</div></div><div class="section-body"><div class="field-grid">'+sl("cred_media","&#x4E3B;&#x6D41;&#x5A92;&#x9AD4;/&#x5B98;&#x65B9;","",5)+sl("cred_social","&#x793E;&#x7FA4;/&#x5730;&#x65B9;&#x7C89;&#x5C08;","",3)+sl("cred_unknown","&#x533F;&#x540D;/&#x4F86;&#x6E90;&#x4E0D;&#x660E;","",2)+'</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x9078;&#x60C5;&#x5F71;&#x97FF;&#x529B;</div></div><div class="section-body"><div class="field-grid">'+sl("impact_critical","&#x53EF;&#x80FD;&#x5F71;&#x97FF;&#x652F;&#x6301;&#x5EA6;/&#x9700;&#x56DE;&#x61C9;","",5)+sl("impact_notable","&#x5024;&#x5F97;&#x95DC;&#x6CE8;/&#x53EF;&#x7576;&#x7D20;&#x6750;","",3)+sl("impact_record","&#x50C5;&#x8A18;&#x9304;&#x7528;&#x9014;","",2)+sl("recency_active","24hr&#x5167;&#x6301;&#x7E8C;&#x767C;&#x9175;","",3)+'</div></div></div>';
-}
-function scCards(){var t=C.thresholds;return'<div class="score-card"><div class="lv S">S</div><div class="range">&#x2265; '+t.S+' &#x5206;<br>&#x7ACB;&#x5373;&#x8655;&#x7406;</div></div><div class="score-card"><div class="lv A">A</div><div class="range">&#x2265; '+t.A+' &#x5206;<br>&#x9AD8;&#x5EA6;&#x95DC;&#x6CE8;</div></div><div class="score-card"><div class="lv B">B</div><div class="range">&#x2265; '+t.B+' &#x5206;<br>&#x6301;&#x7E8C;&#x8FFD;&#x8E64;</div></div><div class="score-card"><div class="lv C">C</div><div class="range">< '+t.B+' &#x5206;<br>&#x5B58;&#x6A94;&#x53C3;&#x8003;</div></div>';}
-function updateSC(){var el=document.getElementById("scprev");if(el)el.innerHTML=scCards();}
-
-// ---- KEYWORDS ----
-function kwSec(title,desc,key,cls){
-  var words=C[key]||[];
-  var tags=words.map(function(w){return'<span class="kw-tag '+cls+'">'+w+'<span class="kw-x" onclick="rmKW(\''+key+'\',\''+w.replace(/'/g,"\\'")+'\')">×</span></span>';}).join('');
-  return'<div class="section"><div class="section-header"><div><div class="section-title">'+title+'</div><div class="section-desc">'+desc+'</div></div></div><div class="section-body"><div class="kw-editor"><div class="kw-list">'+(tags||'<span style="color:var(--mu);font-size:12px">&#xFF08;&#x7A7A;&#xFF09;</span>')+'</div><div class="kw-add"><input type="text" id="kwi-'+key+'" placeholder="&#x8F38;&#x5165;&#x95DC;&#x9375;&#x5B57; Enter&#x6216;+" onkeydown="if(event.key===\'Enter\')addKW(\''+key+'\')"><button onclick="addKW(\''+key+'\')">+</button></div></div></div></div>';
-}
-function renderKW(){
-  return'<div class="page-header"><h2>&#x1F511; &#x95DC;&#x9375;&#x5B57;&#x898F;&#x5247;</h2><p>&#x8A2D;&#x5B9A;&#x5224;&#x65B7;&#x8A0A;&#x865F;&#x50BE;&#x5411;&#x3001;&#x4E8B;&#x4EF6;&#x985E;&#x578B;&#x7684;&#x95DC;&#x9375;&#x5B57;</p></div>'+
-  kwSec("&#x4E0D;&#x5229;&#x8A0A;&#x865F; (harmful) &#x95DC;&#x9375;&#x5B57;","&#x51FA;&#x73FE;&#x9019;&#x4E9B;&#x8A5E; → &#x5224;&#x65B7;&#x70BA;&#x4E0D;&#x5229;&#x8A0A;&#x865F;","signal_harmful","harm")+
-  kwSec("&#x6709;&#x5229;&#x8A0A;&#x865F; (beneficial) &#x95DC;&#x9375;&#x5B57;","&#x51FA;&#x73FE;&#x9019;&#x4E9B;&#x8A5E; → &#x5224;&#x65B7;&#x70BA;&#x6709;&#x5229;&#x8A0A;&#x865F;","signal_beneficial","ben")+
-  kwSec("&#x5F85;&#x5224;&#x8B80; (unclear) &#x95DC;&#x9375;&#x5B57;","&#x51FA;&#x73FE;&#x9019;&#x4E9B;&#x8A5E; → &#x9700;&#x4EBA;&#x5DE5;&#x5224;&#x65B7;","signal_unclear","evt")+
+function sl(k,l,mn,mx){var v=C.scoring[k]!==undefined?C.scoring[k]:0;return '<div class="fld"><label>'+l+'</label><div class="rw"><input type="range" min="'+mn+'" max="'+mx+'" value="'+v+'" data-sk="'+k+'"><span class="rv" id="rv-'+k+'">'+v+'</span></div></div>';}
+function rSc(){var s=C.scoring,t=C.thresholds;
+return '<div class="ph"><h2>📊 評分權重設定</h2><p>調整各因子的分數權重，影響 S/A/B/C 等級判斷</p></div>'+
+'<div class="sec"><div class="sh"><div class="st">等級門滝</div><div class="sd">調整 S/A/B/C 的分數門滝</div></div><div class="sb"><div class="fg3">'+
+'<div class="fld"><label>S 級 ≥</label><input type="number" value="'+t.S+'" min="1" max="20" data-tk="S"></div>'+
+'<div class="fld"><label>A 級 ≥</label><input type="number" value="'+t.A+'" min="1" max="20" data-tk="A"></div>'+
+'<div class="fld"><label>B 級 ≥</label><input type="number" value="'+t.B+'" min="1" max="20" data-tk="B"></div>'+
+'</div><div class="scp">'+
+'<div class="scc"><div class="scv S">S</div><div class="scr">≥ '+t.S+' 分<br>立即處理</div></div>'+
+'<div class="scc"><div class="scv A">A</div><div class="scr">≥ '+t.A+' 分<br>高度關注</div></div>'+
+'<div class="scc"><div class="scv B">B</div><div class="scr">≥ '+t.B+' 分<br>持續追蹤</div></div>'+
+'<div class="scc"><div class="scv C">C</div><div class="scr">< '+t.B+' 分<br>存檔參考</div></div>'+
+'</div></div></div>'+
+'<div class="sec"><div class="sh"><div class="st">主體性</div></div><div class="sb"><div class="fg">'+sl("subject_main","候選人是主角",0,5)+sl("subject_mention","候選人被提及",0,3)+'</div></div></div>'+
+'<div class="sec"><div class="sh"><div class="st">事件類型加分</div></div><div class="sb"><div class="fg">'+sl("evt_controversy","爭議/重大攻防",0,5)+sl("evt_election","選舉/提名",0,4)+sl("evt_construction","地方建設",0,4)+sl("evt_mobilization","組織動員",0,4)+sl("evt_policy","政策/質詢",0,4)+sl("evt_service","服務行程",0,3)+sl("evt_media","媒體曝光",0,3)+sl("evt_general","一般報導",0,2)+'</div></div></div>'+
+'<div class="sec"><div class="sh"><div class="st">擴散性</div></div><div class="sb"><div class="fg">'+sl("spread_multi","多平台同步",0,5)+sl("spread_single_high","單平台高互動",0,3)+sl("spread_single_low","單篇低互動",0,2)+'</div></div></div>'+
+'<div class="sec"><div class="sh"><div class="st">來源可信度</div></div><div class="sb"><div class="fg">'+sl("cred_media","主流媒體/官方",0,5)+sl("cred_social","社群/地方粉專",0,3)+sl("cred_unknown","匿名/來源不明",0,2)+'</div></div></div>'+
+'<div class="sec"><div class="sh"><div class="st">選情影響力</div></div><div class="sb"><div class="fg">'+sl("impact_critical","可能影響支持度/需回應",0,5)+sl("impact_notable","値得關注/可當素材",0,3)+sl("impact_record","僅記錄用途",0,2)+sl("recency_active","24hr內持續發酵",0,3)+'</div></div></div>';}
+function kws(t,d,k,tp){var w=C[k]||[];
+  var tags=w.map(function(x){return '<span class="kt '+tp+'">'+esc(x)+'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';}).join('');
+  return '<div class="sec"><div class="sh"><div class="st">'+t+'</div><div class="sd">'+d+'</div></div><div class="sb"><div class="ke"><div class="kl">'+(tags||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
+  '<div class="ka"><input type="text" data-ak="'+k+'" placeholder="輸入關鍵字 + Enter"><button data-ab="'+k+'">+</button></div></div></div></div>';}
+function rKw(){return '<div class="ph"><h2>🔑 關鍵字規則</h2><p>設定判斷訊號傾向、事件類型的關鍵字</p></div>'+
+  kws("不利訊號關鍵字","出現這些詞 → 判斷為不利訊號","signal_harmful","harm")+
+  kws("有利訊號關鍵字","出現這些詞 → 判斷為有利訊號","signal_beneficial","ben")+
+  kws("待判讀關鍵字","出現這些詞 → 需人工判斷","signal_unclear","evt")+
   '<div class="sep"></div>'+
-  kwSec("&#x722D;&#x8B70;&#x4E8B;&#x4EF6;&#x95DC;&#x9375;&#x5B57;","&#x51FA;&#x73FE;&#x9019;&#x4E9B;&#x8A5E; → &#x4E8B;&#x4EF6;&#x985E;&#x578B;=&#x722D;&#x8B70;&#x653B;&#x9632;","event_controversy","harm")+
-  kwSec("&#x9078;&#x8209;&#x63D0;&#x540D;&#x95DC;&#x9375;&#x5B57;","","event_election","evt")+
-  kwSec("&#x5730;&#x65B9;&#x5EFA;&#x8A2D;&#x95DC;&#x9375;&#x5B57;","","event_construction","ben")+
-  kwSec("&#x7D44;&#x7E54;&#x52D5;&#x54E1;&#x95DC;&#x9375;&#x5B57;","","event_mobilization","evt")+
-  kwSec("&#x653F;&#x7B56;&#x8CEA;&#x8A62;&#x95DC;&#x9375;&#x5B57;","","event_policy","evt")+
-  kwSec("&#x670D;&#x52D9;&#x884C;&#x7A0B;&#x95DC;&#x9375;&#x5B57;","","event_service","ben")+
-  '<div class="sep"></div>'+
-  kwSec("&#x76F8;&#x95DC;&#x6027; high &#x5224;&#x65B7;&#x8A5E;","&#x51FA;&#x73FE;&#x9019;&#x4E9B;&#x8A5E; → relevance=high","relevance_high","evt");
-}
-function addKW(key){var inp=document.getElementById("kwi-"+key);var v=inp.value.trim();if(!v)return;if(!C[key])C[key]=[];if(C[key].indexOf(v)===-1){C[key].push(v);mark();go("keywords");}inp.value="";}
-function rmKW(key,word){var i=C[key].indexOf(word);if(i>-1){C[key].splice(i,1);mark();go("keywords");}}
+  kws("爭議事件關鍵字","","event_controversy","harm")+
+  kws("選舉提名關鍵字","","event_election","evt")+
+  kws("地方建設關鍵字","","event_construction","ben")+
+  kws("政策質詢關鍵字","","event_policy","evt")+
+  kws("服務行程關鍵字","","event_service","ben")+
+  '<div class="sep"></div>'+kws("相關性 high 判斷詞","","relevance_high","evt");}
+function exs(t,d,k){var w=C[k]||[];
+  var tags=w.map(function(x){return '<span class="kt exc">'+esc(x)+'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';}).join('');
+  return '<div class="sec"><div class="sh"><div class="st">'+t+'</div><div class="sd">'+d+'</div></div><div class="sb"><div class="ke"><div class="kl">'+(tags||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
+  '<div class="ka"><input type="text" data-ak="'+k+'" placeholder="新增排除詞"><button data-ab="'+k+'">+</button></div></div></div></div>';}
+function rFl(){var wl=C.filter_whitelist||[];
+  var wlt=wl.map(function(x){return '<span class="kt ben">'+esc(x)+'<span class="kr" data-rk="filter_whitelist" data-rw="'+esc(x)+'">x</span></span>';}).join('');
+  return '<div class="ph"><h2>🚫 過濾設定</h2><p>設定哪些資料應被排除，以及白名單保護</p></div>'+
+  '<div class="sec"><div class="sh"><div class="st">白名單（絕對保留）</div><div class="sd">帳號或標題含這些詞 → 無論如何都不過濾</div></div><div class="sb"><div class="ke"><div class="kl">'+(wlt||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
+  '<div class="ka"><input type="text" data-ak="filter_whitelist" placeholder="新增白名單詞"><button data-ab="filter_whitelist">+</button></div></div></div></div>'+
+  exs("陳素月排除詞","標題含這些詞 → 排除（員林市長業務）","filter_csy_exclude")+
+  exs("黃柏瑜排除詞","標題含這些詞 → 排除（同名無關人物）","filter_hby_exclude")+
+  '<div class="sec"><div class="sh"><div class="st">過濾開關</div></div><div class="sb">'+
+  '<div class="tr"><div><div class="tl">IG/Threads 嚴格過濾</div><div class="ts">貣文必須含立委相關詞才保留</div></div>'+
+  '<label class="tog"><input type="checkbox" data-bc="filter_ig_threads_strict"'+(C.filter_ig_threads_strict?" checked":"")+'><span class="tgs"></span></label></div>'+
+  '<div class="tr"><div><div class="tl">需要候選人名字判斷相關性</div><div class="ts">標題必須含名字才能是 high</div></div>'+
+  '<label class="tog"><input type="checkbox" data-bc="filter_relevance_must_name"'+(C.filter_relevance_must_name?" checked":"")+'><span class="tgs"></span></label></div>'+
+  '</div></div>';}
+function rBt(){var grp={cand:[],sig:[],lev:[],src:[]},gn={cand:"候選人",sig:"訊號傾向",lev:"重要等級",src:"平台"};
+  C.filter_buttons.forEach(function(b,i){if(grp[b.g])grp[b.g].push({b:b,i:i});});
+  var h='<div class="ph"><h2>🎛️ 篩選按鈕設定</h2><p>調整前台篩選按鈕標籤與啟用狀態</p></div>';
+  for(var g in grp){h+='<div class="sec"><div class="sh"><div class="st">'+gn[g]+' 群組</div></div><div class="sb"><div class="bg2">';
+    grp[g].forEach(function(x){h+='<div class="bc"><div class="bch"><span class="bcn">'+x.b.f+'</span><label class="tog"><input type="checkbox" data-bi="'+x.i+'"'+(x.b.on?" checked":"")+'><span class="tgs"></span></label></div><input type="text" value="'+esc(x.b.l)+'" data-bl="'+x.i+'"></div>';});
+    h+='</div></div></div>';}return h;}
+function rPl(){var cr=["high","medium","low"];
+  var h='<div class="ph"><h2>📡 平台設定</h2><p>管理監控平台、可信度設定、搜尋前綴</p></div><div class="sec"><div class="sh"><div class="st">平台管理</div></div><div class="sb">';
+  C.platforms.forEach(function(p,i){var cs=cr.map(function(c){return '<option value="'+c+'"'+(p.cr===c?" selected":"")+'>'+c+'</option>';}).join('');
+    h+='<div class="pr"><span class="pi">'+p.ic+'</span><span class="pn">'+p.nm+'</span><div class="pu"><input type="text" value="'+esc(p.sp)+'" data-pi="'+i+'" data-pk="sp" placeholder="Serper 搜尋前綴"></div>'+
+    '<div class="fld" style="min-width:90px"><select data-pi="'+i+'" data-pk="cr">'+cs+'</select></div>'+
+    '<label class="tog"><input type="checkbox" data-pi="'+i+'" data-pk="on"'+(p.on?" checked":"")+'><span class="tgs"></span></label></div>';});
+  return h+'</div></div>';}
+function rDp(){var d=C.display,so=["level","time","score"].map(function(s){return '<option value="'+s+'"'+(d.sort===s?" selected":"")+'>'+{level:"重要等級",time:"最新時間",score:"分數"}[s]+'</option>';}).join('');
+  return '<div class="ph"><h2>🖥️ 顯示設定</h2><p>調整前台的顯示行為與預設値</p></div>'+
+  '<div class="sec"><div class="sh"><div class="st">顯示行為</div></div><div class="sb">'+
+  '<div class="tr"><div class="tl">顯示分數數字（A 12pt）</div><label class="tog"><input type="checkbox" data-dc="show_score"'+(d.show_score?" checked":"")+'><span class="tgs"></span></label></div>'+
+  '<div class="tr"><div class="tl">顯示相關性標籤</div><label class="tog"><input type="checkbox" data-dc="show_rel"'+(d.show_rel?" checked":"")+'><span class="tgs"></span></label></div>'+
+  '<div class="tr"><div class="tl">顯示低相關性資料</div><label class="tog"><input type="checkbox" data-dc="show_low"'+(d.show_low?" checked":"")+'><span class="tgs"></span></label></div>'+
+  '<div class="sep"></div><div class="fg">'+
+  '<div class="fld"><label>預設排序</label><select data-dc="sort">'+so+'</select></div>'+
+  '<div class="fld"><label>每頁筆數</label><input type="number" value="'+d.per_page+'" min="10" max="500" data-dc="per_page"></div>'+
+  '<div class="fld"><label>自動更新（分鐘）</label><input type="number" value="'+d.refresh+'" min="1" max="60" data-dc="refresh"></div>'+
+  '</div></div></div>';}
+function rHl(){return '<div class="ph"><h2>🔍 系統健康</h2><p>檢查資料來源、Sheets 狀態</p></div>'+
+  '<div class="sec"><div class="sh"><div class="st">快速診斷</div></div><div class="sb">'+
+  '<div class="br2" style="margin-bottom:12px"><button class="btn btn-s" id="hcs">檢查 Sheets</button><button class="btn btn-s" id="hct">檢查今日資料</button><button class="btn btn-s" id="hof">開啟前台</button></div>'+
+  '<div class="pb" id="hlog">點擊上方按鈕開始診斷...</div></div></div>';}
+function rEx(){return '<div class="ph"><h2>💾 匙出/匙入</h2><p>備份或還原設定</p></div>'+
+  '<div class="sec"><div class="sh"><div class="st">匙出</div></div><div class="sb">'+
+  '<button class="btn btn-s" id="ecp" style="margin-bottom:10px">📋 複製 JSON</button>'+
+  '<div class="pb">'+esc(JSON.stringify(C,null,2).substring(0,500))+'...</div></div></div>'+
+  '<div class="sec"><div class="sh"><div class="st">匙入</div></div><div class="sb">'+
+  '<div class="fld"><label>貼上設定 JSON</label><textarea id="ij" placeholder="貼上完整的設定 JSON..." style="min-height:120px"></textarea></div>'+
+  '<button class="btn btn-p" id="eim" style="margin-top:10px">匙入</button></div></div>';}
+function addKw(k,inp){var v=inp.value.trim();if(!v)return;if(!C[k])C[k]=[];if(C[k].indexOf(v)===-1){C[k].push(v);mkd();render();}inp.value="";}
+function chkS(){var l=document.getElementById("hlog");l.textContent="檢查中...";
+  var id="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k",td=new Date().toISOString().split("T")[0];
+  fetch("https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json&sheet="+td+"&ts="+Date.now()).then(function(r){return r.text();}).then(function(t){
+    var s=t.indexOf("{"),e=t.lastIndexOf("}"),j=JSON.parse(t.substring(s,e+1));
+    l.textContent="✅ Sheets 連線正常
+今日（"+td+"）資料："+(j.table?j.table.rows.length:0)+" 筆
+檢查時間："+new Date().toLocaleString("zh-TW");
+  }).catch(function(e){l.textContent="❌ 失敗："+e.message;});}
+function chkT(){var l=document.getElementById("hlog");l.textContent="抓取中...";
+  var id="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k",td=new Date().toISOString().split("T")[0];
+  fetch("https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json&sheet="+td+"&ts="+Date.now()).then(function(r){return r.text();}).then(function(t){
+    var s=t.indexOf("{"),e=t.lastIndexOf("}"),j=JSON.parse(t.substring(s,e+1));
+    var rows=(j.table?j.table.rows:[]).filter(function(r){var c=r.c.map(function(x){return x?(x.v||""):"";});return c[1]&&c[1]!=="候選人";});
+    var src={};rows.forEach(function(r){var s=r.c[7]?(r.c[7].v||""):"";src[s]=(src[s]||0)+1;});
+    l.textContent="📊 今日（"+td+"）
+總計："+rows.length+" 筆
+來源："+Object.entries(src).map(function(x){return x[0]+":"+x[1];}).join(", ")+"
 
-// ---- FILTERS ----
-function exSec(title,desc,key){
-  var words=C[key]||[];
-  var tags=words.map(function(w){return'<span class="kw-tag excl">'+w+'<span class="kw-x" onclick="rmKW(\''+key+'\',\''+w.replace(/'/g,"\\'")+'\')">×</span></span>';}).join('');
-  return'<div class="section"><div class="section-header"><div><div class="section-title">'+title+'</div><div class="section-desc">'+desc+'</div></div></div><div class="section-body"><div class="kw-editor"><div class="kw-list">'+(tags||'<span style="color:var(--mu);font-size:12px">&#xFF08;&#x7A7A;&#xFF09;</span>')+'</div><div class="kw-add"><input type="text" id="kwi-'+key+'" placeholder="&#x65B0;&#x589E;&#x6392;&#x9664;&#x8A5E;" onkeydown="if(event.key===\'Enter\')addKW(\''+key+'\')"><button onclick="addKW(\''+key+'\')">+</button></div></div></div></div>';
+前 5 筆：
+"+rows.slice(0,5).map(function(r,i){return (i+1)+". "+(r.c[8]?r.c[8].v:"").substring(0,45);}).join("
+");
+  }).catch(function(e){l.textContent="❌ "+e.message;});}
+function bind(){
+  document.querySelectorAll("input[data-sk]").forEach(function(e){e.addEventListener("input",function(){C.scoring[this.dataset.sk]=parseFloat(this.value);var r=document.getElementById("rv-"+this.dataset.sk);if(r)r.textContent=this.value;mkd();});});
+  document.querySelectorAll("input[data-tk]").forEach(function(e){e.addEventListener("change",function(){C.thresholds[this.dataset.tk]=parseInt(this.value);mkd();render();});});
+  document.querySelectorAll(".kr").forEach(function(e){e.addEventListener("click",function(){var k=this.dataset.rk,w=this.dataset.rw,a=C[k];if(!a)return;var i=a.indexOf(w);if(i>-1){a.splice(i,1);mkd();render();}});});
+  document.querySelectorAll("input[data-ak]").forEach(function(e){e.addEventListener("keydown",function(ev){if(ev.key==="Enter")addKw(this.dataset.ak,this);});});
+  document.querySelectorAll("button[data-ab]").forEach(function(e){e.addEventListener("click",function(){var k=this.dataset.ab,inp=document.querySelector("input[data-ak='"+k+"']");if(inp)addKw(k,inp);});});
+  document.querySelectorAll("input[data-bc]").forEach(function(e){e.addEventListener("change",function(){C[this.dataset.bc]=this.checked;mkd();});});
+  document.querySelectorAll("input[data-bi]").forEach(function(e){e.addEventListener("change",function(){C.filter_buttons[parseInt(this.dataset.bi)].on=this.checked;mkd();});});
+  document.querySelectorAll("input[data-bl]").forEach(function(e){e.addEventListener("change",function(){C.filter_buttons[parseInt(this.dataset.bl)].l=this.value;mkd();});});
+  document.querySelectorAll("[data-pi]").forEach(function(e){e.addEventListener("change",function(){var i=parseInt(this.dataset.pi),k=this.dataset.pk;if(k==="on")C.platforms[i][k]=this.checked;else C.platforms[i][k]=this.value;mkd();});});
+  document.querySelectorAll("[data-dc]").forEach(function(e){e.addEventListener("change",function(){var k=this.dataset.dc;if(this.type==="checkbox")C.display[k]=this.checked;else if(this.type==="number")C.display[k]=parseInt(this.value);else C.display[k]=this.value;mkd();});});
+  var hcs=document.getElementById("hcs");if(hcs)hcs.addEventListener("click",chkS);
+  var hct=document.getElementById("hct");if(hct)hct.addEventListener("click",chkT);
+  var hof=document.getElementById("hof");if(hof)hof.addEventListener("click",function(){window.open("https://kellychenichun-glitch.github.io/election-monitor/","_blank");});
+  var ecp=document.getElementById("ecp");if(ecp)ecp.addEventListener("click",function(){navigator.clipboard.writeText(JSON.stringify(C,null,2));tst("已複製！");});
+  var eim=document.getElementById("eim");if(eim)eim.addEventListener("click",function(){var v=document.getElementById("ij").value.trim();try{C=JSON.parse(v);mg(C,DF);save();go("scoring");tst("匙入成功！");}catch(e){alert("JSON 錯誤："+e.message);}});
 }
-function renderFilters(){
-  var wlTags=(C.filter_whitelist||[]).map(function(w){return'<span class="kw-tag ben">'+w+'<span class="kw-x" onclick="rmKW(\'filter_whitelist\',\''+w.replace(/'/g,"\\'")+'\')">×</span></span>';}).join('');
-  return'<div class="page-header"><h2>&#x1F6AB; &#x904E;&#x6FFE;&#x8A2D;&#x5B9A;</h2><p>&#x8A2D;&#x5B9A;&#x54EA;&#x4E9B;&#x8CC7;&#x6599;&#x61C9;&#x88AB;&#x6392;&#x9664;&#xFF0C;&#x4EE5;&#x53CA;&#x767D;&#x540D;&#x55AE;&#x4FDD;&#x8B77;</p></div>'+
-  '<div class="section"><div class="section-header"><div><div class="section-title">&#x767D;&#x540D;&#x55AE;&#xFF08;&#x7D55;&#x5C0D;&#x4FDD;&#x7559;&#xFF09;</div><div class="section-desc">&#x5E33;&#x865F;&#x6216;&#x6A19;&#x984C;&#x542B;&#x9019;&#x4E9B;&#x8A5E; → &#x7121;&#x8AD6;&#x5982;&#x4F55;&#x90FD;&#x4E0D;&#x904E;&#x6FFE;</div></div></div><div class="section-body"><div class="kw-editor"><div class="kw-list">'+(wlTags||'<span style="color:var(--mu);font-size:12px">&#xFF08;&#x7A7A;&#xFF09;</span>')+'</div><div class="kw-add"><input type="text" id="kwi-filter_whitelist" placeholder="&#x65B0;&#x589E;&#x767D;&#x540D;&#x55AE;&#x8A5E;" onkeydown="if(event.key===\'Enter\')addKW(\'filter_whitelist\')"><button onclick="addKW(\'filter_whitelist\')">+</button></div></div></div></div>'+
-  exSec("&#x9673;&#x7D20;&#x6708;&#x6392;&#x9664;&#x8A5E;","&#x6A19;&#x984C;&#x542B;&#x9019;&#x4E9B;&#x8A5E; → &#x5224;&#x65B7;&#x70BA;&#x54E1;&#x6797;&#x5E02;&#x9577;&#x696D;&#x52D9;&#xFF0C;&#x6392;&#x9664;","filter_csy_exclude")+
-  exSec("&#x9EC3;&#x67CF;&#x745C;&#x6392;&#x9664;&#x8A5E;","&#x6A19;&#x984C;&#x542B;&#x9019;&#x4E9B;&#x8A5E; → &#x5224;&#x65B7;&#x70BA;&#x540C;&#x540D;&#x7121;&#x95DC;&#x4EBA;&#x7269;&#xFF0C;&#x6392;&#x9664;","filter_hby_exclude")+
-  '<div class="section"><div class="section-header"><div class="section-title">IG/Threads &#x56B4;&#x683C;&#x6A21;&#x5F0F;</div></div><div class="section-body"><div class="toggle-row"><div><div class="toggle-label">&#x555F;&#x7528; IG/Threads &#x56B4;&#x683C;&#x904E;&#x6FFE;</div><div class="toggle-sub">&#x95DC;&#x9589;&#x5F8C; IG/Threads &#x8CA3;&#x6587;&#x4E0D;&#x505A;&#x984D;&#x5916;&#x904E;&#x6FFE;</div></div><label class="toggle"><input type="checkbox" '+(C.filter_ig_threads_strict?"checked":"")+" onchange="C.filter_ig_threads_strict=this.checked;mark()"><span class="toggle-slider"></span></label></div></div></div>';
-}
-
-// ---- BUTTONS ----
-function renderButtons(){
-  var grps={};C.filter_buttons.forEach(function(b){if(!grps[b.group])grps[b.group]=[];grps[b.group].push(b);});
-  var gn={"cand":"&#x5019;&#x9078;&#x4EBA;","sig":"&#x8A0A;&#x865F;&#x50BE;&#x5411;","lev":"&#x91CD;&#x8981;&#x7B49;&#x7D1A;","src":"&#x5E73;&#x53F0;"};
-  var html='<div class="page-header"><h2>&#x1F39B;&#xFE0F; &#x7BE9;&#x9078;&#x6309;&#x9215;&#x8A2D;&#x5B9A;</h2><p>&#x8ABF;&#x6574;&#x524D;&#x53F0;&#x986F;&#x793A;&#x7684;&#x7BE9;&#x9078;&#x6309;&#x9215;&#x6A19;&#x7C64;&#x8207;&#x555F;&#x7528;&#x72C0;&#x614B;</p></div>';
-  for(var g in grps){
-    html+='<div class="section"><div class="section-header"><div class="section-title">'+(gn[g]||g)+' &#x7FA4;&#x7D44;</div></div><div class="section-body"><div class="btn-grid">';
-    grps[g].forEach(function(btn){
-      var idx=C.filter_buttons.indexOf(btn);
-      html+='<div class="btn-card"><div class="btn-card-hd"><span class="btn-card-name">'+btn.filter+'</span><label class="toggle"><input type="checkbox" '+(btn.enabled?"checked":"")+" onchange="C.filter_buttons["+idx+"].enabled=this.checked;mark()"><span class="toggle-slider"></span></label></div>"+
-      '<input type="text" value="'+btn.label+'" placeholder="&#x6309;&#x9215;&#x6587;&#x5B57;" onchange="C.filter_buttons['+idx+'].label=this.value;mark()"></div>';
-    });
-    html+='</div></div></div>';
-  }
-  return html;
-}
-
-// ---- PLATFORMS ----
-function renderPlatforms(){
-  var html='<div class="page-header"><h2>&#x1F4E1; &#x5E73;&#x53F0;&#x8A2D;&#x5B9A;</h2><p>&#x7BA1;&#x7406;&#x76E3;&#x63A7;&#x5E73;&#x53F0;&#x3001;&#x53EF;&#x4FE1;&#x5EA6;&#x8A2D;&#x5B9A;&#x3001;Serper &#x641C;&#x5C0B;&#x524D;&#x7DB4;</p></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x5E73;&#x53F0;&#x7BA1;&#x7406;</div></div><div class="section-body">';
-  C.platforms.forEach(function(p,i){
-    var co=['high','medium','low'].map(function(c){return'<option value="'+c+'"'+(p.cred===c?' selected':'')+'>'+c+'</option>';}).join('');
-    html+='<div class="platform-row"><span class="picon">'+p.icon+'</span><span class="pname">'+p.name+'</span>'+
-    '<div class="purl"><input type="text" value="'+p.search_prefix+'" placeholder="Serper &#x641C;&#x5C0B;&#x524D;&#x7DB4;" onchange="C.platforms['+i+'].search_prefix=this.value;mark()"></div>'+
-    '<div class="field" style="min-width:100px"><select onchange="C.platforms['+i+'].cred=this.value;mark()">'+co+'</select></div>'+
-    '<label class="toggle"><input type="checkbox" '+(p.enabled?'checked':'')+" onchange="C.platforms["+i+"].enabled=this.checked;mark()"><span class="toggle-slider"></span></label></div>";
-  });
-  return html+'</div></div>';
-}
-
-// ---- DISPLAY ----
-function renderDisplay(){
-  var d=C.display;
-  var so=['level','time','score'].map(function(s){return'<option value="'+s+'"'+(d.default_sort===s?' selected':'')+'>'+({"level":"&#x91CD;&#x8981;&#x7B49;&#x7D1A;","time":"&#x6700;&#x65B0;&#x6642;&#x9593;","score":"&#x5206;&#x6578;"}[s])+'</option>';}).join('');
-  return'<div class="page-header"><h2>&#x1F5A5;&#xFE0F; &#x986F;&#x793A;&#x8A2D;&#x5B9A;</h2><p>&#x8ABF;&#x6574;&#x524D;&#x53F0;&#x7684;&#x986F;&#x793A;&#x884C;&#x70BA;&#x8207;&#x9810;&#x8A2D;&#x5024;</p></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x986F;&#x793A;&#x884C;&#x70BA;</div></div><div class="section-body">'+
-  '<div class="toggle-row"><div><div class="toggle-label">&#x986F;&#x793A;&#x5206;&#x6578;&#x6578;&#x5B57;&#xFF08;&#x5982; A 12pt&#xFF09;</div><div class="toggle-sub">&#x5728;&#x91CD;&#x8981;&#x5EA6;&#x6A19;&#x7C64;&#x65C1;&#x986F;&#x793A;&#x6578;&#x5B57;&#x5206;&#x6578;</div></div><label class="toggle"><input type="checkbox" '+(d.show_score_points?"checked":"")+" onchange="C.display.show_score_points=this.checked;mark()"><span class="toggle-slider"></span></label></div>"+
-  '<div class="toggle-row"><div><div class="toggle-label">&#x986F;&#x793A;&#x76F8;&#x95DC;&#x6027;&#x6A19;&#x7C64;</div><div class="toggle-sub">&#x5728;&#x6BCF;&#x7B46;&#x8CC7;&#x6599;&#x65C1;&#x986F;&#x793A; high/medium</div></div><label class="toggle"><input type="checkbox" '+(d.show_relevance_badge?"checked":"")+" onchange="C.display.show_relevance_badge=this.checked;mark()"><span class="toggle-slider"></span></label></div>"+
-  '<div class="toggle-row"><div><div class="toggle-label">&#x986F;&#x793A;&#x4F4E;&#x76F8;&#x95DC;&#x6027;&#x8CC7;&#x6599;</div><div class="toggle-sub">&#x958B;&#x555F;&#x5F8C; relevance=low &#x7684;&#x8CC7;&#x6599;&#x4E5F;&#x6703;&#x986F;&#x793A;</div></div><label class="toggle"><input type="checkbox" '+(d.low_relevance_visible?"checked":"")+" onchange="C.display.low_relevance_visible=this.checked;mark()"><span class="toggle-slider"></span></label></div>"+
-  '<div class="sep"></div><div class="field-grid">'+
-  '<div class="field"><label>&#x9810;&#x8A2D;&#x6392;&#x5E8F;&#x65B9;&#x5F0F;</label><select onchange="C.display.default_sort=this.value;mark()">'+so+'</select></div>'+
-  '<div class="field"><label>&#x6BCF;&#x9801;&#x986F;&#x793A;&#x7B46;&#x6578;</label><input type="number" value="'+d.items_per_page+'" min="10" max="500" onchange="C.display.items_per_page=parseInt(this.value);mark()"></div>'+
-  '<div class="field"><label>&#x81EA;&#x52D5;&#x66F4;&#x65B0;&#xFF08;&#x5206;&#x9418;&#xFF09;</label><input type="number" value="'+d.auto_refresh_minutes+'" min="1" max="60" onchange="C.display.auto_refresh_minutes=parseInt(this.value);mark()"></div>'+
-  '</div></div></div>';
-}
-
-// ---- HEALTH ----
-function renderHealth(){
-  return'<div class="page-header"><h2>&#x1F50D; &#x7CFB;&#x7D71;&#x5065;&#x5EB7;</h2><p>&#x6AA2;&#x67E5;&#x8CC7;&#x6599;&#x4F86;&#x6E90;&#x3001;Sheets &#x72C0;&#x614B;&#x3001;&#x6700;&#x5F8C;&#x66F4;&#x65B0;&#x6642;&#x9593;</p></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x5FEB;&#x901F;&#x8A3A;&#x65B7;</div></div><div class="section-body">'+
-  '<div class="btn-row" style="margin-bottom:16px"><button class="btn btn-s" onclick="chkSheets()">&#x6AA2;&#x67E5; Sheets &#x9023;&#x7DDA;</button><button class="btn btn-s" onclick="chkToday()">&#x6AA2;&#x67E5;&#x4ECA;&#x65E5;&#x8CC7;&#x6599;</button><button class="btn btn-s" onclick="window.open(\'https://kellychenichun-glitch.github.io/election-monitor/\',\'_blank\')">&#x958B;&#x555F;&#x524D;&#x53F0;</button></div>'+
-  '<div class="preview-box" id="hlog">&#x9EDE;&#x64CA;&#x4E0A;&#x65B9;&#x6309;&#x9215;&#x958B;&#x59CB;&#x8A3A;&#x65B7;...</div></div></div>';
-}
-function chkSheets(){
-  var log=document.getElementById("hlog");log.textContent="&#x6B63;&#x5728;&#x6AA2;&#x67E5;...";
-  var sid="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
-  var today=new Date().toISOString().split("T")[0];
-  fetch("https://docs.google.com/spreadsheets/d/"+sid+"/gviz/tq?tqx=out:json&sheet="+today+"&ts="+Date.now())
-    .then(function(r){return r.text();}).then(function(t){var s=t.indexOf("{"),e=t.lastIndexOf("}");var j=JSON.parse(t.substring(s,e+1));var rows=j.table?j.table.rows.length:0;log.textContent="&#x2705; Sheets &#x9023;&#x7DDA;&#x6B63;&#x5E38;
-&#x4ECA;&#x65E5;&#xFF08;"+today+"&#xFF09;&#x8CC7;&#x6599;&#xFF1A;"+rows+" &#x7B46;
-&#x6700;&#x5F8C;&#x6AA2;&#x67E5;&#xFF1A;"+new Date().toLocaleString("zh-TW");})
-    .catch(function(e){log.textContent="&#x274C; &#x9023;&#x7DDA;&#x5931;&#x6557;&#xFF1A;"+e.message;});
-}
-function chkToday(){
-  var log=document.getElementById("hlog");log.textContent="&#x6B63;&#x5728;&#x6293;&#x53D6;&#x4ECA;&#x65E5;&#x8CC7;&#x6599;...";
-  var sid="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
-  var today=new Date().toISOString().split("T")[0];
-  fetch("https://docs.google.com/spreadsheets/d/"+sid+"/gviz/tq?tqx=out:json&sheet="+today+"&ts="+Date.now())
-    .then(function(r){return r.text();}).then(function(t){var s=t.indexOf("{"),e=t.lastIndexOf("}");var j=JSON.parse(t.substring(s,e+1));var rows=(j.table?j.table.rows:[]).filter(function(r){var c=r.c.map(function(x){return x?(x.v||""):"";});return c[1]&&c[1]!=="&#x5019;&#x9078;&#x4EBA;";});var srcs={};rows.forEach(function(r){var s2=r.c[7]?(r.c[7].v||")":"";srcs[s2]=(srcs[s2]||0)+1;});var ss=Object.entries(srcs).map(function(kv){return kv[0]+":"+kv[1];}).join(", ");log.textContent="&#x1F4CA; &#x4ECA;&#x65E5;&#x8CC7;&#x6599;&#xFF08;"+today+"&#xFF09;
-&#x7E3D;&#x8A08;&#xFF1A;"+rows.length+" &#x7B46;
-&#x4F86;&#x6E90;&#x5206;&#x5E03;&#xFF1A;"+ss+"
-
-&#x524D; 5 &#x7B46;&#x6A19;&#x984C;&#xFF1A;
-"+rows.slice(0,5).map(function(r2,i){return(i+1)+". "+(r2.c[8]?r2.c[8].v:"").substring(0,50);}).join("
-");})
-    .catch(function(e){log.textContent="&#x274C; &#x5931;&#x6557;&#xFF1A;"+e.message;});
-}
-
-// ---- EXPORT ----
-function renderExport(){
-  return'<div class="page-header"><h2>&#x1F4BE; &#x5302;&#x51FA;/&#x5302;&#x5165;</h2><p>&#x5099;&#x4EFD;&#x6216;&#x9084;&#x539F;&#x8A2D;&#x5B9A;</p></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x5302;&#x51FA;&#x8A2D;&#x5B9A;</div></div><div class="section-body">'+
-  '<button class="btn btn-s" onclick="doExport()" style="margin-bottom:12px">&#x1F4CB; &#x8907;&#x88FD;&#x8A2D;&#x5B9A; JSON</button>'+
-  '<div class="preview-box" id="eprev">'+JSON.stringify(C,null,2).substring(0,400)+'...</div></div></div>'+
-  '<div class="section"><div class="section-header"><div class="section-title">&#x5302;&#x5165;&#x8A2D;&#x5B9A;</div></div><div class="section-body">'+
-  '<div class="field"><label>&#x8CBC;&#x4E0A;&#x8A2D;&#x5B9A; JSON</label><textarea id="impj" placeholder="&#x8CBC;&#x4E0A;&#x5B8C;&#x6574;&#x7684;&#x8A2D;&#x5B9A; JSON..." style="min-height:150px;font-family:DM Mono,monospace;font-size:12px"></textarea></div>'+
-  '<button class="btn btn-p" onclick="doImport()" style="margin-top:10px">&#x5302;&#x5165;</button></div></div>';
-}
-function doExport(){var j=JSON.stringify(C,null,2);navigator.clipboard.writeText(j).then(function(){toast("&#x5DF2;&#x8907;&#x88FD;&#x5230;&#x526A;&#x8CBC;&#x7C3F;&#xFF01;");});document.getElementById("eprev").textContent=j;}
-function doImport(){var j=document.getElementById("impj").value.trim();try{var imp=JSON.parse(j);C=imp;merge(C,DEF);saveAll();go("scoring");toast("&#x8A2D;&#x5B9A;&#x5302;&#x5165;&#x6210;&#x529F;&#xFF01;");}catch(e){alert("JSON &#x683C;&#x5F0F;&#x932F;&#x8AA4;&#xFF1A;"+e.message);}}
-
-loadC();
-go("scoring");
-</script>
-</body>
-</html>
+document.querySelectorAll(".nav-item").forEach(function(n){n.addEventListener("click",function(){go(this.dataset.pg);});});
+document.getElementById("btn-save").addEventListener("click",save);
+document.getElementById("btn-reset").addEventListener("click",function(){if(!confirm("確定要重置？"))return;C=cl(DF);mkd();render();tst("已重置為預設値");});
+document.getElementById("btn-open").addEventListener("click",function(){window.open("https://kellychenichun-glitch.github.io/election-monitor/","_blank");});
+load();
+</script></body></html>
