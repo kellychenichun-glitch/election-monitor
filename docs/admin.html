@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>選情雷達｜後台設定</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--sf3:#2a2f45;--bd:#333856;--tx:#e8eaf6;--mu:#8892b0;--ac:#64ffda;--ac2:#7c83ff;--da:#ff6b6b;--go:#ffd166;--gr:#06d6a0;--pu:#c77dff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--sf);border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--bd)}
+.sidebar-logo h1{font-size:16px;font-weight:900;color:var(--tx)}
+.sidebar-logo h1 span{color:var(--ac)}
+.ver{font-size:11px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:3px}
+.nav-section{padding:12px 0}
+.nav-label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;padding:6px 20px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--mu);font-size:13px;transition:all .15s}
+.nav-item:hover{color:var(--tx);background:var(--sf2)}
+.nav-item.active{color:var(--ac);background:var(--sf2);border-left:2px solid var(--ac)}
+.main{padding:32px 40px;max-width:1100px;padding-bottom:80px}
+.page-header{margin-bottom:28px}
+.page-header h2{font-size:22px;font-weight:900}
+.page-header p{font-size:13px;color:var(--mu);margin-top:5px}
+.section{background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.section-header{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;background:var(--sf2)}
+.section-title{font-size:14px;font-weight:700}
+.section-desc{font-size:12px;color:var(--mu);margin-top:2px}
+.section-body{padding:20px}
+.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.field-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.field input[type=number],.field input[type=text],.field select,.field textarea{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:8px 12px;color:var(--tx);font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ac)}
+.field textarea{resize:vertical;min-height:80px;font-family:'DM Mono',monospace;font-size:12px}
+.field .hint{font-size:11px;color:var(--mu)}
+.range-wrap{display:flex;align-items:center;gap:10px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--ac)}
+.range-val{font-family:'DM Mono',monospace;font-size:13px;color:var(--ac);min-width:28px;text-align:right}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--sf3)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:13px}
+.toggle-sub{font-size:11px;color:var(--mu);margin-top:2px}
+.toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--sf3);border-radius:22px;transition:.2s}
+.toggle-slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:var(--mu);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--ac)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#000}
+.kw-editor{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:12px}
+.kw-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:30px}
+.kw-tag{display:inline-flex;align-items:center;gap:5px;background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:3px 8px;font-size:12px;font-family:'DM Mono',monospace}
+.kw-tag.harm{border-color:var(--da);color:var(--da)}.kw-tag.ben{border-color:var(--gr);color:var(--gr)}
+.kw-tag.evt{border-color:var(--ac2);color:var(--ac2)}.kw-tag.exc{border-color:var(--go);color:var(--go)}
+.kw-tag.wl{border-color:var(--gr);color:var(--gr)}
+.kw-x{cursor:pointer;opacity:.6;font-size:14px;line-height:1}.kw-x:hover{opacity:1}
+.kw-add{display:flex;gap:8px}
+.kw-add input{flex:1;background:var(--sf3);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;color:var(--tx);font-size:12px;font-family:'DM Mono',monospace;outline:none}
+.kw-add input:focus{border-color:var(--ac)}
+.kw-add button{background:var(--sf3);border:1px solid var(--bd);border-radius:6px;padding:6px 14px;color:var(--ac);font-size:13px;cursor:pointer;font-weight:700}
+.kw-add button:hover{background:var(--ac);color:#000}
+.btn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.btn-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.btn-card-header{display:flex;justify-content:space-between;align-items:center}
+.btn-card-name{font-size:11px;font-family:'DM Mono',monospace;color:var(--mu)}
+.btn-card-group{font-size:10px;color:var(--pu);background:rgba(199,125,255,.12);padding:2px 6px;border-radius:4px}
+.btn-card input{background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--tx);font-size:12px;width:100%;outline:none}
+.btn-card input:focus{border-color:var(--ac)}
+.action-bar{position:fixed;bottom:0;right:0;left:240px;background:var(--sf);border-top:1px solid var(--bd);padding:14px 40px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.save-st{font-size:13px;font-family:'DM Mono',monospace}
+.saved{color:var(--gr)}.unsaved{color:var(--go)}
+.btn-row{display:flex;gap:10px}
+.btn{padding:8px 20px;border-radius:7px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s}
+.btn-p{background:var(--ac);color:#000}.btn-p:hover{background:#4dd8bb}
+.btn-s{background:var(--sf2);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
+.preview-box{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.score-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.sc-card{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px;text-align:center}
+.sc-lv{font-size:20px;font-weight:900;font-family:'DM Mono',monospace}
+.lv-S{color:#ff6b6b}.lv-A{color:#ffa94d}.lv-B{color:#74c0fc}.lv-C{color:var(--mu)}
+.sc-range{font-size:11px;color:var(--mu);margin-top:3px;font-family:'DM Mono',monospace}
+.sep{height:1px;background:var(--bd);margin:16px 0}
+.plat-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--sf3)}
+.plat-row:last-child{border-bottom:none}
+.plat-icon{font-size:18px;width:28px;text-align:center}
+.plat-name{min-width:100px;font-size:13px;font-weight:600}
+.plat-url{flex:2}
+.plat-url input{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--mu);font-size:11px;font-family:'DM Mono',monospace;outline:none}
+.plat-url input:focus{border-color:var(--ac);color:var(--tx)}
+.toast{position:fixed;top:20px;right:20px;background:var(--gr);color:#000;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;transform:translateY(-60px);opacity:0;transition:all .3s;z-index:1000}
+.toast.show{transform:translateY(0);opacity:1}
+.health-stat{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.hs-card{background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:14px}
+.hs-label{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.hs-value{font-size:18px;font-weight:700;font-family:'DM Mono',monospace;color:var(--ac)}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>選情<span>雷達</span> ⚙️</h1>
+    <div class="ver">Admin Panel v1.0 &middot; 設定儲存於瀏覽器</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">判讀設定</div>
+    <div class="nav-item active" onclick="go('scoring')" id="n-scoring"><span>📊</span>評分權重</div>
+    <div class="nav-item" onclick="go('keywords')" id="n-keywords"><span>🔑</span>關鍵字規則</div>
+    <div class="nav-item" onclick="go('filters')" id="n-filters"><span>🚫</span>過濳設定</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">前台設定</div>
+    <div class="nav-item" onclick="go('buttons')" id="n-buttons"><span>🎛️</span>篩選按鈕</div>
+    <div class="nav-item" onclick="go('platforms')" id="n-platforms"><span>📡</span>平台設定</div>
+    <div class="nav-item" onclick="go('display')" id="n-display"><span>🖥️</span>顯示設定</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">系統</div>
+    <div class="nav-item" onclick="go('health')" id="n-health"><span>🔍</span>系統健康</div>
+    <div class="nav-item" onclick="go('export')" id="n-export"><span>💾</span>匙出/匙入</div>
+  </div>
+</div>
+<div class="main" id="mc"></div>
+</div>
+<div class="action-bar">
+  <div class="save-st" id="sst">⚡ 設定已載入</div>
+  <div class="btn-row">
+    <button class="btn btn-s" onclick="resetDef()">重置預設値</button>
+    <button class="btn btn-s" onclick="window.open('https://kellychenichun-glitch.github.io/election-monitor/','_blank')">開啟前台 ↗</button>
+    <button class="btn btn-p" onclick="saveAll()">💾 儲存設定</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var DEFAULTS={
+  scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2,recency_stale:0},
+  thresholds:{S:11,A:9,B:6},
+  signal_harmful:['爭議','批評','攻擊','指控','失言','危機','質疑','賄','弊','醒荦','送辦','起訴','提告'],
+  signal_beneficial:['完工','等取','支持','背書','當選','力挺','推薦','肯定','成功','通過','發春'],
+  signal_unclear:['迷因','諷刺','？','痑','傳說','據說'],
+  event_controversy:['爭議','攻打','被批','質疑','指控','失言','危機'],
+  event_election:['提名','候選','選舉','大選','選區','當選','初選'],
+  event_construction:['建設','工程','道路','橋樑','公園','學校','交通','高架'],
+  event_mobilization:['造勴','動員','宣傳','活動','募款','志工'],
+  event_policy:['政策','政見','提案','質詢','交通委員','審查'],
+  event_service:['服務','拜訪','考察','行程','陳情','會勘'],
+  event_media:['專訪','媒體','採訪','節目','報導'],
+  relevance_high:['選舉','提名','立委','縣長','市長','問政','質詢','交通委員','彰化縣長','彰化市長'],
+  relevance_must_have_name:true,
+  filter_csy_exclude:['白米','包材','農產包材','農會','稻米','自備袋','員林市','員林市長','員林農會','大峦巫步道','北溝排水','永安區','八卦山','步道','環保考察','媒祖','宗教活動','老人照護','長照','樂齊'],
+  filter_hby_exclude:['其他縣市的黃柏瑜'],
+  filter_whitelist:['SayYes','陳素月委員','Chen Su-Yueh'],
+  filter_ig_threads_strict:true,
+  filter_buttons:[
+    {group:'cand',filter:'all',label:'全部',enabled:true},
+    {group:'cand',filter:'HBY',label:'黃柏瑜',enabled:true},
+    {group:'cand',filter:'CSY',label:'陳素月',enabled:true},
+    {group:'sig',filter:'all',label:'全部',enabled:true},
+    {group:'sig',filter:'ben',label:'✅ 有利',enabled:true},
+    {group:'sig',filter:'har',label:'❌ 不利',enabled:true},
+    {group:'sig',filter:'neu',label:'⚪ 中性',enabled:true},
+    {group:'sig',filter:'unc',label:'⚠ 待判讀',enabled:true},
+    {group:'lev',filter:'all',label:'全部',enabled:true},
+    {group:'lev',filter:'S',label:'S 立即',enabled:true},
+    {group:'lev',filter:'A',label:'A 高度',enabled:true},
+    {group:'lev',filter:'B',label:'B 追蹤',enabled:true},
+    {group:'lev',filter:'C',label:'C 存檔',enabled:false},
+    {group:'src',filter:'all',label:'全部',enabled:true},
+    {group:'src',filter:'FB2',label:'Facebook',enabled:true},
+    {group:'src',filter:'IG2',label:'Instagram',enabled:true},
+    {group:'src',filter:'TH',label:'Threads',enabled:true},
+    {group:'src',filter:'PT',label:'PTT',enabled:true},
+    {group:'src',filter:'GO',label:'Google',enabled:true}
+  ],
+  display:{show_score_points:true,show_relevance_badge:false,default_sort:'level',items_per_page:100,auto_refresh_minutes:5,low_relevance_visible:false},
+  platforms:[
+    {id:'FB',name:'Facebook',icon:'📘',enabled:true,search_prefix:'site:facebook.com',cred:'medium'},
+    {id:'IG',name:'Instagram',icon:'📸',enabled:true,search_prefix:'site:instagram.com',cred:'medium'},
+    {id:'Threads',name:'Threads',icon:'🧵',enabled:true,search_prefix:'site:threads.net',cred:'medium'},
+    {id:'PTT',name:'PTT',icon:'💬',enabled:true,search_prefix:'site:ptt.cc',cred:'low'},
+    {id:'Google',name:'Google Search',icon:'🔍',enabled:true,search_prefix:'',cred:'high'}
+  ]
+};
+
+var C={},cur='scoring',dirty=false;
+
+function load(){var s=localStorage.getItem('em_admin_cfg');if(s){try{C=JSON.parse(s);merge(C,DEFAULTS);}catch(e){C=JSON.parse(JSON.stringify(DEFAULTS));}}else{C=JSON.parse(JSON.stringify(DEFAULTS));}}
+function merge(t,s){for(var k in s){if(!(k in t))t[k]=JSON.parse(JSON.stringify(s[k]));else if(typeof s[k]==='object'&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=='object')t[k]={};merge(t[k],s[k]);}}}
+function mark(){dirty=true;var el=document.getElementById('sst');el.textContent='⚠ 有未儲存的變更';el.className='save-st unsaved';}
+function saveAll(){localStorage.setItem('em_admin_cfg',JSON.stringify(C));dirty=false;var el=document.getElementById('sst');el.textContent='✅ 設定已儲存';el.className='save-st saved';toast('設定已儲存！前台重整後生效');}
+function resetDef(){if(!confirm('確定要重置所有設定為預設値嗎？'))return;C=JSON.parse(JSON.stringify(DEFAULTS));go(cur);mark();toast('已重置為預設値');}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function upScore(sec,key,val){if(!C[sec])C[sec]={};C[sec][key]=parseFloat(val);mark();var prev=document.getElementById('sc-preview');if(prev)prev.innerHTML=scoreCards();}
+function scoreCards(){var t=C.thresholds;return '<div class="sc-card"><div class="sc-lv lv-S">S</div><div class="sc-range">≥'+t.S+' 分<br>立即處理</div></div><div class="sc-card"><div class="sc-lv lv-A">A</div><div class="sc-range">≥'+t.A+' 分<br>高度關注</div></div><div class="sc-card"><div class="sc-lv lv-B">B</div><div class="sc-range">≥'+t.B+' 分<br>持續追蹤</div></div><div class="sc-card"><div class="sc-lv lv-C">C</div><div class="sc-range">< '+t.B+' 分<br>存檔參考</div></div>';}
+
+function go(page){cur=page;document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('n-'+page).classList.add('active');var mc=document.getElementById('mc');
+switch(page){case 'scoring':mc.innerHTML=renderScoring();break;case 'keywords':mc.innerHTML=renderKW();break;case 'filters':mc.innerHTML=renderFilters();break;case 'buttons':mc.innerHTML=renderBtns();break;case 'platforms':mc.innerHTML=renderPlats();break;case 'display':mc.innerHTML=renderDisplay();break;case 'health':mc.innerHTML=renderHealth();break;case 'export':mc.innerHTML=renderExport();break;}}
+
+function slider(sec,key,label,hint,mn,mx){var v=C[sec]&&C[sec][key]!==undefined?C[sec][key]:0;return '<div class="field"><label>'+label+'</label><div class="range-wrap"><input type="range" min="'+mn+'" max="'+mx+'" value="'+v+'" oninput="upScore(''+sec+'',''+key+'',this.value);this.nextSibling.textContent=this.value"><span class="range-val">'+v+'</span></div>'+(hint?'<div class="hint">'+hint+'</div>':'')+'</div>';}
+
+function renderScoring(){var t=C.thresholds,s=C.scoring,mx=s.subject_main+s.evt_controversy+s.spread_multi+s.cred_media+s.impact_critical+s.recency_active;
+return '<div class="page-header"><h2>📊 評分權重設定</h2><p>調整各因子的分數權重，影響 S/A/B/C 等級判斷（目前最高分：'+mx+'）</p></div>'+
+'<div class="section"><div class="section-header"><div><div class="section-title">等級門滝</div><div class="section-desc">調整 S/A/B/C 的分數門滝</div></div></div><div class="section-body">'+
+'<div class="field-grid-3">'+
+'<div class="field"><label>S 級（立即處理）≥</label><input type="number" value="'+t.S+'" min="1" max="25" onchange="C.thresholds.S=parseInt(this.value);mark();document.getElementById('sc-preview').innerHTML=scoreCards()"></div>'+
+'<div class="field"><label>A 級（高度關注）≥</label><input type="number" value="'+t.A+'" min="1" max="25" onchange="C.thresholds.A=parseInt(this.value);mark();document.getElementById('sc-preview').innerHTML=scoreCards()"></div>'+
+'<div class="field"><label>B 級（持續追蹤）≥</label><input type="number" value="'+t.B+'" min="1" max="25" onchange="C.thresholds.B=parseInt(this.value);mark();document.getElementById('sc-preview').innerHTML=scoreCards()"></div>'+
+'</div><div class="score-cards" id="sc-preview">'+scoreCards()+'</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">主體性</div></div><div class="section-body"><div class="field-grid">'+slider('scoring','subject_main','候選人是主角','新聞/貣文的主角是候選人',0,5)+slider('scoring','subject_mention','候選人被提及','只是順帶提及',0,3)+'</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">事件類型加分</div></div><div class="section-body"><div class="field-grid">'+slider('scoring','evt_controversy','爭議/重大攻防','',0,5)+slider('scoring','evt_election','選舉/提名','',0,4)+slider('scoring','evt_construction','地方建設','',0,4)+slider('scoring','evt_mobilization','組織動員','',0,4)+slider('scoring','evt_policy','政策/質詢','',0,4)+slider('scoring','evt_service','服務行程','',0,3)+slider('scoring','evt_media','媒體曝光','',0,3)+slider('scoring','evt_general','一般報導','',0,2)+'</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">擴散性</div></div><div class="section-body"><div class="field-grid">'+slider('scoring','spread_multi','多平台同步','',0,5)+slider('scoring','spread_single_high','單平台高互動','',0,3)+slider('scoring','spread_single_low','單篇低互動','',0,2)+'</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">來源可信度</div></div><div class="section-body"><div class="field-grid">'+slider('scoring','cred_media','主流媒體/官方','',0,5)+slider('scoring','cred_social','社群/地方粉專','',0,3)+slider('scoring','cred_unknown','匿名/來源不明','',0,2)+'</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">選情影響力</div></div><div class="section-body"><div class="field-grid">'+slider('scoring','impact_critical','可能影響支持度/需回應','',0,5)+slider('scoring','impact_notable','値得關注/可當素材','',0,3)+slider('scoring','impact_record','僅記錄用途','',0,2)+slider('scoring','recency_active','24hr內持續發酵','',0,3)+'</div></div></div>';}
+
+function kwSec(title,desc,key,cls){var words=C[key]||[];var tags=words.map(function(w){return '<span class="kw-tag '+cls+'">'+escH(w)+'<span class="kw-x" onclick="rmKw(''+key+'',''+escQ(w)+'')">×</span></span>';}).join('');return '<div class="section"><div class="section-header"><div><div class="section-title">'+title+'</div><div class="section-desc">'+desc+'</div></div></div><div class="section-body"><div class="kw-editor"><div class="kw-list">'+(tags||'<span style="color:var(--mu);font-size:12px">（空）</span>')+'</div><div class="kw-add"><input type="text" placeholder="輸入關鍵字後按 Enter" id="kwi-'+key+'" onkeydown="if(event.key==='Enter')addKw(''+key+'')"><button onclick="addKw(''+key+'')">+</button></div></div></div></div>';}
+function renderKW(){return '<div class="page-header"><h2>🔑 關鍵字規則</h2><p>設定判斷訊號傾向、事件類型的關鍵字，支持新增/刪除</p></div>'+kwSec('🔴 不利訊號關鍵字','出現這些詞 → 判斷為不利','signal_harmful','harm')+kwSec('🟢 有利訊號關鍵字','出現這些詞 → 判斷為有利','signal_beneficial','ben')+kwSec('⚠ 待判讀關鍵字','出現這些詞 → 需人工判斷','signal_unclear','exc')+'<div class="sep"></div>'+kwSec('🟠 爭議事件關鍵字','出現這些詞 → 事件類型=爭議攻防','event_controversy','harm')+kwSec('選舉提名關鍵字','','event_election','evt')+kwSec('地方建設關鍵字','','event_construction','ben')+kwSec('政策質詢關鍵字','','event_policy','evt')+kwSec('服務行程關鍵字','','event_service','ben')+'<div class="sep"></div>'+kwSec('相關性 high 判斷詞','出現這些詞 → relevance=high','relevance_high','evt');}
+
+function renderFilters(){var wl=(C.filter_whitelist||[]).map(function(w){return '<span class="kw-tag wl">'+escH(w)+'<span class="kw-x" onclick="rmKw('filter_whitelist',''+escQ(w)+'')">×</span></span>';}).join('');
+return '<div class="page-header"><h2>🚫 過濳設定</h2><p>設定哪些資料應被排除，以及白名單保護</p></div>'+
+'<div class="section"><div class="section-header"><div><div class="section-title">白名單（絕對保留）</div><div class="section-desc">帳號或標題含這些詞 → 無論如何都不過濳</div></div></div><div class="section-body"><div class="kw-editor"><div class="kw-list">'+(wl||'<span style="color:var(--mu);font-size:12px">（空）</span>')+'</div><div class="kw-add"><input type="text" placeholder="新增白名單詞" id="kwi-filter_whitelist" onkeydown="if(event.key==='Enter')addKw('filter_whitelist')"><button onclick="addKw('filter_whitelist')">+</button></div></div></div></div>'+
+kwSec('陳素月排除詞','標題含這些詞 → 判斷為員林市長業務，排除','filter_csy_exclude','exc')+
+kwSec('黃柏瑜排除詞','標題含這些詞 → 判斷為同名無關人物，排除','filter_hby_exclude','exc')+
+'<div class="section"><div class="section-header"><div><div class="section-title">IG/Threads 嚴格模式</div><div class="section-desc">IG/Threads 貣文必須含立委相關詞才保留</div></div></div><div class="section-body"><div class="toggle-row"><div><div class="toggle-label">啟用 IG/Threads 嚴格過濳</div><div class="toggle-sub">關閉後 IG/Threads 貣文不做額外過濳</div></div><label class="toggle"><input type="checkbox" '+(C.filter_ig_threads_strict?'checked':'')+' onchange="C.filter_ig_threads_strict=this.checked;mark()"><span class="toggle-slider"></span></label></div><div class="toggle-row"><div><div class="toggle-label">相關性必須含候選人名字</div><div class="toggle-sub">標題/摘要沒有候選人名字 → 最多 medium</div></div><label class="toggle"><input type="checkbox" '+(C.relevance_must_have_name?'checked':'')+' onchange="C.relevance_must_have_name=this.checked;mark()"><span class="toggle-slider"></span></label></div></div></div>';}
+
+function renderBtns(){var grps={},gn={cand:'候選人',sig:'訊號傾向',lev:'重要等級',src:'平台'};(C.filter_buttons||[]).forEach(function(b){if(!grps[b.group])grps[b.group]=[];grps[b.group].push(b);});var html='<div class="page-header"><h2>🎛️ 篩選按鈕設定</h2><p>調整前台顯示的篩選按鈕標籤與啟用狀態</p></div>';
+for(var g in grps){html+='<div class="section"><div class="section-header"><div><div class="section-title">'+(gn[g]||g)+' 群組</div></div></div><div class="section-body"><div class="btn-grid">';grps[g].forEach(function(b){var gi=C.filter_buttons.indexOf(b);html+='<div class="btn-card"><div class="btn-card-header"><span class="btn-card-name">'+b.filter+'</span><label class="toggle"><input type="checkbox" '+(b.enabled?'checked':'')+' onchange="C.filter_buttons['+gi+'].enabled=this.checked;mark()"><span class="toggle-slider"></span></label></div><input type="text" value="'+escH(b.label)+'" onchange="C.filter_buttons['+gi+'].label=this.value;mark()"></div>';});html+='</div></div></div>';}return html;}
+
+function renderPlats(){var creds=['high','medium','low'];var html='<div class="page-header"><h2>📡 平台設定</h2><p>管理監控平台、可信度設定、Serper 搜尋前綴</p></div><div class="section"><div class="section-header"><div class="section-title">平台管理</div></div><div class="section-body">';(C.platforms||[]).forEach(function(p,i){var sel=creds.map(function(c){return '<option value="'+c+'"'+(p.cred===c?' selected':'')+'>'+c+'</option>';}).join('');html+='<div class="plat-row"><span class="plat-icon">'+p.icon+'</span><span class="plat-name">'+p.name+'</span><div class="plat-url"><input type="text" value="'+escH(p.search_prefix)+'" placeholder="Serper 搜尋前綴" onchange="C.platforms['+i+'].search_prefix=this.value;mark()"></div><div class="field" style="min-width:90px"><select onchange="C.platforms['+i+'].cred=this.value;mark()">'+sel+'</select></div><label class="toggle"><input type="checkbox" '+(p.enabled?'checked':'')+' onchange="C.platforms['+i+'].enabled=this.checked;mark()"><span class="toggle-slider"></span></label></div>';});return html+'</div></div>';}
+
+function renderDisplay(){var d=C.display||{};var sorts=['level','time','score'];var sn={level:'重要等級',time:'最新時間',score:'分數'};var ssel=sorts.map(function(s){return '<option value="'+s+'"'+(d.default_sort===s?' selected':'')+'>'+sn[s]+'</option>';}).join('');
+return '<div class="page-header"><h2>🖥️ 顯示設定</h2><p>調整前台的顯示行為與預設値</p></div><div class="section"><div class="section-header"><div class="section-title">顯示行為</div></div><div class="section-body">'+
+'<div class="toggle-row"><div><div class="toggle-label">顯示分數數字（如 A 12pt）</div><div class="toggle-sub">在重要度標籤旁顯示數字分數</div></div><label class="toggle"><input type="checkbox" '+(d.show_score_points?'checked':'')+' onchange="C.display.show_score_points=this.checked;mark()"><span class="toggle-slider"></span></label></div>'+
+'<div class="toggle-row"><div><div class="toggle-label">顯示相關性標籤</div><div class="toggle-sub">在每筆資料旁顯示 high/medium</div></div><label class="toggle"><input type="checkbox" '+(d.show_relevance_badge?'checked':'')+' onchange="C.display.show_relevance_badge=this.checked;mark()"><span class="toggle-slider"></span></label></div>'+
+'<div class="toggle-row"><div><div class="toggle-label">顯示低相關性資料</div><div class="toggle-sub">開啟後 relevance=low 的資料也會顯示</div></div><label class="toggle"><input type="checkbox" '+(d.low_relevance_visible?'checked':'')+' onchange="C.display.low_relevance_visible=this.checked;mark()"><span class="toggle-slider"></span></label></div>'+
+'<div class="sep"></div><div class="field-grid">'+
+'<div class="field"><label>預設排序方式</label><select onchange="C.display.default_sort=this.value;mark()">'+ssel+'</select></div>'+
+'<div class="field"><label>自動更新（分鐘）</label><input type="number" value="'+(d.auto_refresh_minutes||5)+'" min="1" max="60" onchange="C.display.auto_refresh_minutes=parseInt(this.value);mark()"></div>'+
+'</div></div></div>';}
+
+function renderHealth(){var sid='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k',today=new Date().toISOString().split('T')[0];
+return '<div class="page-header"><h2>🔍 系統健康</h2><p>檢查資料來源、Sheets 狀態、最後更新時間</p></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">快速診斷</div></div><div class="section-body">'+
+'<div class="btn-row" style="margin-bottom:16px"><button class="btn btn-s" onclick="chkSheets()">檢查 Sheets 連線</button><button class="btn btn-s" onclick="chkToday()">檢查今日資料</button><button class="btn btn-s" onclick="window.open('https://kellychenichun-glitch.github.io/election-monitor/','_blank')">開啟前台檢查</button></div>'+
+'<div class="preview-box" id="hlog">點擊上方按鈕開始診斷...</div></div></div>'+
+'<div class="section"><div class="section-header"><div class="section-title">Sheets 資訊</div></div><div class="section-body"><div class="field-grid"><div class="field"><label>Sheet ID</label><input type="text" value="'+sid+'" readonly style="opacity:.5;font-family:DM Mono,monospace;font-size:11px"></div><div class="field"><label>今日日期</label><input type="text" value="'+today+'" readonly style="opacity:.5;font-family:DM Mono,monospace"></div></div></div></div>';}
+
+function chkSheets(){var log=document.getElementById('hlog');log.textContent='檢查 Sheets 連線中...';var sid='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k',today=new Date().toISOString().split('T')[0];fetch('https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=out:json&sheet='+today+'&ts='+Date.now()).then(function(r){return r.text();}).then(function(t){var s=t.indexOf('{'),e=t.lastIndexOf('}');var j=JSON.parse(t.substring(s,e+1));var rows=j.table?j.table.rows.length:0;log.textContent='✅ Sheets 連線正常
+今日（'+today+'）資料：'+rows+' 筆
+最後檢查：'+new Date().toLocaleString('zh-TW');}).catch(function(e){log.textContent='❌ 連線失敗：'+e.message;});}
+function chkToday(){var log=document.getElementById('hlog');log.textContent='抓取今日資料中...';var sid='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k',today=new Date().toISOString().split('T')[0];fetch('https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=out:json&sheet='+today+'&ts='+Date.now()).then(function(r){return r.text();}).then(function(t){var s=t.indexOf('{'),e=t.lastIndexOf('}');var j=JSON.parse(t.substring(s,e+1));var rows=(j.table?j.table.rows:[]).filter(function(r){var c=r.c.map(function(x){return x?(x.v||''):'';});return c[1]&&c[1]!=='候選人';});var srcs={};rows.forEach(function(r){var src=r.c[7]?(r.c[7].v||')':'';srcs[src]=(srcs[src]||0)+1;});var ss=Object.keys(srcs).map(function(k){return k+':'+srcs[k];}).join(', ');log.textContent='📊 今日資料（'+today+'）
+總計：'+rows.length+' 筆
+來源分布：'+ss+'
+
+前5筆標題：
+'+rows.slice(0,5).map(function(r,i){return (i+1)+'. '+(r.c[8]?r.c[8].v:'').substring(0,50);}).join('
+');}).catch(function(e){log.textContent='❌ 失敗：'+e.message;});}
+
+function renderExport(){return '<div class="page-header"><h2>💾 匙出/匙入</h2><p>備份或還原設定</p></div><div class="section"><div class="section-header"><div class="section-title">匙出設定</div></div><div class="section-body"><button class="btn btn-s" onclick="doExport()" style="margin-bottom:12px">📋 複製設定 JSON</button><div class="preview-box" id="ep">'+escH(JSON.stringify(C,null,2)).substring(0,800)+'...</div></div></div><div class="section"><div class="section-header"><div class="section-title">匙入設定</div></div><div class="section-body"><div class="field"><label>貼上設定 JSON</label><textarea id="ij" placeholder="貼上完整的設定 JSON..." style="min-height:150px"></textarea></div><button class="btn btn-p" onclick="doImport()" style="margin-top:10px">匙入</button></div></div>';}
+function doExport(){var json=JSON.stringify(C,null,2);navigator.clipboard.writeText(json).then(function(){toast('已複製到剪貼簿！');});document.getElementById('ep').textContent=json;}
+function doImport(){try{var imp=JSON.parse(document.getElementById('ij').value.trim());C=imp;merge(C,DEFAULTS);saveAll();go('scoring');toast('設定匙入成功！');}catch(e){alert('JSON 格式錯誤：'+e.message);}}
+
+function addKw(key){var inp=document.getElementById('kwi-'+key);if(!inp)return;var v=inp.value.trim();if(!v)return;if(!C[key])C[key]=[];if(C[key].indexOf(v)===-1){C[key].push(v);mark();go(cur);}inp.value='';}
+function rmKw(key,word){var idx=C[key].indexOf(word);if(idx>-1){C[key].splice(idx,1);mark();go(cur);}}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escQ(s){return String(s).replace(/'/g,"\'");}
+
+load();go('scoring');
+</script>
+</body>
+</html>
