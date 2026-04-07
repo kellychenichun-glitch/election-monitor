@@ -1,275 +1,388 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>選情雷達｜後台設定</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--sf3:#2a2f45;--bd:#333856;--tx:#e8eaf6;--mu:#8892b0;--ac:#64ffda;--ac2:#7c83ff;--da:#ff6b6b;--go:#ffd166;--gr:#06d6a0;--pu:#c77dff}
+:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--sf3:#2a2f45;--bd:#333856;--tx:#e8eaf6;--mu:#8892b0;--ac:#64ffda;--da:#ff6b6b;--go:#ffd166;--gr:#06d6a0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:14px}
 .layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
 .sidebar{background:var(--sf);border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;overflow-y:auto}
-.logo{padding:20px 18px 14px;border-bottom:1px solid var(--bd)}
-.logo h1{font-size:15px;font-weight:900}.logo h1 span{color:var(--ac)}
-.logo .ver{font-size:11px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:2px}
-.nav-sec{padding:10px 0}
-.nav-lbl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;padding:5px 18px;font-weight:700}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--mu);font-size:13px}
-.nav-item:hover{color:var(--tx);background:var(--sf2)}
-.nav-item.active{color:var(--ac);background:var(--sf2);border-left:2px solid var(--ac)}
-.ni{font-size:15px;width:18px;text-align:center}
-.main{padding:28px 36px 80px;max-width:980px}
+.logo{padding:20px 18px 14px;border-bottom:1px solid var(--bd)}.logo h1{font-size:15px;font-weight:900}.logo h1 span{color:var(--ac)}.logo .ver{font-size:11px;color:var(--mu);font-family:'DM Mono',monospace;margin-top:2px}
+.ns{padding:10px 0}.nl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;padding:5px 18px;font-weight:700}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 18px;cursor:pointer;color:var(--mu);font-size:13px}.ni:hover{color:var(--tx);background:var(--sf2)}.ni.active{color:var(--ac);background:var(--sf2);border-left:2px solid var(--ac)}
+.ic{font-size:15px;width:18px;text-align:center}.main{padding:28px 36px 80px;max-width:980px}
 .ph{margin-bottom:24px}.ph h2{font-size:20px;font-weight:900}.ph p{font-size:13px;color:var(--mu);margin-top:4px}
 .sec{background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:16px;overflow:hidden}
-.sh{padding:13px 18px;border-bottom:1px solid var(--bd);background:var(--sf2)}
-.st{font-size:13px;font-weight:700}.sd{font-size:11px;color:var(--mu);margin-top:2px}
-.sb{padding:18px}
-.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
-.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.fld{display:flex;flex-direction:column;gap:5px}
-.fld label{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
+.sh{padding:13px 18px;border-bottom:1px solid var(--bd);background:var(--sf2)}.st{font-size:13px;font-weight:700}.sd{font-size:11px;color:var(--mu);margin-top:2px}.sb{padding:18px}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}.fg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fld{display:flex;flex-direction:column;gap:5px}.fld label{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}
 .fld input,.fld select,.fld textarea{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;color:var(--tx);font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;width:100%}
 .fld input:focus,.fld select:focus{border-color:var(--ac)}
-.fld textarea{resize:vertical;min-height:70px;font-family:'DM Mono',monospace;font-size:11px}
-.hint{font-size:11px;color:var(--mu)}
-.rw{display:flex;align-items:center;gap:8px}
-.rw input[type=range]{flex:1;accent-color:var(--ac)}
-.rv{font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);min-width:24px;text-align:right}
-.tr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--sf3)}
-.tr:last-child{border-bottom:none}
-.tl{font-size:13px}.ts{font-size:11px;color:var(--mu);margin-top:1px}
-.tog{position:relative;display:inline-block;width:38px;height:21px;flex-shrink:0}
-.tog input{opacity:0;width:0;height:0}
+.rw{display:flex;align-items:center;gap:8px}.rw input[type=range]{flex:1;accent-color:var(--ac)}.rv{font-family:'DM Mono',monospace;font-size:12px;color:var(--ac);min-width:24px;text-align:right}
+.tr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--sf3)}.tr:last-child{border-bottom:none}.tl{font-size:13px}.ts{font-size:11px;color:var(--mu);margin-top:1px}
+.tog{position:relative;display:inline-block;width:38px;height:21px;flex-shrink:0}.tog input{opacity:0;width:0;height:0}
 .tgs{position:absolute;cursor:pointer;inset:0;background:var(--sf3);border-radius:21px;transition:.2s}
 .tgs:before{position:absolute;content:"";height:15px;width:15px;left:3px;bottom:3px;background:var(--mu);border-radius:50%;transition:.2s}
-.tog input:checked+.tgs{background:var(--ac)}
-.tog input:checked+.tgs:before{transform:translateX(17px);background:#000}
-.ke{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px}
-.kl{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:26px}
+.tog input:checked+.tgs{background:var(--ac)}.tog input:checked+.tgs:before{transform:translateX(17px);background:#000}
+.ke{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px}.kl{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;min-height:26px}
 .kt{display:inline-flex;align-items:center;gap:4px;background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:2px 7px;font-size:11px;font-family:'DM Mono',monospace}
-.kt.harm{border-color:var(--da);color:var(--da)}.kt.ben{border-color:var(--gr);color:var(--gr)}
-.kt.evt{border-color:var(--ac2);color:var(--ac2)}.kt.exc{border-color:var(--go);color:var(--go)}
+.kt.harm{border-color:var(--da);color:var(--da)}.kt.ben{border-color:var(--gr);color:var(--gr)}.kt.evt{border-color:#7c83ff;color:#7c83ff}.kt.exc{border-color:var(--go);color:var(--go)}
 .kr{cursor:pointer;opacity:.6;line-height:1}.kr:hover{opacity:1}
-.ka{display:flex;gap:7px}
-.ka input{flex:1;background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--tx);font-size:11px;font-family:'DM Mono',monospace;outline:none}
-.ka input:focus{border-color:var(--ac)}
-.ka button{background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 10px;color:var(--ac);font-size:11px;cursor:pointer}
-.ka button:hover{background:var(--ac);color:#000}
+.ka{display:flex;gap:7px}.ka input{flex:1;background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 8px;color:var(--tx);font-size:11px;font-family:'DM Mono',monospace;outline:none}.ka input:focus{border-color:var(--ac)}.ka button{background:var(--sf3);border:1px solid var(--bd);border-radius:5px;padding:5px 10px;color:var(--ac);font-size:11px;cursor:pointer}.ka button:hover{background:var(--ac);color:#000}
 .bg2{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}
 .bc{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:10px;display:flex;flex-direction:column;gap:7px}
-.bch{display:flex;justify-content:space-between;align-items:center}
-.bcn{font-size:11px;font-family:'DM Mono',monospace;color:var(--mu)}
-.bc input[type=text]{background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--tx);font-size:12px;width:100%;outline:none;font-family:'Noto Sans TC',sans-serif}
-.bc input[type=text]:focus{border-color:var(--ac)}
+.bch{display:flex;justify-content:space-between;align-items:center}.bcn{font-size:11px;font-family:'DM Mono',monospace;color:var(--mu)}
+.bc input[type=text]{background:var(--sf3);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--tx);font-size:12px;width:100%;outline:none}.bc input[type=text]:focus{border-color:var(--ac)}
 .sep{height:1px;background:var(--bd);margin:14px 0}
 .scp{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
 .scc{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:9px;text-align:center}
-.scv{font-size:18px;font-weight:900;font-family:'DM Mono',monospace}
-.scv.S{color:#ff6b6b}.scv.A{color:#ffa94d}.scv.B{color:#74c0fc}.scv.C{color:var(--mu)}
+.scv{font-size:18px;font-weight:900;font-family:'DM Mono',monospace}.scv.S{color:#ff6b6b}.scv.A{color:#ffa94d}.scv.B{color:#74c0fc}.scv.C{color:var(--mu)}
 .scr{font-size:10px;color:var(--mu);margin-top:2px;font-family:'DM Mono',monospace}
-.pr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--sf3)}
-.pr:last-child{border-bottom:none}
-.pi{font-size:16px;width:24px;text-align:center}
-.pn{min-width:80px;font-size:13px;font-weight:600}
-.pu{flex:1}.pu input{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--mu);font-size:10px;font-family:'DM Mono',monospace;outline:none}
-.pu input:focus{border-color:var(--ac);color:var(--tx)}
+.pr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--sf3)}.pr:last-child{border-bottom:none}
+.pi{font-size:16px;width:24px;text-align:center}.pn{min-width:80px;font-size:13px;font-weight:600}
+.pu{flex:1}.pu input{width:100%;background:var(--sf2);border:1px solid var(--bd);border-radius:4px;padding:4px 7px;color:var(--mu);font-size:10px;font-family:'DM Mono',monospace;outline:none}.pu input:focus{border-color:var(--ac);color:var(--tx)}
 .pb{background:var(--sf2);border:1px solid var(--bd);border-radius:7px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ac);max-height:180px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
 .ab{position:fixed;bottom:0;right:0;left:220px;background:var(--sf);border-top:1px solid var(--bd);padding:12px 36px;display:flex;justify-content:space-between;align-items:center;z-index:100}
-.ss{font-size:12px;font-family:'DM Mono',monospace}
-.ss.ok{color:var(--gr)}.ss.ng{color:var(--go)}
-.br2{display:flex;gap:8px}
+.ss{font-size:12px;font-family:'DM Mono',monospace}.ss.ok{color:var(--gr)}.ss.ng{color:var(--go)}.br2{display:flex;gap:8px}
 .btn{padding:7px 18px;border-radius:6px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
 .btn-p{background:var(--ac);color:#000}.btn-p:hover{background:#4dd8bb}
 .btn-s{background:var(--sf2);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{border-color:var(--ac);color:var(--ac)}
 .btn-d{background:rgba(255,107,107,.15);color:var(--da);border:1px solid rgba(255,107,107,.3)}
-.tst{position:fixed;top:16px;right:16px;background:var(--gr);color:#000;padding:9px 18px;border-radius:7px;font-weight:700;font-size:12px;transform:translateY(-50px);opacity:0;transition:all .3s;z-index:999}
-.tst.show{transform:none;opacity:1}
+.tst{position:fixed;top:16px;right:16px;background:var(--gr);color:#000;padding:9px 18px;border-radius:7px;font-weight:700;font-size:12px;transform:translateY(-50px);opacity:0;transition:all .3s;z-index:999}.tst.show{transform:none;opacity:1}
 </style></head><body>
 <div class="layout">
 <div class="sidebar">
-  <div class="logo"><h1>選情<span>雷達</span> ⚙️</h1><div class="ver">Admin Panel v1.1</div></div>
-  <div class="nav-sec">
-    <div class="nav-lbl">判讀設定</div>
-    <div class="nav-item active" data-pg="scoring"><span class="ni">📊</span>評分權重</div>
-    <div class="nav-item" data-pg="keywords"><span class="ni">🔑</span>關鍵字規則</div>
-    <div class="nav-item" data-pg="filters"><span class="ni">🚫</span>過濾設定</div>
+  <div class="logo"><h1>選情<span>雷達</span> &#x2699;&#xFE0F;</h1><div class="ver">Admin v1.2</div></div>
+  <div class="ns"><div class="nl">判讀設定</div>
+    <div class="ni active" data-pg="scoring"><span class="ic">&#x1F4CA;</span>評分權重</div>
+    <div class="ni" data-pg="keywords"><span class="ic">&#x1F511;</span>關鍵字規則</div>
+    <div class="ni" data-pg="filters"><span class="ic">&#x1F6AB;</span>過濾設定</div>
   </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">前台設定</div>
-    <div class="nav-item" data-pg="buttons"><span class="ni">🎛️</span>篩選按鈕</div>
-    <div class="nav-item" data-pg="platforms"><span class="ni">📡</span>平台設定</div>
-    <div class="nav-item" data-pg="display"><span class="ni">🖥️</span>顯示設定</div>
+  <div class="ns"><div class="nl">前台設定</div>
+    <div class="ni" data-pg="buttons"><span class="ic">&#x1F39B;&#xFE0F;</span>篩選按鈕</div>
+    <div class="ni" data-pg="platforms"><span class="ic">&#x1F4E1;</span>平台設定</div>
+    <div class="ni" data-pg="display"><span class="ic">&#x1F5A5;&#xFE0F;</span>顯示設定</div>
   </div>
-  <div class="nav-sec">
-    <div class="nav-lbl">系統</div>
-    <div class="nav-item" data-pg="health"><span class="ni">🔍</span>系統健康</div>
-    <div class="nav-item" data-pg="export"><span class="ni">💾</span>匙出/匙入</div>
+  <div class="ns"><div class="nl">系統</div>
+    <div class="ni" data-pg="health"><span class="ic">&#x1F50D;</span>系統健康</div>
+    <div class="ni" data-pg="export"><span class="ic">&#x1F4BE;</span>匙出/匙入</div>
   </div>
 </div>
 <div class="main" id="main"></div>
 </div>
 <div class="ab">
-  <div class="ss ok" id="ss">⚡ 設定已載入</div>
+  <div class="ss ok" id="ss">&#x26A1; 設定已載入</div>
   <div class="br2">
     <button class="btn btn-d" id="btn-reset">重置預設値</button>
-    <button class="btn btn-s" id="btn-open">開啟前台 ↗</button>
-    <button class="btn btn-p" id="btn-save">💾 儲存設定</button>
+    <button class="btn btn-s" id="btn-open">開啟前台 &#x2197;</button>
+    <button class="btn btn-p" id="btn-save">&#x1F4BE; 儲存設定</button>
   </div>
 </div>
-<div class="tst" id="tst"></div><script>
-var DF={scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2},thresholds:{S:11,A:9,B:6},signal_harmful:["爭議","批評","攻擊","指控","負面","失言","危機","質詢","弊釜賣"],signal_beneficial:["完工","第取","支持","背書","當選","力挺","推薦","備選","通過","争取到"],signal_unclear:["迷因","諌刺","傳說","據說"],event_controversy:["爭議","攻打","被批","躨指","失言","危機"],event_election:["提名","備選","選舉","大選","選區","初選"],event_construction:["建設","工程","道路","橋樑","公園","交通","高架"],event_mobilization:["造勴","動員","宣傳","受氾"],event_policy:["政策","政見","提案","質詢","交通委員"],event_service:["服務","拜訪","考察","行程","陳情"],relevance_high:["選舉","提名","立委","縣長","市長","問政","質詢","交通委員","彰化縣長","彰化市長"],filter_csy_exclude:["白米","包材","農產包材","農會","稻米","自備袋","員林市","員林農會","大峦巫步道","北溝排水","八卦山","步道","環保考察","媒祖","宗教活動","樂齊","長照"],filter_hby_exclude:["劇橋非彰化"],filter_whitelist:["SayYes","陳素月委員","Chen Su-Yueh"],filter_ig_threads_strict:true,filter_relevance_must_name:true,filter_buttons:[{g:"cand",f:"all",l:"全部",on:true},{g:"cand",f:"HBY",l:"黃柏瑜",on:true},{g:"cand",f:"CSY",l:"陳素月",on:true},{g:"sig",f:"all",l:"全部",on:true},{g:"sig",f:"ben",l:"✅ 有利",on:true},{g:"sig",f:"har",l:"❌ 不利",on:true},{g:"sig",f:"neu",l:"⚪ 中性",on:true},{g:"sig",f:"unc",l:"⚠ 待判讀",on:true},{g:"lev",f:"all",l:"全部",on:true},{g:"lev",f:"S",l:"S 立即",on:true},{g:"lev",f:"A",l:"A 高度",on:true},{g:"lev",f:"B",l:"B 追蹤",on:true},{g:"lev",f:"C",l:"C 存檔",on:false},{g:"src",f:"all",l:"全部",on:true},{g:"src",f:"FB2",l:"Facebook",on:true},{g:"src",f:"IG2",l:"Instagram",on:true},{g:"src",f:"TH",l:"Threads",on:true},{g:"src",f:"PT",l:"PTT",on:true},{g:"src",f:"GO",l:"Google",on:true}],display:{show_score:true,show_rel:false,sort:"level",per_page:100,refresh:5,show_low:false},platforms:[{id:"FB",nm:"Facebook",ic:"📘",on:true,sp:"site:facebook.com",cr:"medium"},{id:"IG",nm:"Instagram",ic:"📸",on:true,sp:"site:instagram.com",cr:"medium"},{id:"Threads",nm:"Threads",ic:"🧵",on:true,sp:"site:threads.net",cr:"medium"},{id:"PTT",nm:"PTT",ic:"💬",on:true,sp:"site:ptt.cc",cr:"low"},{id:"Google",nm:"Google",ic:"🔍",on:true,sp:"",cr:"high"}]};
-var C={},dirty=false,pg="scoring";
+<div class="tst" id="tst"></div>
+<script>
+var DF={"scoring": {"subject_main": 3, "subject_mention": 1, "evt_controversy": 3, "evt_election": 2, "evt_construction": 2, "evt_mobilization": 2, "evt_policy": 2, "evt_service": 1, "evt_media": 1, "evt_general": 1, "spread_multi": 3, "spread_single_high": 2, "spread_single_low": 1, "cred_media": 3, "cred_social": 2, "cred_unknown": 1, "impact_critical": 3, "impact_notable": 2, "impact_record": 1, "recency_active": 2}, "thresholds": {"S": 11, "A": 9, "B": 6}, "signal_harmful": ["爭議", "批評", "攻擊", "指控", "負面", "失言", "危機", "質詢", "弊釜"], "signal_beneficial": ["完工", "第取", "支持", "背書", "當選", "力挺", "推薦", "備選", "通過", "争取到"], "signal_unclear": ["迷因", "諌刺", "傳說", "據說"], "event_controversy": ["爭議", "攻打", "被批", "躨指", "失言", "危機"], "event_election": ["提名", "候選", "選舉", "大選", "選區", "初選"], "event_construction": ["建設", "工程", "道路", "橋樑", "公園", "交通", "高架"], "event_mobilization": ["造勴", "動員", "宣傳", "受氾"], "event_policy": ["政策", "政見", "提案", "質詢", "交通委員"], "event_service": ["服務", "拜訪", "考察", "行程", "陳情"], "relevance_high": ["選舉", "提名", "立委", "縣長", "市長", "問政", "質詢", "交通委員", "彰化縣長", "彰化市長"], "filter_csy_exclude": ["白米", "包材", "農產包材", "農會", "稻米", "自備袋", "員林市", "員林農會", "大峦巫步道", "北溝排水", "八卦山", "步道", "環保考察", "媒祖", "宗教活動", "樂齊", "長照"], "filter_hby_exclude": ["劇橋 非彰化"], "filter_whitelist": ["SayYes", "陳素月委員", "Chen Su-Yueh"], "filter_ig_threads_strict": true, "filter_relevance_must_name": true, "display": {"show_score": true, "show_rel": false, "sort": "level", "per_page": 100, "refresh": 5, "show_low": false}, "filter_buttons": [{"g": "cand", "f": "all", "l": "全部", "on": true}, {"g": "cand", "f": "HBY", "l": "黃柏瑜", "on": true}, {"g": "cand", "f": "CSY", "l": "陳素月", "on": true}, {"g": "sig", "f": "all", "l": "全部", "on": true}, {"g": "sig", "f": "ben", "l": "✅ 有利", "on": true}, {"g": "sig", "f": "har", "l": "❌ 不利", "on": true}, {"g": "sig", "f": "neu", "l": "⚪ 中性", "on": true}, {"g": "sig", "f": "unc", "l": "⚠ 待判讀", "on": true}, {"g": "lev", "f": "all", "l": "全部", "on": true}, {"g": "lev", "f": "S", "l": "S 立即", "on": true}, {"g": "lev", "f": "A", "l": "A 高度", "on": true}, {"g": "lev", "f": "B", "l": "B 追蹤", "on": true}, {"g": "lev", "f": "C", "l": "C 存檔", "on": false}, {"g": "src", "f": "all", "l": "全部", "on": true}, {"g": "src", "f": "FB2", "l": "Facebook", "on": true}, {"g": "src", "f": "IG2", "l": "Instagram", "on": true}, {"g": "src", "f": "TH", "l": "Threads", "on": true}, {"g": "src", "f": "PT", "l": "PTT", "on": true}, {"g": "src", "f": "GO", "l": "Google", "on": true}], "platforms": [{"id": "FB", "nm": "Facebook", "ic": "FB", "on": true, "sp": "site:facebook.com", "cr": "medium"}, {"id": "IG", "nm": "Instagram", "ic": "IG", "on": true, "sp": "site:instagram.com", "cr": "medium"}, {"id": "Threads", "nm": "Threads", "ic": "Th", "on": true, "sp": "site:threads.net", "cr": "medium"}, {"id": "PTT", "nm": "PTT", "ic": "PT", "on": true, "sp": "site:ptt.cc", "cr": "low"}, {"id": "Google", "nm": "Google", "ic": "GG", "on": true, "sp": "", "cr": "high"}]};
+var C={},pg="scoring";
 function cl(o){return JSON.parse(JSON.stringify(o));}
 function mg(t,s){for(var k in s){if(!(k in t))t[k]=cl(s[k]);else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=="object")t[k]={};mg(t[k],s[k]);}}}
-function load(){var s=localStorage.getItem("emcfg");if(s){try{C=JSON.parse(s);mg(C,DF);}catch(e){C=cl(DF);}}else{C=cl(DF);}render();}
-function mkd(){dirty=true;var e=document.getElementById("ss");e.textContent="⚠ 有未儲存的變更";e.className="ss ng";}
-function save(){localStorage.setItem("emcfg",JSON.stringify(C));dirty=false;var e=document.getElementById("ss");e.textContent="✅ 設定已儲存";e.className="ss ok";tst("設定已儲存！前台重整後生效");}
+function load(){var sv=localStorage.getItem("emcfg");if(sv){try{C=JSON.parse(sv);mg(C,DF);}catch(e){C=cl(DF);}}else{C=cl(DF);}render();}
+function mkd(){var e=document.getElementById("ss");e.textContent="⚠ 有未儲存的變更";e.className="ss ng";}
+function save(){localStorage.setItem("emcfg",JSON.stringify(C));var e=document.getElementById("ss");e.textContent="✅ 設定已儲存";e.className="ss ok";tst("設定已儲存！前台重整後生效");}
 function tst(m){var t=document.getElementById("tst");t.textContent=m;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2500);}
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function go(p){pg=p;document.querySelectorAll(".nav-item").forEach(function(n){n.classList.toggle("active",n.dataset.pg===p);});render();}
+function go(p){pg=p;document.querySelectorAll(".ni").forEach(function(n){n.classList.toggle("active",n.dataset.pg===p);});render();}
+function sl(k,l,mn,mx){
+  var v=C.scoring[k]!==undefined?C.scoring[k]:0;
+  return '<div class="fld"><label>'+l+'</label>'
+    +'<div class="rw"><input type="range" min="'+mn+'" max="'+mx+'" value="'+v+'" data-sk="'+k+'">'
+    +'<span class="rv" id="rv-'+k+'">'+v+'</span></div></div>';
+}
+function kws(ti,de,k,tp){
+  var w=C[k]||[];
+  var tags=w.map(function(x){
+    return '<span class="kt '+tp+'">'+esc(x)
+      +'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';
+  }).join('');
+  var empty='<span style="color:var(--mu);font-size:11px">(\u7a7a)</span>';
+  return '<div class="sec"><div class="sh"><div class="st">'+ti+'</div>'
+    +'<div class="sd">'+de+'</div></div><div class="sb"><div class="ke">'
+    +'<div class="kl">'+(tags||empty)+'</div>'
+    +'<div class="ka"><input type="text" data-ak="'+k+'" placeholder="\u8f38\u5165\u95dc\u9375\u5b57">'
+    +'<button data-ab="'+k+'">+</button></div>'
+    +'</div></div></div>';
+}
+function exs(ti,de,k){
+  var w=C[k]||[];
+  var tags=w.map(function(x){
+    return '<span class="kt exc">'+esc(x)
+      +'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';
+  }).join('');
+  var empty='<span style="color:var(--mu);font-size:11px">(\u7a7a)</span>';
+  return '<div class="sec"><div class="sh"><div class="st">'+ti+'</div>'
+    +'<div class="sd">'+de+'</div></div><div class="sb"><div class="ke">'
+    +'<div class="kl">'+(tags||empty)+'</div>'
+    +'<div class="ka"><input type="text" data-ak="'+k+'" placeholder="\u65b0\u589e\u6392\u9664\u8a5e">'
+    +'<button data-ab="'+k+'">+</button></div>'
+    +'</div></div></div>';
+}
 function render(){
-  var h="";
-  if(pg==="scoring")h=rSc();
-  else if(pg==="keywords")h=rKw();
-  else if(pg==="filters")h=rFl();
-  else if(pg==="buttons")h=rBt();
-  else if(pg==="platforms")h=rPl();
-  else if(pg==="display")h=rDp();
-  else if(pg==="health")h=rHl();
-  else if(pg==="export")h=rEx();
-  document.getElementById("main").innerHTML=h;
+  var h='',t=C.thresholds,s=C.scoring,d=C.display;
+  if(pg==='scoring'){
+    h='<div class="ph"><h2>&#x1F4CA; \u8a55\u5206\u6b0a\u91cd\u8a2d\u5b9a</h2>'
+      +'<p>\u8abf\u6574\u5404\u56e0\u5b50\u7684\u5206\u6578\u6b0a\u91cd\uff0c\u5f71\u97ff S/A/B/C \u7b49\u7d1a\u5224\u65b7</p></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u7b49\u7d1a\u9580\u6edd</div>'
+      +'<div class="sd">\u8abf\u6574 S/A/B/C \u7684\u5206\u6578\u9580\u6edd</div></div><div class="sb"><div class="fg3">';
+    h+='<div class="fld"><label>S \u7d1a &ge;</label>'
+      +'<input type="number" value="'+t.S+'" min="1" max="20" data-tk="S"></div>';
+    h+='<div class="fld"><label>A \u7d1a &ge;</label>'
+      +'<input type="number" value="'+t.A+'" min="1" max="20" data-tk="A"></div>';
+    h+='<div class="fld"><label>B \u7d1a &ge;</label>'
+      +'<input type="number" value="'+t.B+'" min="1" max="20" data-tk="B"></div>';
+    h+='</div><div class="scp">';
+    h+='<div class="scc"><div class="scv S">S</div><div class="scr">&ge; '+t.S+' \u5206<br>\u7acb\u5373\u8655\u7406</div></div>';
+    h+='<div class="scc"><div class="scv A">A</div><div class="scr">&ge; '+t.A+' \u5206<br>\u9ad8\u5ea6\u95dc\u6ce8</div></div>';
+    h+='<div class="scc"><div class="scv B">B</div><div class="scr">&ge; '+t.B+' \u5206<br>\u6301\u7e8c\u8ffd\u8e64</div></div>';
+    h+='<div class="scc"><div class="scv C">C</div><div class="scr">< '+t.B+' \u5206<br>\u5b58\u6a94\u53c3\u8003</div></div>';
+    h+='</div></div></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u4e3b\u9ad4\u6027</div></div><div class="sb"><div class="fg">';
+    h+=sl('subject_main','\u5019\u9078\u4eba\u662f\u4e3b\u89d2',0,5)+sl('subject_mention','\u5019\u9078\u4eba\u88ab\u63d0\u53ca',0,3);
+    h+='</div></div></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u4e8b\u4ef6\u985e\u578b\u52a0\u5206</div></div><div class="sb"><div class="fg">';
+    h+=sl('evt_controversy','\u722d\u8b70/\u91cd\u5927\u653b\u9632',0,5)+sl('evt_election','\u9078\u8209/\u63d0\u540d',0,4)
+      +sl('evt_construction','\u5730\u65b9\u5efa\u8a2d',0,4)+sl('evt_mobilization','\u7d44\u7e54\u52d5\u54e1',0,4)
+      +sl('evt_policy','\u653f\u7b56/\u8cea\u8a62',0,4)+sl('evt_service','\u670d\u52d9\u884c\u7a0b',0,3)
+      +sl('evt_media','\u5a92\u9ad4\u66dd\u5149',0,3)+sl('evt_general','\u4e00\u822c\u5831\u5c0e',0,2);
+    h+='</div></div></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u64f4\u6563\u6027</div></div><div class="sb"><div class="fg">';
+    h+=sl('spread_multi','\u591a\u5e73\u53f0\u540c\u6b65',0,5)+sl('spread_single_high','\u55ae\u5e73\u53f0\u9ad8\u4e92\u52d5',0,3)+sl('spread_single_low','\u55ae\u7bc7\u4f4e\u4e92\u52d5',0,2);
+    h+='</div></div></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u4f86\u6e90\u53ef\u4fe1\u5ea6</div></div><div class="sb"><div class="fg">';
+    h+=sl('cred_media','\u4e3b\u6d41\u5a92\u9ad4/\u5b98\u65b9',0,5)+sl('cred_social','\u793e\u7fa4/\u5730\u65b9\u7c89\u5c08',0,3)+sl('cred_unknown','\u533f\u540d/\u4f86\u6e90\u4e0d\u660e',0,2);
+    h+='</div></div></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u9078\u60c5\u5f71\u97ff\u529b</div></div><div class="sb"><div class="fg">';
+    h+=sl('impact_critical','\u53ef\u80fd\u5f71\u97ff\u652f\u6301\u5ea6/\u9700\u56de\u61c9',0,5)+sl('impact_notable','\u5024\u5f97\u95dc\u6ce8/\u53ef\u7576\u7d20\u6750',0,3)
+      +sl('impact_record','\u50c5\u8a18\u9304\u7528\u9014',0,2)+sl('recency_active','24hr \u5167\u6301\u7e8c\u767c\u9175',0,3);
+    h+='</div></div></div>';
+  } else if(pg==='keywords'){
+    h='<div class="ph"><h2>&#x1F511; \u95dc\u9375\u5b57\u898f\u5247</h2><p>\u8a2d\u5b9a\u5224\u65b7\u8a0a\u865f\u50be\u5411\u3001\u4e8b\u4ef6\u985e\u578b\u7684\u95dc\u9375\u5b57</p></div>';
+    h+=kws('\u4e0d\u5229\u8a0a\u865f\u95dc\u9375\u5b57','\u51fa\u73fe\u9019\u4e9b\u8a5e \u2192 \u5224\u65b7\u70ba\u4e0d\u5229\u8a0a\u865f','signal_harmful','harm');
+    h+=kws('\u6709\u5229\u8a0a\u865f\u95dc\u9375\u5b57','\u51fa\u73fe\u9019\u4e9b\u8a5e \u2192 \u5224\u65b7\u70ba\u6709\u5229\u8a0a\u865f','signal_beneficial','ben');
+    h+=kws('\u5f85\u5224\u8b80\u95dc\u9375\u5b57','\u51fa\u73fe\u9019\u4e9b\u8a5e \u2192 \u9700\u4eba\u5de5\u5224\u65b7','signal_unclear','evt');
+    h+='<div class="sep"></div>';
+    h+=kws('\u722d\u8b70\u4e8b\u4ef6\u95dc\u9375\u5b57','','event_controversy','harm');
+    h+=kws('\u9078\u8209\u63d0\u540d\u95dc\u9375\u5b57','','event_election','evt');
+    h+=kws('\u5730\u65b9\u5efa\u8a2d\u95dc\u9375\u5b57','','event_construction','ben');
+    h+=kws('\u653f\u7b56\u8cea\u8a62\u95dc\u9375\u5b57','','event_policy','evt');
+    h+=kws('\u670d\u52d9\u884c\u7a0b\u95dc\u9375\u5b57','','event_service','ben');
+    h+='<div class="sep"></div>';
+    h+=kws('\u76f8\u95dc\u6027 high \u5224\u65b7\u8a5e','','relevance_high','evt');
+  } else if(pg==='filters'){
+    var wl=C.filter_whitelist||[];
+    var wlt=wl.map(function(x){return '<span class="kt ben">'+esc(x)+'<span class="kr" data-rk="filter_whitelist" data-rw="'+esc(x)+'">x</span></span>';}).join('');
+    var empty='<span style="color:var(--mu);font-size:11px">(\u7a7a)</span>';
+    h='<div class="ph"><h2>&#x1F6AB; \u904e\u6ffe\u8a2d\u5b9a</h2><p>\u8a2d\u5b9a\u54ea\u4e9b\u8cc7\u6599\u61c9\u88ab\u6392\u9664\uff0c\u4ee5\u53ca\u767d\u540d\u55ae\u4fdd\u8b77</p></div>';
+    h+='<div class="sec"><div class="sh"><div class="st">\u767d\u540d\u55ae\uff08\u7d55\u5c0d\u4fdd\u7559\uff09</div>'
+      +'<div class="sd">\u5e33\u865f\u6216\u6a19\u984c\u542b\u9019\u4e9b\u8a5e \u2192 \u7121\u8ad6\u5982\u4f55\u90fd\u4e0d\u904e\u6ffe</div></div>'
+      +'<div class="sb"><div class="ke"><div class="kl">'+(wlt||empty)+'</div>'
+      +'<div class="ka"><input type="text" data-ak="filter_whitelist" placeholder="\u65b0\u589e\u767d\u540d\u55ae\u8a5e">'
+      +'<button data-ab="filter_whitelist">+</button></div></div></div></div>';
+    h+=exs('\u9673\u7d20\u6708\u6392\u9664\u8a5e','\u6a19\u984c\u542b\u9019\u4e9b\u8a5e \u2192 \u6392\u9664\uff08\u54e1\u6797\u5e02\u9577\u696d\u52d9\uff09','filter_csy_exclude');
+    h+=exs('\u9ec3\u67cf\u745c\u6392\u9664\u8a5e','\u6a19\u984c\u542b\u9019\u4e9b\u8a5e \u2192 \u6392\u9664\uff08\u540c\u540d\u7121\u95dc\u4eba\u7269\uff09','filter_hby_exclude');
+    h+='<div class="sec"><div class="sh"><div class="st">\u904e\u6ffe\u958b\u95dc</div></div><div class="sb">';
+    h+='<div class="tr"><div><div class="tl">IG/Threads \u56b4\u683c\u904e\u6ffe</div>'
+      +'<div class="ts">\u8ca3\u6587\u5fc5\u9808\u542b\u7acb\u59d4\u76f8\u95dc\u8a5e\u624d\u4fdd\u7559</div></div>'
+      +'<label class="tog"><input type="checkbox" data-bc="filter_ig_threads_strict"'+(C.filter_ig_threads_strict?" checked":"")+'><span class="tgs"></span></label></div>';
+    h+='<div class="tr"><div><div class="tl">\u9700\u8981\u5019\u9078\u4eba\u540d\u5b57\u5224\u65b7\u76f8\u95dc\u6027</div>'
+      +'<div class="ts">\u6a19\u984c\u5fc5\u9808\u542b\u540d\u5b57\u624d\u80fd\u662f high</div></div>'
+      +'<label class="tog"><input type="checkbox" data-bc="filter_relevance_must_name"'+(C.filter_relevance_must_name?" checked":"")+'><span class="tgs"></span></label></div>';
+    h+='</div></div>';
+  } else if(pg==='buttons'){
+    var grp={cand:[],sig:[],lev:[],src:[]};
+    var gn={cand:'\u5019\u9078\u4eba',sig:'\u8a0a\u865f\u50be\u5411',lev:'\u91cd\u8981\u7b49\u7d1a',src:'\u5e73\u53f0'};
+    C.filter_buttons.forEach(function(b,i){if(grp[b.g])grp[b.g].push({b:b,i:i});});
+    h='<div class="ph"><h2>&#x1F39B;&#xFE0F; \u7be9\u9078\u6309\u9215\u8a2d\u5b9a</h2><p>\u8abf\u6574\u524d\u53f0\u7be9\u9078\u6309\u9215\u6a19\u7c64\u8207\u555f\u7528\u72c0\u614b</p></div>';
+    for(var g in grp){
+      h+='<div class="sec"><div class="sh"><div class="st">'+gn[g]+' \u7fa4\u7d44</div></div><div class="sb"><div class="bg2">';
+      grp[g].forEach(function(x){
+        h+='<div class="bc"><div class="bch"><span class="bcn">'+x.b.f+'</span>'
+          +'<label class="tog"><input type="checkbox" data-bi="'+x.i+'"'+(x.b.on?" checked":"")+'>'
+          +'<span class="tgs"></span></label></div>'
+          +'<input type="text" value="'+esc(x.b.l)+'" data-bl="'+x.i+'"></div>';
+      });
+      h+='</div></div></div>';
+    }
+  } else if(pg==='platforms'){
+    var cr=['high','medium','low'];
+    h='<div class="ph"><h2>&#x1F4E1; \u5e73\u53f0\u8a2d\u5b9a</h2><p>\u7ba1\u7406\u76e3\u63a7\u5e73\u53f0\u3001\u53ef\u4fe1\u5ea6\u8a2d\u5b9a\u3001\u641c\u5c0b\u524d\u7db4</p></div>'
+      +'<div class="sec"><div class="sh"><div class="st">\u5e73\u53f0\u7ba1\u7406</div></div><div class="sb">';
+    C.platforms.forEach(function(p,i){
+      var cs=cr.map(function(c){return '<option value="'+c+'"'+(p.cr===c?' selected':'')+'>'+c+'</option>';}).join('');
+      h+='<div class="pr"><span class="pi">'+p.ic+'</span><span class="pn">'+p.nm+'</span>'
+        +'<div class="pu"><input type="text" value="'+esc(p.sp)+'" data-pi="'+i+'" data-pk="sp" placeholder="\u641c\u5c0b\u524d\u7db4"></div>'
+        +'<div class="fld" style="min-width:90px"><select data-pi="'+i+'" data-pk="cr">'+cs+'</select></div>'
+        +'<label class="tog"><input type="checkbox" data-pi="'+i+'" data-pk="on"'+(p.on?" checked":"")+'>'
+        +'<span class="tgs"></span></label></div>';
+    });
+    h+='</div></div>';
+  } else if(pg==='display'){
+    var so=['level','time','score'].map(function(sv){
+      var lbl={level:'\u91cd\u8981\u7b49\u7d1a',time:'\u6700\u65b0\u6642\u9593',score:'\u5206\u6578'}[sv];
+      return '<option value="'+sv+'"'+(d.sort===sv?' selected':'')+'>'+lbl+'</option>';
+    }).join('');
+    h='<div class="ph"><h2>&#x1F5A5;&#xFE0F; \u986f\u793a\u8a2d\u5b9a</h2><p>\u8abf\u6574\u524d\u53f0\u7684\u986f\u793a\u884c\u70ba\u8207\u9810\u8a2d\u5024</p></div>'
+      +'<div class="sec"><div class="sh"><div class="st">\u986f\u793a\u884c\u70ba</div></div><div class="sb">';
+    h+='<div class="tr"><div class="tl">\u986f\u793a\u5206\u6578\u6578\u5b57\uff08A 12pt\uff09</div>'
+      +'<label class="tog"><input type="checkbox" data-dc="show_score"'+(d.show_score?" checked":"")+'>'
+      +'<span class="tgs"></span></label></div>';
+    h+='<div class="tr"><div class="tl">\u986f\u793a\u76f8\u95dc\u6027\u6a19\u7c64</div>'
+      +'<label class="tog"><input type="checkbox" data-dc="show_rel"'+(d.show_rel?" checked":"")+'>'
+      +'<span class="tgs"></span></label></div>';
+    h+='<div class="tr"><div class="tl">\u986f\u793a\u4f4e\u76f8\u95dc\u6027\u8cc7\u6599</div>'
+      +'<label class="tog"><input type="checkbox" data-dc="show_low"'+(d.show_low?" checked":"")+'>'
+      +'<span class="tgs"></span></label></div>';
+    h+='<div class="sep"></div><div class="fg">';
+    h+='<div class="fld"><label>\u9810\u8a2d\u6392\u5e8f</label><select data-dc="sort">'+so+'</select></div>';
+    h+='<div class="fld"><label>\u6bcf\u9801\u7b46\u6578</label><input type="number" value="'+d.per_page+'" min="10" max="500" data-dc="per_page"></div>';
+    h+='<div class="fld"><label>\u81ea\u52d5\u66f4\u65b0\uff08\u5206\u9418\uff09</label><input type="number" value="'+d.refresh+'" min="1" max="60" data-dc="refresh"></div>';
+    h+='</div></div></div>';
+  } else if(pg==='health'){
+    h='<div class="ph"><h2>&#x1F50D; \u7cfb\u7d71\u5065\u5eb7</h2><p>\u6aa2\u67e5\u8cc7\u6599\u4f86\u6e90\u3001Sheets \u72c0\u614b</p></div>'
+      +'<div class="sec"><div class="sh"><div class="st">\u5feb\u901f\u8a3a\u65b7</div></div><div class="sb">'
+      +'<div class="br2" style="margin-bottom:12px">'
+      +'<button class="btn btn-s" id="hcs">\u6aa2\u67e5 Sheets</button>'
+      +'<button class="btn btn-s" id="hct">\u6aa2\u67e5\u4eca\u65e5\u8cc7\u6599</button>'
+      +'<button class="btn btn-s" id="hof">\u958b\u555f\u524d\u53f0</button>'
+      +'</div><div class="pb" id="hlog">\u9ede\u64ca\u4e0a\u65b9\u6309\u9215\u958b\u59cb\u8a3a\u65b7...</div>'
+      +'</div></div>';
+  } else if(pg==='export'){
+    h='<div class="ph"><h2>&#x1F4BE; \u5319\u51fa/\u5319\u5165</h2><p>\u5099\u4efd\u6216\u9084\u539f\u8a2d\u5b9a</p></div>'
+      +'<div class="sec"><div class="sh"><div class="st">\u5319\u51fa</div></div><div class="sb">'
+      +'<button class="btn btn-s" id="ecp" style="margin-bottom:10px">&#x1F4CB; \u8907\u88fd JSON</button>'
+      +'<div class="pb">'+esc(JSON.stringify(C,null,2).substring(0,500))+'...</div></div></div>'
+      +'<div class="sec"><div class="sh"><div class="st">\u5319\u5165</div></div><div class="sb">'
+      +'<div class="fld"><label>\u8cbc\u4e0a\u8a2d\u5b9a JSON</label>'
+      +'<textarea id="ij" placeholder="\u8cbc\u4e0a\u5b8c\u6574\u7684\u8a2d\u5b9a JSON..." style="min-height:120px"></textarea></div>'
+      +'<button class="btn btn-p" id="eim" style="margin-top:10px">\u5319\u5165</button>'
+      +'</div></div>';
+  }
+  document.getElementById('main').innerHTML=h;
   bind();
 }
-function sl(k,l,mn,mx){var v=C.scoring[k]!==undefined?C.scoring[k]:0;return '<div class="fld"><label>'+l+'</label><div class="rw"><input type="range" min="'+mn+'" max="'+mx+'" value="'+v+'" data-sk="'+k+'"><span class="rv" id="rv-'+k+'">'+v+'</span></div></div>';}
-function rSc(){var s=C.scoring,t=C.thresholds;
-return '<div class="ph"><h2>📊 評分權重設定</h2><p>調整各因子的分數權重，影響 S/A/B/C 等級判斷</p></div>'+
-'<div class="sec"><div class="sh"><div class="st">等級門滝</div><div class="sd">調整 S/A/B/C 的分數門滝</div></div><div class="sb"><div class="fg3">'+
-'<div class="fld"><label>S 級 ≥</label><input type="number" value="'+t.S+'" min="1" max="20" data-tk="S"></div>'+
-'<div class="fld"><label>A 級 ≥</label><input type="number" value="'+t.A+'" min="1" max="20" data-tk="A"></div>'+
-'<div class="fld"><label>B 級 ≥</label><input type="number" value="'+t.B+'" min="1" max="20" data-tk="B"></div>'+
-'</div><div class="scp">'+
-'<div class="scc"><div class="scv S">S</div><div class="scr">≥ '+t.S+' 分<br>立即處理</div></div>'+
-'<div class="scc"><div class="scv A">A</div><div class="scr">≥ '+t.A+' 分<br>高度關注</div></div>'+
-'<div class="scc"><div class="scv B">B</div><div class="scr">≥ '+t.B+' 分<br>持續追蹤</div></div>'+
-'<div class="scc"><div class="scv C">C</div><div class="scr">< '+t.B+' 分<br>存檔參考</div></div>'+
-'</div></div></div>'+
-'<div class="sec"><div class="sh"><div class="st">主體性</div></div><div class="sb"><div class="fg">'+sl("subject_main","候選人是主角",0,5)+sl("subject_mention","候選人被提及",0,3)+'</div></div></div>'+
-'<div class="sec"><div class="sh"><div class="st">事件類型加分</div></div><div class="sb"><div class="fg">'+sl("evt_controversy","爭議/重大攻防",0,5)+sl("evt_election","選舉/提名",0,4)+sl("evt_construction","地方建設",0,4)+sl("evt_mobilization","組織動員",0,4)+sl("evt_policy","政策/質詢",0,4)+sl("evt_service","服務行程",0,3)+sl("evt_media","媒體曝光",0,3)+sl("evt_general","一般報導",0,2)+'</div></div></div>'+
-'<div class="sec"><div class="sh"><div class="st">擴散性</div></div><div class="sb"><div class="fg">'+sl("spread_multi","多平台同步",0,5)+sl("spread_single_high","單平台高互動",0,3)+sl("spread_single_low","單篇低互動",0,2)+'</div></div></div>'+
-'<div class="sec"><div class="sh"><div class="st">來源可信度</div></div><div class="sb"><div class="fg">'+sl("cred_media","主流媒體/官方",0,5)+sl("cred_social","社群/地方粉專",0,3)+sl("cred_unknown","匿名/來源不明",0,2)+'</div></div></div>'+
-'<div class="sec"><div class="sh"><div class="st">選情影響力</div></div><div class="sb"><div class="fg">'+sl("impact_critical","可能影響支持度/需回應",0,5)+sl("impact_notable","値得關注/可當素材",0,3)+sl("impact_record","僅記錄用途",0,2)+sl("recency_active","24hr內持續發酵",0,3)+'</div></div></div>';}
-function kws(t,d,k,tp){var w=C[k]||[];
-  var tags=w.map(function(x){return '<span class="kt '+tp+'">'+esc(x)+'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';}).join('');
-  return '<div class="sec"><div class="sh"><div class="st">'+t+'</div><div class="sd">'+d+'</div></div><div class="sb"><div class="ke"><div class="kl">'+(tags||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
-  '<div class="ka"><input type="text" data-ak="'+k+'" placeholder="輸入關鍵字 + Enter"><button data-ab="'+k+'">+</button></div></div></div></div>';}
-function rKw(){return '<div class="ph"><h2>🔑 關鍵字規則</h2><p>設定判斷訊號傾向、事件類型的關鍵字</p></div>'+
-  kws("不利訊號關鍵字","出現這些詞 → 判斷為不利訊號","signal_harmful","harm")+
-  kws("有利訊號關鍵字","出現這些詞 → 判斷為有利訊號","signal_beneficial","ben")+
-  kws("待判讀關鍵字","出現這些詞 → 需人工判斷","signal_unclear","evt")+
-  '<div class="sep"></div>'+
-  kws("爭議事件關鍵字","","event_controversy","harm")+
-  kws("選舉提名關鍵字","","event_election","evt")+
-  kws("地方建設關鍵字","","event_construction","ben")+
-  kws("政策質詢關鍵字","","event_policy","evt")+
-  kws("服務行程關鍵字","","event_service","ben")+
-  '<div class="sep"></div>'+kws("相關性 high 判斷詞","","relevance_high","evt");}
-function exs(t,d,k){var w=C[k]||[];
-  var tags=w.map(function(x){return '<span class="kt exc">'+esc(x)+'<span class="kr" data-rk="'+k+'" data-rw="'+esc(x)+'">x</span></span>';}).join('');
-  return '<div class="sec"><div class="sh"><div class="st">'+t+'</div><div class="sd">'+d+'</div></div><div class="sb"><div class="ke"><div class="kl">'+(tags||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
-  '<div class="ka"><input type="text" data-ak="'+k+'" placeholder="新增排除詞"><button data-ab="'+k+'">+</button></div></div></div></div>';}
-function rFl(){var wl=C.filter_whitelist||[];
-  var wlt=wl.map(function(x){return '<span class="kt ben">'+esc(x)+'<span class="kr" data-rk="filter_whitelist" data-rw="'+esc(x)+'">x</span></span>';}).join('');
-  return '<div class="ph"><h2>🚫 過濾設定</h2><p>設定哪些資料應被排除，以及白名單保護</p></div>'+
-  '<div class="sec"><div class="sh"><div class="st">白名單（絕對保留）</div><div class="sd">帳號或標題含這些詞 → 無論如何都不過濾</div></div><div class="sb"><div class="ke"><div class="kl">'+(wlt||'<span style="color:var(--mu);font-size:11px">(空)</span>')+'</div>'+
-  '<div class="ka"><input type="text" data-ak="filter_whitelist" placeholder="新增白名單詞"><button data-ab="filter_whitelist">+</button></div></div></div></div>'+
-  exs("陳素月排除詞","標題含這些詞 → 排除（員林市長業務）","filter_csy_exclude")+
-  exs("黃柏瑜排除詞","標題含這些詞 → 排除（同名無關人物）","filter_hby_exclude")+
-  '<div class="sec"><div class="sh"><div class="st">過濾開關</div></div><div class="sb">'+
-  '<div class="tr"><div><div class="tl">IG/Threads 嚴格過濾</div><div class="ts">貣文必須含立委相關詞才保留</div></div>'+
-  '<label class="tog"><input type="checkbox" data-bc="filter_ig_threads_strict"'+(C.filter_ig_threads_strict?" checked":"")+'><span class="tgs"></span></label></div>'+
-  '<div class="tr"><div><div class="tl">需要候選人名字判斷相關性</div><div class="ts">標題必須含名字才能是 high</div></div>'+
-  '<label class="tog"><input type="checkbox" data-bc="filter_relevance_must_name"'+(C.filter_relevance_must_name?" checked":"")+'><span class="tgs"></span></label></div>'+
-  '</div></div>';}
-function rBt(){var grp={cand:[],sig:[],lev:[],src:[]},gn={cand:"候選人",sig:"訊號傾向",lev:"重要等級",src:"平台"};
-  C.filter_buttons.forEach(function(b,i){if(grp[b.g])grp[b.g].push({b:b,i:i});});
-  var h='<div class="ph"><h2>🎛️ 篩選按鈕設定</h2><p>調整前台篩選按鈕標籤與啟用狀態</p></div>';
-  for(var g in grp){h+='<div class="sec"><div class="sh"><div class="st">'+gn[g]+' 群組</div></div><div class="sb"><div class="bg2">';
-    grp[g].forEach(function(x){h+='<div class="bc"><div class="bch"><span class="bcn">'+x.b.f+'</span><label class="tog"><input type="checkbox" data-bi="'+x.i+'"'+(x.b.on?" checked":"")+'><span class="tgs"></span></label></div><input type="text" value="'+esc(x.b.l)+'" data-bl="'+x.i+'"></div>';});
-    h+='</div></div></div>';}return h;}
-function rPl(){var cr=["high","medium","low"];
-  var h='<div class="ph"><h2>📡 平台設定</h2><p>管理監控平台、可信度設定、搜尋前綴</p></div><div class="sec"><div class="sh"><div class="st">平台管理</div></div><div class="sb">';
-  C.platforms.forEach(function(p,i){var cs=cr.map(function(c){return '<option value="'+c+'"'+(p.cr===c?" selected":"")+'>'+c+'</option>';}).join('');
-    h+='<div class="pr"><span class="pi">'+p.ic+'</span><span class="pn">'+p.nm+'</span><div class="pu"><input type="text" value="'+esc(p.sp)+'" data-pi="'+i+'" data-pk="sp" placeholder="Serper 搜尋前綴"></div>'+
-    '<div class="fld" style="min-width:90px"><select data-pi="'+i+'" data-pk="cr">'+cs+'</select></div>'+
-    '<label class="tog"><input type="checkbox" data-pi="'+i+'" data-pk="on"'+(p.on?" checked":"")+'><span class="tgs"></span></label></div>';});
-  return h+'</div></div>';}
-function rDp(){var d=C.display,so=["level","time","score"].map(function(s){return '<option value="'+s+'"'+(d.sort===s?" selected":"")+'>'+{level:"重要等級",time:"最新時間",score:"分數"}[s]+'</option>';}).join('');
-  return '<div class="ph"><h2>🖥️ 顯示設定</h2><p>調整前台的顯示行為與預設値</p></div>'+
-  '<div class="sec"><div class="sh"><div class="st">顯示行為</div></div><div class="sb">'+
-  '<div class="tr"><div class="tl">顯示分數數字（A 12pt）</div><label class="tog"><input type="checkbox" data-dc="show_score"'+(d.show_score?" checked":"")+'><span class="tgs"></span></label></div>'+
-  '<div class="tr"><div class="tl">顯示相關性標籤</div><label class="tog"><input type="checkbox" data-dc="show_rel"'+(d.show_rel?" checked":"")+'><span class="tgs"></span></label></div>'+
-  '<div class="tr"><div class="tl">顯示低相關性資料</div><label class="tog"><input type="checkbox" data-dc="show_low"'+(d.show_low?" checked":"")+'><span class="tgs"></span></label></div>'+
-  '<div class="sep"></div><div class="fg">'+
-  '<div class="fld"><label>預設排序</label><select data-dc="sort">'+so+'</select></div>'+
-  '<div class="fld"><label>每頁筆數</label><input type="number" value="'+d.per_page+'" min="10" max="500" data-dc="per_page"></div>'+
-  '<div class="fld"><label>自動更新（分鐘）</label><input type="number" value="'+d.refresh+'" min="1" max="60" data-dc="refresh"></div>'+
-  '</div></div></div>';}
-function rHl(){return '<div class="ph"><h2>🔍 系統健康</h2><p>檢查資料來源、Sheets 狀態</p></div>'+
-  '<div class="sec"><div class="sh"><div class="st">快速診斷</div></div><div class="sb">'+
-  '<div class="br2" style="margin-bottom:12px"><button class="btn btn-s" id="hcs">檢查 Sheets</button><button class="btn btn-s" id="hct">檢查今日資料</button><button class="btn btn-s" id="hof">開啟前台</button></div>'+
-  '<div class="pb" id="hlog">點擊上方按鈕開始診斷...</div></div></div>';}
-function rEx(){return '<div class="ph"><h2>💾 匙出/匙入</h2><p>備份或還原設定</p></div>'+
-  '<div class="sec"><div class="sh"><div class="st">匙出</div></div><div class="sb">'+
-  '<button class="btn btn-s" id="ecp" style="margin-bottom:10px">📋 複製 JSON</button>'+
-  '<div class="pb">'+esc(JSON.stringify(C,null,2).substring(0,500))+'...</div></div></div>'+
-  '<div class="sec"><div class="sh"><div class="st">匙入</div></div><div class="sb">'+
-  '<div class="fld"><label>貼上設定 JSON</label><textarea id="ij" placeholder="貼上完整的設定 JSON..." style="min-height:120px"></textarea></div>'+
-  '<button class="btn btn-p" id="eim" style="margin-top:10px">匙入</button></div></div>';}
-function addKw(k,inp){var v=inp.value.trim();if(!v)return;if(!C[k])C[k]=[];if(C[k].indexOf(v)===-1){C[k].push(v);mkd();render();}inp.value="";}
-function chkS(){var l=document.getElementById("hlog");l.textContent="檢查中...";
-  var id="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k",td=new Date().toISOString().split("T")[0];
-  fetch("https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json&sheet="+td+"&ts="+Date.now()).then(function(r){return r.text();}).then(function(t){
-    var s=t.indexOf("{"),e=t.lastIndexOf("}"),j=JSON.parse(t.substring(s,e+1));
-    l.textContent="✅ Sheets 連線正常
-今日（"+td+"）資料："+(j.table?j.table.rows.length:0)+" 筆
-檢查時間："+new Date().toLocaleString("zh-TW");
-  }).catch(function(e){l.textContent="❌ 失敗："+e.message;});}
-function chkT(){var l=document.getElementById("hlog");l.textContent="抓取中...";
-  var id="1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k",td=new Date().toISOString().split("T")[0];
-  fetch("https://docs.google.com/spreadsheets/d/"+id+"/gviz/tq?tqx=out:json&sheet="+td+"&ts="+Date.now()).then(function(r){return r.text();}).then(function(t){
-    var s=t.indexOf("{"),e=t.lastIndexOf("}"),j=JSON.parse(t.substring(s,e+1));
-    var rows=(j.table?j.table.rows:[]).filter(function(r){var c=r.c.map(function(x){return x?(x.v||""):"";});return c[1]&&c[1]!=="候選人";});
-    var src={};rows.forEach(function(r){var s=r.c[7]?(r.c[7].v||""):"";src[s]=(src[s]||0)+1;});
-    l.textContent="📊 今日（"+td+"）
-總計："+rows.length+" 筆
-來源："+Object.entries(src).map(function(x){return x[0]+":"+x[1];}).join(", ")+"
-
-前 5 筆：
-"+rows.slice(0,5).map(function(r,i){return (i+1)+". "+(r.c[8]?r.c[8].v:"").substring(0,45);}).join("
-");
-  }).catch(function(e){l.textContent="❌ "+e.message;});}
-function bind(){
-  document.querySelectorAll("input[data-sk]").forEach(function(e){e.addEventListener("input",function(){C.scoring[this.dataset.sk]=parseFloat(this.value);var r=document.getElementById("rv-"+this.dataset.sk);if(r)r.textContent=this.value;mkd();});});
-  document.querySelectorAll("input[data-tk]").forEach(function(e){e.addEventListener("change",function(){C.thresholds[this.dataset.tk]=parseInt(this.value);mkd();render();});});
-  document.querySelectorAll(".kr").forEach(function(e){e.addEventListener("click",function(){var k=this.dataset.rk,w=this.dataset.rw,a=C[k];if(!a)return;var i=a.indexOf(w);if(i>-1){a.splice(i,1);mkd();render();}});});
-  document.querySelectorAll("input[data-ak]").forEach(function(e){e.addEventListener("keydown",function(ev){if(ev.key==="Enter")addKw(this.dataset.ak,this);});});
-  document.querySelectorAll("button[data-ab]").forEach(function(e){e.addEventListener("click",function(){var k=this.dataset.ab,inp=document.querySelector("input[data-ak='"+k+"']");if(inp)addKw(k,inp);});});
-  document.querySelectorAll("input[data-bc]").forEach(function(e){e.addEventListener("change",function(){C[this.dataset.bc]=this.checked;mkd();});});
-  document.querySelectorAll("input[data-bi]").forEach(function(e){e.addEventListener("change",function(){C.filter_buttons[parseInt(this.dataset.bi)].on=this.checked;mkd();});});
-  document.querySelectorAll("input[data-bl]").forEach(function(e){e.addEventListener("change",function(){C.filter_buttons[parseInt(this.dataset.bl)].l=this.value;mkd();});});
-  document.querySelectorAll("[data-pi]").forEach(function(e){e.addEventListener("change",function(){var i=parseInt(this.dataset.pi),k=this.dataset.pk;if(k==="on")C.platforms[i][k]=this.checked;else C.platforms[i][k]=this.value;mkd();});});
-  document.querySelectorAll("[data-dc]").forEach(function(e){e.addEventListener("change",function(){var k=this.dataset.dc;if(this.type==="checkbox")C.display[k]=this.checked;else if(this.type==="number")C.display[k]=parseInt(this.value);else C.display[k]=this.value;mkd();});});
-  var hcs=document.getElementById("hcs");if(hcs)hcs.addEventListener("click",chkS);
-  var hct=document.getElementById("hct");if(hct)hct.addEventListener("click",chkT);
-  var hof=document.getElementById("hof");if(hof)hof.addEventListener("click",function(){window.open("https://kellychenichun-glitch.github.io/election-monitor/","_blank");});
-  var ecp=document.getElementById("ecp");if(ecp)ecp.addEventListener("click",function(){navigator.clipboard.writeText(JSON.stringify(C,null,2));tst("已複製！");});
-  var eim=document.getElementById("eim");if(eim)eim.addEventListener("click",function(){var v=document.getElementById("ij").value.trim();try{C=JSON.parse(v);mg(C,DF);save();go("scoring");tst("匙入成功！");}catch(e){alert("JSON 錯誤："+e.message);}});
+function addKw(k,inp){
+  var v=inp.value.trim();
+  if(!v)return;
+  if(!C[k])C[k]=[];
+  if(C[k].indexOf(v)===-1){C[k].push(v);mkd();render();}
+  inp.value='';
 }
-document.querySelectorAll(".nav-item").forEach(function(n){n.addEventListener("click",function(){go(this.dataset.pg);});});
-document.getElementById("btn-save").addEventListener("click",save);
-document.getElementById("btn-reset").addEventListener("click",function(){if(!confirm("確定要重置？"))return;C=cl(DF);mkd();render();tst("已重置為預設値");});
-document.getElementById("btn-open").addEventListener("click",function(){window.open("https://kellychenichun-glitch.github.io/election-monitor/","_blank");});
+function chkS(){
+  var l=document.getElementById('hlog');
+  l.textContent='\u6aa2\u67e5\u4e2d...';
+  var id='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
+  var td=new Date().toISOString().split('T')[0];
+  fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&sheet='+td+'&ts='+Date.now())
+    .then(function(r){return r.text();})
+    .then(function(t){
+      var s=t.indexOf('{'),e=t.lastIndexOf('}');
+      var j=JSON.parse(t.substring(s,e+1));
+      l.textContent='\u2705 Sheets \u9023\u7dda\u6b63\u5e38\n\u4eca\u65e5('+td+')\u8cc7\u6599\uff1a'+(j.table?j.table.rows.length:0)+'\u7b46\n\u6aa2\u67e5\u6642\u9593\uff1a'+new Date().toLocaleString('zh-TW');
+    }).catch(function(e){l.textContent='\u274c \u5931\u6557\uff1a'+e.message;});
+}
+function chkT(){
+  var l=document.getElementById('hlog');
+  l.textContent='\u6293\u53d6\u4e2d...';
+  var id='1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k';
+  var td=new Date().toISOString().split('T')[0];
+  fetch('https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&sheet='+td+'&ts='+Date.now())
+    .then(function(r){return r.text();})
+    .then(function(t){
+      var s=t.indexOf('{'),e=t.lastIndexOf('}');
+      var j=JSON.parse(t.substring(s,e+1));
+      var rows=(j.table?j.table.rows:[]).filter(function(r){
+        var c=r.c.map(function(x){return x?(x.v||''):'';});
+        return c[1]&&c[1]!=='\u5019\u9078\u4eba';
+      });
+      var src={};
+      rows.forEach(function(r){var sv=r.c[7]?(r.c[7].v||""):"";src[sv]=(src[sv]||0)+1;});
+      l.textContent='\uD83D\uDCCA \u4eca\u65e5('+td+')\n\u7e3d\u8a08\uff1a'+rows.length+'\u7b46\n'
+        +'\u4f86\u6e90\uff1a'+Object.entries(src).map(function(x){return x[0]+':'+x[1];}).join(', ')
+        +'\n\n\u524d 5 \u7b46\uff1a\n'
+        +rows.slice(0,5).map(function(r,i){return (i+1)+'. '+(r.c[8]?r.c[8].v:'').substring(0,45);}).join('\n');
+    }).catch(function(e){l.textContent='\u274c '+e.message;});
+}
+function bind(){
+  document.querySelectorAll('input[data-sk]').forEach(function(e){
+    e.addEventListener('input',function(){
+      C.scoring[this.dataset.sk]=parseFloat(this.value);
+      var r=document.getElementById('rv-'+this.dataset.sk);
+      if(r)r.textContent=this.value;
+      mkd();
+    });
+  });
+  document.querySelectorAll('input[data-tk]').forEach(function(e){
+    e.addEventListener('change',function(){C.thresholds[this.dataset.tk]=parseInt(this.value);mkd();render();});
+  });
+  document.querySelectorAll('.kr').forEach(function(e){
+    e.addEventListener('click',function(){
+      var k=this.dataset.rk,w=this.dataset.rw,a=C[k];
+      if(!a)return;
+      var i=a.indexOf(w);
+      if(i>-1){a.splice(i,1);mkd();render();}
+    });
+  });
+  document.querySelectorAll('input[data-ak]').forEach(function(e){
+    e.addEventListener('keydown',function(ev){if(ev.key==='Enter')addKw(this.dataset.ak,this);});
+  });
+  document.querySelectorAll('button[data-ab]').forEach(function(e){
+    e.addEventListener('click',function(){
+      var k=this.dataset.ab;
+      var i=document.querySelector('input[data-ak="'+k+'"]');
+      if(i)addKw(k,i);
+    });
+  });
+  document.querySelectorAll('input[data-bc]').forEach(function(e){
+    e.addEventListener('change',function(){C[this.dataset.bc]=this.checked;mkd();});
+  });
+  document.querySelectorAll('input[data-bi]').forEach(function(e){
+    e.addEventListener('change',function(){C.filter_buttons[parseInt(this.dataset.bi)].on=this.checked;mkd();});
+  });
+  document.querySelectorAll('input[data-bl]').forEach(function(e){
+    e.addEventListener('change',function(){C.filter_buttons[parseInt(this.dataset.bl)].l=this.value;mkd();});
+  });
+  document.querySelectorAll('[data-pi]').forEach(function(e){
+    e.addEventListener('change',function(){
+      var i=parseInt(this.dataset.pi),k=this.dataset.pk;
+      if(k==='on')C.platforms[i][k]=this.checked;
+      else C.platforms[i][k]=this.value;
+      mkd();
+    });
+  });
+  document.querySelectorAll('[data-dc]').forEach(function(e){
+    e.addEventListener('change',function(){
+      var k=this.dataset.dc;
+      if(this.type==='checkbox')C.display[k]=this.checked;
+      else if(this.type==='number')C.display[k]=parseInt(this.value);
+      else C.display[k]=this.value;
+      mkd();
+    });
+  });
+  var hcs=document.getElementById('hcs');if(hcs)hcs.addEventListener('click',chkS);
+  var hct=document.getElementById('hct');if(hct)hct.addEventListener('click',chkT);
+  var hof=document.getElementById('hof');
+  if(hof)hof.addEventListener('click',function(){window.open('https://kellychenichun-glitch.github.io/election-monitor/','_blank');});
+  var ecp=document.getElementById('ecp');
+  if(ecp)ecp.addEventListener('click',function(){navigator.clipboard.writeText(JSON.stringify(C,null,2));tst('\u5df2\u8907\u88fd\uff01');});
+  var eim=document.getElementById('eim');
+  if(eim)eim.addEventListener('click',function(){
+    var v=document.getElementById('ij').value.trim();
+    try{C=JSON.parse(v);mg(C,DF);save();go('scoring');tst('\u5319\u5165\u6210\u529f\uff01');}
+    catch(e){alert('JSON \u932f\u8aa4\uff1a'+e.message);}
+  });
+}
+document.querySelectorAll('.ni').forEach(function(n){n.addEventListener('click',function(){go(this.dataset.pg);});});
+document.getElementById('btn-save').addEventListener('click',save);
+document.getElementById('btn-reset').addEventListener('click',function(){if(!confirm('確定要重置？'))return;C=cl(DF);mkd();render();tst('已重置為預設値');});
+document.getElementById('btn-open').addEventListener('click',function(){window.open('https://kellychenichun-glitch.github.io/election-monitor/','_blank');});
 load();
 </script></body></html>
