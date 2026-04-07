@@ -167,6 +167,9 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
   <div>&#x8CC7;&#x6599;&#x6BCF;&#x65E5; 08:00 / 14:00 / 20:00 &#xFF08;&#x53F0;&#x7063;&#x6642;&#x9593;&#xFF09;</div>
 </div></div>
 <script>
+
+var CFG=(function(){var def={thresholds:{S:11,A:9,B:6},scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2},signal_harmful:["爭議","批評","攻擊","指控","負面","失言","危機","質詢","弊釜"],signal_beneficial:["完工","第取","支持","背書","當選","力挺","推薦","備選","通過","争取到"],signal_unclear:["迷因","諌刺","傳說","據說"],event_controversy:["爭議","攻打","被批","躨指","失言","危機"],event_election:["提名","候選","選舉","大選","選區","初選"],event_construction:["建設","工程","道路","橋樑","公園","交通","高架"],event_mobilization:["造勴","動員","宣傳","受氾"],event_policy:["政策","政見","提案","質詢","交通委員"],event_service:["服務","拜訪","考察","行程","陳情"],relevance_high:["選舉","提名","立委","縣長","市長","問政","質詢","交通委員","彰化縣長","彰化市長"],filter_csy_exclude:["白米","包材","農產包材","農會","稻米","自備袋","員林市","員林農會","大峦巫步道","北溝排水","八卦山","步道","環保考察","媒祖","宗教活動","樂齊","長照"],filter_hby_exclude:[],filter_whitelist:["SayYes","陳素月委員","Chen Su-Yueh"],filter_ig_threads_strict:true,filter_relevance_must_name:true,display:{show_score:true,show_rel:false,sort:"level",per_page:100,refresh:5,show_low:false},filter_buttons:null};
+try{var sv=localStorage.getItem("emcfg");if(sv){var p=JSON.parse(sv);function dm(t,s){for(var k in s){if(!(k in t))t[k]=s[k];else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=="object")t[k]={};dm(t[k],s[k]);}}}dm(p,def);return p;}}catch(e){}return def;})();
 var SID = "1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
 var D = [], FD = [], SH = [], AS = "";
 var FILTERS = {cand:"all", sig:"all", lev:"all", src:"all"};
@@ -295,9 +298,10 @@ function getImportanceScore(r) {
 }
 
 function getImportanceLevel(score) {
-  if (score >= 11) return "S";
-  if (score >= 9) return "A";
-  if (score >= 6) return "B";
+  var t=CFG.thresholds;
+  if (score >= t.S) return "S";
+  if (score >= t.A) return "A";
+  if (score >= t.B) return "B";
   return "C";
 }
 
@@ -431,6 +435,9 @@ async function switchDate(d) {
 }
 
 // === stats ===
+
+
+(function(){if(!CFG.filter_buttons)return;CFG.filter_buttons.forEach(function(btn){var el=document.querySelector('.fb[data-g="'+btn.g+'"][data-f="'+btn.f+'"]');if(!el)return;el.textContent=btn.l;if(!btn.on)el.style.display='none';});})();
 
 function renderStats(data) {
   var ben=0,har=0,neu=0,unc=0,hi=0,pl=[];
