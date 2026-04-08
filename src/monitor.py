@@ -19,6 +19,29 @@ ANTHROPIC_KEY  = os.environ["ANTHROPIC_API_KEY"].strip()
 GMAIL_USER     = os.environ["GMAIL_USER"].strip()
 GMAIL_PASS     = os.environ["GMAIL_PASS"].strip()
 NOTIFY_EMAIL   = os.environ["NOTIFY_EMAIL"].strip()
+
+def get_notify_emails():
+    """從 notify_config.json 讀取訂閱者名單，fallback 到環境變數"""
+    import urllib.request as _ur, json as _js, ssl as _ssl
+    try:
+        _ctx = _ssl.create_default_context()
+        _req = _ur.Request(
+            "https://raw.githubusercontent.com/kellychenichun-glitch/election-monitor/main/docs/notify_config.json",
+            headers={"Cache-Control": "no-cache"}
+        )
+        with _ur.urlopen(_req, context=_ctx, timeout=5) as _r:
+            cfg = _js.loads(_r.read().decode('utf-8'))
+        if not cfg.get('schedule', {}).get('enabled', True):
+            return []  # 訂閱已關閉
+        subscribers = cfg.get('subscribers', [])
+        emails = [s['email'] for s in subscribers if s.get('enabled') and s.get('email')]
+        if emails:
+            return emails
+    except Exception as e:
+        print(f"notify_config.json read failed: {e}, fallback to env")
+    # fallback
+    env_email = os.environ.get('NOTIFY_EMAIL', '')
+    return [env_email] if env_email else []
 SHEET_ID       = os.environ["GOOGLE_SHEET_ID"].strip()
 
 TODAY     = datetime.date.today().isoformat()
