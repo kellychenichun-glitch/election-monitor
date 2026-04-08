@@ -168,8 +168,51 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
 </div></div>
 <script>
 
-var CFG=(function(){var def={thresholds:{S:11,A:9,B:6},scoring:{subject_main:3,subject_mention:1,evt_controversy:3,evt_election:2,evt_construction:2,evt_mobilization:2,evt_policy:2,evt_service:1,evt_media:1,evt_general:1,spread_multi:3,spread_single_high:2,spread_single_low:1,cred_media:3,cred_social:2,cred_unknown:1,impact_critical:3,impact_notable:2,impact_record:1,recency_active:2},signal_harmful:["爭議","批評","攻擊","指控","負面","失言","危機","質詢","弊釜"],signal_beneficial:["完工","第取","支持","背書","當選","力挺","推薦","備選","通過","争取到"],signal_unclear:["迷因","諌刺","傳說","據說"],event_controversy:["爭議","攻打","被批","躨指","失言","危機"],event_election:["提名","候選","選舉","大選","選區","初選"],event_construction:["建設","工程","道路","橋樑","公園","交通","高架"],event_mobilization:["造勴","動員","宣傳","受氾"],event_policy:["政策","政見","提案","質詢","交通委員"],event_service:["服務","拜訪","考察","行程","陳情"],relevance_high:["選舉","提名","立委","縣長","市長","問政","質詢","交通委員","彰化縣長","彰化市長"],filter_csy_exclude:["白米","包材","農產包材","農會","稻米","自備袋","員林市","員林農會","大峦巫步道","北溝排水","八卦山","步道","環保考察","媒祖","宗教活動","樂齊","長照"],filter_hby_exclude:[],filter_whitelist:["SayYes","陳素月委員","Chen Su-Yueh"],filter_ig_threads_strict:true,filter_relevance_must_name:true,display:{show_score:true,show_rel:false,sort:"level",per_page:100,refresh:5,show_low:false},filter_buttons:null};
-try{var sv=localStorage.getItem("emcfg");if(sv){var p=JSON.parse(sv);function dm(t,s){for(var k in s){if(!(k in t))t[k]=s[k];else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){if(typeof t[k]!=="object")t[k]={};dm(t[k],s[k]);}}}dm(p,def);return p;}}catch(e){}return def;})();
+// ============================================================
+// CFG: 從 admin localStorage 讀取設定，缺則用預設值
+// ============================================================
+var CFG = (function() {
+  var def = {
+    thresholds: {S:11, A:9, B:6},
+    scoring: {
+      subject_main:3, subject_mention:1,
+      evt_controversy:3, evt_election:2, evt_construction:2,
+      evt_mobilization:2, evt_policy:2, evt_service:1,
+      evt_media:1, evt_general:1,
+      spread_multi:3, spread_single_high:2, spread_single_low:1,
+      cred_media:3, cred_social:2, cred_unknown:1,
+      impact_critical:3, impact_notable:2, impact_record:1, recency_active:2
+    },
+    signal_harmful: ["\u722d\u8b70","\u6279\u8a55","\u653b\u64ca","\u6307\u63a7","\u8ca0\u9762","\u5931\u8a00","\u5371\u6a5f","\u8cea\u8a62","\u5f0a\u91dc"],
+    signal_beneficial: ["\u5b8c\u5de5","\u7b2c\u53d6","\u652f\u6301","\u80cc\u66f8","\u7576\u9078","\u529b\u633a","\u63a8\u85a6","\u5099\u9078","\u901a\u904e","\u4e89\u53d6\u5230"],
+    signal_unclear: ["\u8ff7\u56e0","\u8acc\u523a","\u50b3\u8aaa","\u64da\u8aaa"],
+    event_controversy: ["\u722d\u8b70","\u653b\u6253","\u88ab\u6279","\u8ea8\u6307","\u5931\u8a00","\u5371\u6a5f"],
+    event_election: ["\u63d0\u540d","\u5019\u9078","\u9078\u8209","\u5927\u9078","\u9078\u5340","\u521d\u9078"],
+    event_construction: ["\u5efa\u8a2d","\u5de5\u7a0b","\u9053\u8def","\u6a4b\u6a11","\u516c\u5712","\u4ea4\u901a","\u9ad8\u67b6"],
+    event_mobilization: ["\u9020\u52f4","\u52d5\u54e1","\u5ba3\u50b3","\u53d7\u6c3e"],
+    event_policy: ["\u653f\u7b56","\u653f\u898b","\u63d0\u6848","\u8cea\u8a62","\u4ea4\u901a\u59d4\u54e1"],
+    event_service: ["\u670d\u52d9","\u62dc\u8a2a","\u8003\u5bdf","\u884c\u7a0b","\u9673\u60c5"],
+    relevance_high: ["\u9078\u8209","\u63d0\u540d","\u7acb\u59d4","\u7e23\u9577","\u5e02\u9577","\u554f\u653f","\u8cea\u8a62","\u4ea4\u901a\u59d4\u54e1","\u5f70\u5316\u7e23\u9577","\u5f70\u5316\u5e02\u9577"],
+    filter_csy_exclude: ["\u767d\u7c73","\u5305\u6750","\u8fb2\u7522\u5305\u6750","\u8fb2\u6703","\u7a3b\u7c73","\u81ea\u5099\u888b","\u54e1\u6797\u5e02","\u54e1\u6797\u8fb2\u6703","\u5927\u5ce6\u5deb\u6b65\u9053","\u5317\u6e9d\u6392\u6c34","\u516b\u5366\u5c71","\u6b65\u9053","\u74b0\u4fdd\u8003\u5bdf","\u5a92\u7956","\u5b97\u6559\u6d3b\u52d5","\u6a02\u9f4a","\u9577\u7167"],
+    filter_hby_exclude: [],
+    filter_whitelist: ["SayYes","\u9673\u7d20\u6708\u59d4\u54e1","Chen Su-Yueh"],
+    filter_ig_threads_strict: true,
+    filter_relevance_must_name: true,
+    display: {show_score:true, show_rel:false, sort:"level", per_page:100, refresh:5, show_low:false},
+    filter_buttons: null
+  };
+  try {
+    var sv = localStorage.getItem("emcfg");
+    if (sv) {
+      var p = JSON.parse(sv);
+      function _dm(t,s){ for(var k in s){ if(!(k in t))t[k]=s[k]; else if(typeof s[k]==="object"&&!Array.isArray(s[k])&&s[k]!==null){ if(typeof t[k]!=="object")t[k]={}; _dm(t[k],s[k]); } } }
+      _dm(p, def);
+      return p;
+    }
+  } catch(e) {}
+  return def;
+})();
+
 var SID = "1rKfbDPgmjenPuXh3d7BuOffrQzZyrze54Q_uFpBnw_k";
 var D = [], FD = [], SH = [], AS = "";
 var FILTERS = {cand:"all", sig:"all", lev:"all", src:"all"};
@@ -183,72 +226,93 @@ function getRelevanceLevel(r) {
   var t = (r.topic || "").toLowerCase();
   var sum = (r.summary || "").toLowerCase();
   var cand = r.candidate || "";
-  var candShort = cand.substring(0,2); // 陳素 / 黃柏
-
-  // 必要條件：標題或摘要必須含候選人名字，才可能是 high
-  var hasCandName = ttl.indexOf(candShort) > -1 || sum.indexOf(candShort) > -1 ||
-                    ttl.indexOf(cand) > -1 || sum.indexOf(cand) > -1 ||
-                    ttl.indexOf("素月") > -1 || ttl.indexOf("柏瑜") > -1; // 素月/柏瑜
-  
-  if (!hasCandName) {
-    // 沒有候選人名字 → 最多是 medium（透過彰化地區相關性）
-    var midWords = ["彰化縣長","彰化市長","彰化選舉","2026彰化"];
-    for (var i = 0; i < midWords.length; i++) {
-      if (ttl.indexOf(midWords[i]) > -1) return "medium";
+  var candShort = cand.substring(0,2);
+  var mustHaveName = CFG.filter_relevance_must_name !== false;
+  // 必須有候選人名字才能是 high
+  var hasCandName = ttl.indexOf(candShort) > -1 || sum.indexOf(candShort) > -1
+    || ttl.indexOf("\u7d20\u6708") > -1 || ttl.indexOf("\u67cf\u745c") > -1;
+  if (mustHaveName && !hasCandName) {
+    // 沒有名字 → medium（若有彰化縣長相關詞）或 low
+    var midChk = ["\u5f70\u5316\u7e23\u9577","\u5f70\u5316\u5e02\u9577","2026\u5f70\u5316"];
+    for (var mi = 0; mi < midChk.length; mi++) {
+      if (ttl.indexOf(midChk[mi]) > -1) return "medium";
     }
     return "low";
   }
-
-  // 有候選人名字 → 判斷是 high 還是 medium
-  var highWords = ["選舉","提名","候選","立委","質詢","交通委員會","建設","政見","彰化市長","彰化縣長","大選","造勴","議員","問政","備選"];
+  // 有名字 → 看高相關詞
+  var highWords = CFG.relevance_high || [];
   for (var i = 0; i < highWords.length; i++) {
     if (ttl.indexOf(highWords[i]) > -1 || t.indexOf(highWords[i]) > -1) return "high";
   }
-  // 候選人名字在標題前5字
-  if (ttl.indexOf(candShort) < 5 || ttl.indexOf('素月') < 5 || ttl.indexOf('柏瑜') < 5) return "high";
-  
+  if (ttl.indexOf(candShort) < 5) return "high";
   return "medium";
 }
 
 function getSignalDirection(r) {
-  // 根據 sentiment + topic + priority 判斷訊號傾向
-  var s = r.sentiment || "";
-  var t = (r.topic || "").toLowerCase();
   var ttl = (r.title || "").toLowerCase();
   var sum = (r.summary || "").toLowerCase();
-  
-  // harmful: 負面情緒 或 爭議/批評/攻擊 關鍵字
-  if (s === "負面") return "har";
-  var harmWords = ["爭議","批評","攻擊","指控","賣","失言","危機","負面","問題","送辦","起訴","提告"];
-  for (var i = 0; i < harmWords.length; i++) {
-    if (t.indexOf(harmWords[i]) > -1 || ttl.indexOf(harmWords[i]) > -1) return "har";
+  var txt = ttl + " " + sum;
+  // 白名單帳號 → 有利
+  var wl = CFG.filter_whitelist || [];
+  for (var wi = 0; wi < wl.length; wi++) {
+    if (ttl.indexOf(wl[wi].toLowerCase()) > -1) return "ben";
   }
-  
-  // beneficial: 正面情緒 或 具體政绩/支持/建設
-  if (s === "正面") return "ben";
-  var benWords = ["完工","商議","争取","高票","支持","背書","圈粉","提名","合格","當選","力挺","推薦","背書"];
-  for (var i = 0; i < benWords.length; i++) {
-    if (t.indexOf(benWords[i]) > -1 || ttl.indexOf(benWords[i]) > -1 || sum.indexOf(benWords[i]) > -1) return "ben";
+  // 用 CFG 關鍵字判斷
+  var harmful = CFG.signal_harmful || [];
+  for (var i = 0; i < harmful.length; i++) {
+    if (txt.indexOf(harmful[i]) > -1) return "har";
   }
-  
-  // unclear: 读不出傾向的
-  if (t.indexOf("请问") > -1 || ttl.indexOf("迯") > -1 || ttl.indexOf("呼籲") > -1) return "unc";
-  
+  var unclear = CFG.signal_unclear || [];
+  for (var i = 0; i < unclear.length; i++) {
+    if (txt.indexOf(unclear[i]) > -1) return "unc";
+  }
+  var beneficial = CFG.signal_beneficial || [];
+  for (var i = 0; i < beneficial.length; i++) {
+    if (txt.indexOf(beneficial[i]) > -1) return "ben";
+  }
+  // 用 stance/sentiment fallback
+  var st = (r.stance || r.sentiment || "").toLowerCase();
+  if (st === "positive" || st === "ben") return "ben";
+  if (st === "negative" || st === "har") return "har";
   return "neu";
 }
 
 function getEventType(r) {
-  var t = (r.topic || "").toLowerCase();
   var ttl = (r.title || "").toLowerCase();
-  
-  if (t.indexOf("爭議") > -1 || t.indexOf("攻擊") > -1 || ttl.indexOf("攻擊") > -1 || ttl.indexOf("爭議") > -1) return "controversy";
-  if (t.indexOf("宣傳") > -1 || t.indexOf("造勴") > -1 || t.indexOf("動員") > -1) return "mobilization";
-  if (t.indexOf("建設") > -1 || t.indexOf("工程") > -1 || t.indexOf("步道") > -1 || t.indexOf("道路") > -1 || t.indexOf("公園") > -1) return "local_construction";
-  if (t.indexOf("候選人") > -1 || t.indexOf("選舉") > -1 || t.indexOf("提名") > -1 || ttl.indexOf("選舉") > -1) return "election";
-  if (t.indexOf("交通") > -1 || t.indexOf("道路") > -1) return "local_construction";
-  if (t.indexOf("教育") > -1 || t.indexOf("學校") > -1) return "policy";
-  if (t.indexOf("服務") > -1 || t.indexOf("行程") > -1 || t.indexOf("考察") > -1 || t.indexOf("拜訪") > -1) return "service";
-  if (t.indexOf("媒體") > -1 || t.indexOf("報導") > -1 || ttl.indexOf("專訪") > -1) return "media";
+  var tp = (r.topic || "").toLowerCase();
+  var txt = ttl + " " + tp;
+  var controversy = CFG.event_controversy || [];
+  for (var i = 0; i < controversy.length; i++) {
+    if (txt.indexOf(controversy[i]) > -1) return "controversy";
+  }
+  var election = CFG.event_election || [];
+  for (var i = 0; i < election.length; i++) {
+    if (txt.indexOf(election[i]) > -1) return "election";
+  }
+  var construction = CFG.event_construction || [];
+  for (var i = 0; i < construction.length; i++) {
+    if (txt.indexOf(construction[i]) > -1) return "local_construction";
+  }
+  var mobilization = CFG.event_mobilization || [];
+  for (var i = 0; i < mobilization.length; i++) {
+    if (txt.indexOf(mobilization[i]) > -1) return "mobilization";
+  }
+  var policy = CFG.event_policy || [];
+  for (var i = 0; i < policy.length; i++) {
+    if (txt.indexOf(policy[i]) > -1) return "policy";
+  }
+  var service = CFG.event_service || [];
+  for (var i = 0; i < service.length; i++) {
+    if (txt.indexOf(service[i]) > -1) return "service";
+  }
+  // fallback: 用原始欄位
+  var et = (r.topic || r.category || "").toLowerCase();
+  if (et.indexOf("\u722d\u8b70") > -1) return "controversy";
+  if (et.indexOf("\u9078\u8209") > -1 || et.indexOf("\u63d0\u540d") > -1) return "election";
+  if (et.indexOf("\u5efa\u8a2d") > -1) return "local_construction";
+  if (et.indexOf("\u52d5\u54e1") > -1) return "mobilization";
+  if (et.indexOf("\u653f\u7b56") > -1 || et.indexOf("\u8cea\u8a62") > -1) return "policy";
+  if (et.indexOf("\u670d\u52d9") > -1) return "service";
   return "general";
 }
 
@@ -298,14 +362,94 @@ function getImportanceScore(r) {
 }
 
 function getImportanceLevel(score) {
-  var t=CFG.thresholds;
+  var t = CFG.thresholds;
   if (score >= t.S) return "S";
   if (score >= t.A) return "A";
   if (score >= t.B) return "B";
   return "C";
 }
+function calcImportanceScore(r) {
+  var s = CFG.scoring;
+  var score = 0;
+  // 主體性
+  var ttl = (r.title || "").toLowerCase();
+  var cand = (r.candidate || "").substring(0,2);
+  if (ttl.indexOf(cand) > -1 || ttl.indexOf("\u7d20\u6708") > -1 || ttl.indexOf("\u67cf\u745c") > -1) {
+    score += s.subject_main;
+  } else {
+    score += s.subject_mention;
+  }
+  // 事件類型
+  var et = r._eventType || getEventType(r);
+  var etMap = {
+    controversy: s.evt_controversy,
+    election: s.evt_election,
+    local_construction: s.evt_construction,
+    mobilization: s.evt_mobilization,
+    policy: s.evt_policy,
+    service: s.evt_service,
+    media: s.evt_media,
+    general: s.evt_general
+  };
+  score += etMap[et] || s.evt_general;
+  // 擴散性（目前單一來源）
+  score += s.spread_single_low;
+  // 來源可信度
+  var src = (r.source || "").toLowerCase();
+  if (src === "google" || src.indexOf("news") > -1) score += s.cred_media;
+  else if (src === "fb" || src === "ig" || src === "threads") score += s.cred_social;
+  else score += s.cred_unknown;
+  // 選情影響力
+  var sig = r._signal || getSignalDirection(r);
+  if (sig === "har") score += s.impact_critical;
+  else if (sig === "ben") score += s.impact_notable;
+  else score += s.impact_record;
+  // 時效性（今日資料）
+  score += s.recency_active;
+  return score;
+}
+
+
+// === 前台硬過濾：接上 CFG 設定 ===
+function hardFilter(data) {
+  return data.filter(function(r) {
+    var ttl = (r.title || "").toLowerCase();
+    var cand = r.candidate || "";
+    // 白名單：無論如何保留
+    var wl = CFG.filter_whitelist || [];
+    for (var wi = 0; wi < wl.length; wi++) {
+      if (ttl.indexOf(wl[wi].toLowerCase()) > -1) return true;
+    }
+    // 陳素月排除詞
+    if (cand === "\u9673\u7d20\u6708") {
+      var excCSY = CFG.filter_csy_exclude || [];
+      for (var i = 0; i < excCSY.length; i++) {
+        if (ttl.indexOf(excCSY[i]) > -1) return false;
+      }
+      // IG/Threads 嚴格模式
+      if (CFG.filter_ig_threads_strict && (r.source === "IG" || r.source === "Threads")) {
+        var liWei = ["\u7acb\u59d4","\u7acb\u6cd5\u9662","\u4ea4\u901a\u59d4\u54e1\u6703","\u5f70\u5316\u7e23\u9577","\u5f70\u5316\u5e02\u9577","\u5f70\u5316\u7e23\u9078","\u9078\u8209","\u63d0\u540d"];
+        var hasLiWei = false;
+        var txt2 = ttl + " " + (r.summary || "").toLowerCase();
+        for (var j = 0; j < liWei.length; j++) {
+          if (txt2.indexOf(liWei[j]) > -1) { hasLiWei = true; break; }
+        }
+        if (!hasLiWei) return false;
+      }
+    }
+    // 黃柏瑜排除詞
+    if (cand === "\u9ec3\u67cf\u745c") {
+      var excHBY = CFG.filter_hby_exclude || [];
+      for (var i = 0; i < excHBY.length; i++) {
+        if (ttl.indexOf(excHBY[i]) > -1) return false;
+      }
+    }
+    return true;
+  });
+}
 
 function enrichData(data) {
+  data = hardFilter(data);
   // === 陳素月硬過濾：排除員林市長業務 ===
   data = data.filter(function(r) {
     if (r.candidate !== "陳素月") return true;
