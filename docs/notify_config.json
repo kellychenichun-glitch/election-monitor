@@ -1,0 +1,16 @@
+{
+  "subscribers": [
+    {
+      "email": "",
+      "enabled": true,
+      "created": "2026-04-08"
+    }
+  ],
+  "schedule": {
+    "mode": "daily",
+    "daily_hour": 6,
+    "interval_hours": 6,
+    "enabled": true
+  },
+  "last_updated": "2026-04-08"
+}
