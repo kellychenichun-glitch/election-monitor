@@ -88,9 +88,42 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
 .sbw{height:4px;background:var(--sf2);border-radius:2px;overflow:hidden;margin-top:5px}
 .sb{height:100%;border-radius:2px;transition:width .8s}
 .score-tag{font-size:10px;font-family:'DM Mono',monospace;color:var(--mu);margin-left:4px}
+
+#fe-login{position:fixed;inset:0;background:#f5f6fa;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:'Noto Sans TC',sans-serif}
+.fe-box{background:#fff;border:2px solid #d0d5e8;border-radius:16px;padding:40px 48px;width:380px;box-shadow:0 4px 24px rgba(0,0,0,.10);text-align:center}
+.fe-box h2{font-size:20px;font-weight:900;color:#1a1a1a;margin-bottom:4px}
+.fe-box .sub{font-size:13px;color:#5a6080;margin-bottom:28px}
+.fe-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;text-align:left}
+.fe-field label{font-size:12px;font-weight:700;color:#5a6080;text-transform:uppercase;letter-spacing:.5px}
+.fe-field input{background:#f0f2f8;border:2px solid #d0d5e8;border-radius:8px;padding:10px 14px;color:#1a1a1a;font-size:15px;outline:none;width:100%;font-family:'Noto Sans TC',sans-serif}
+.fe-field input:focus{border-color:#1a1a1a;background:#fff}
+.fe-err{color:#cc3333;font-size:13px;margin-bottom:10px;min-height:18px;font-weight:500}
+.fe-btn{width:100%;padding:12px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:4px}
+.fe-btn:hover{background:#333}
+.fe-footer{font-size:12px;color:#8892b0;margin-top:16px}
+
 </style>
 </head>
 <body>
+
+<div id="fe-login">
+  <div class="fe-box">
+    <h2>&#x1F4CA; 選情雷達</h2>
+    <div class="sub">彰化選情監控系統</div>
+    <div class="fe-field">
+      <label>帳號</label>
+      <input type="text" id="fe-user" placeholder="請輸入帳號" autocomplete="username">
+    </div>
+    <div class="fe-field">
+      <label>密碼</label>
+      <input type="password" id="fe-pass" placeholder="請輸入密碼" autocomplete="current-password">
+    </div>
+    <div class="fe-err" id="fe-err"></div>
+    <button class="fe-btn" id="fe-btn">登入</button>
+    <div class="fe-footer">如需帳號請聯絡管理員</div>
+  </div>
+</div>
+
 <div class="hdr"><div class="wrap"><div class="hrow">
   <div class="logo">
     <div class="icon">&#x1F4E1;</div>
@@ -167,6 +200,95 @@ a.lnk:hover{color:var(--ac);text-decoration:underline}
   <div>&#x8CC7;&#x6599;&#x6BCF;&#x65E5; 08:00 / 14:00 / 20:00 &#xFF08;&#x53F0;&#x7063;&#x6642;&#x9593;&#xFF09;</div>
 </div></div>
 <script>
+
+// ============================================================
+// 前台登入保護 — 與 admin 共用同一套使用者系統
+// ============================================================
+(function() {
+  var USERS_KEY = 'em_users';
+  var FE_SESSION_KEY = 'em_fe_session';
+  var DEFAULT_USERS = [
+    {username:'admin', pwHash: _feHash('admin123'), role:'admin', created:'', lastLogin:'', loginCount:0}
+  ];
+
+  function _feHash(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) {
+      h = ((h << 5) - h) + str.charCodeAt(i);
+      h = h & h;
+    }
+    return 'h' + Math.abs(h).toString(16) + str.length.toString(16);
+  }
+
+  function getUsers() {
+    try { var u = localStorage.getItem(USERS_KEY); if (u) return JSON.parse(u); } catch(e) {}
+    return DEFAULT_USERS;
+  }
+
+  function checkSession() {
+    try {
+      var s = localStorage.getItem(FE_SESSION_KEY);
+      if (!s) return false;
+      var sess = JSON.parse(s);
+      // session 有效期 24 小時
+      var age = Date.now() - new Date(sess.time).getTime();
+      return age < 24 * 60 * 60 * 1000;
+    } catch(e) { return false; }
+  }
+
+  function tryLogin(username, password) {
+    var users = getUsers();
+    var user = users.find(function(u){ return u.username === username; });
+    if (!user) return false;
+    if (user.pwHash !== _feHash(password)) return false;
+    // 更新登入時間
+    user.lastLogin = new Date().toLocaleString('zh-TW');
+    user.loginCount = (user.loginCount || 0) + 1;
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    // 設定 session
+    localStorage.setItem(FE_SESSION_KEY, JSON.stringify({
+      username: username,
+      time: new Date().toISOString()
+    }));
+    return true;
+  }
+
+  function showApp() {
+    var el = document.getElementById('fe-login');
+    if (el) el.style.display = 'none';
+  }
+
+  // 已登入 → 直接顯示
+  if (checkSession()) {
+    // 等 DOM 就緒
+    document.addEventListener('DOMContentLoaded', function() { showApp(); });
+    return;
+  }
+
+  // 未登入 → 等 DOM 就緒後顯示登入畫面
+  document.addEventListener('DOMContentLoaded', function() {
+    var loginEl = document.getElementById('fe-login');
+    if (!loginEl) return;
+
+    function doLogin() {
+      var u = document.getElementById('fe-user').value.trim();
+      var p = document.getElementById('fe-pass').value;
+      var err = document.getElementById('fe-err');
+      if (!u || !p) { err.textContent = '\u8ACB\u8F38\u5165\u5E33\u865F\u548C\u5BC6\u78BC'; return; }
+      if (tryLogin(u, p)) {
+        showApp();
+      } else {
+        err.textContent = '\u5E33\u865F\u6216\u5BC6\u78BC\u932F\u8AA4';
+        document.getElementById('fe-pass').value = '';
+      }
+    }
+
+    document.getElementById('fe-btn').addEventListener('click', doLogin);
+    document.getElementById('fe-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+    document.getElementById('fe-user').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('fe-pass').focus(); });
+  });
+})();
+
 
 // ============================================================
 // CFG: 從 admin localStorage 讀取設定，缺則用預設值
