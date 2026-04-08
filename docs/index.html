@@ -862,7 +862,8 @@ init();
     localStorage.setItem(UK,JSON.stringify(list));setSess(u);return true;
   }
   function addBar(name){
-    if(document.getElementById('__lgbar'))return;
+    var existing=document.getElementById('__lgbar');
+    if(existing)existing.remove();
     var css=document.createElement('style');
     css.textContent='#__lgbar{position:fixed;top:10px;right:14px;z-index:99999;display:flex;align-items:center;gap:8px}'
       +'#__lgbar span{background:rgba(255,255,255,.95);color:#555;border:1.5px solid #ddd;border-radius:6px;padding:5px 12px;font-size:13px;font-family:monospace;box-shadow:0 2px 6px rgba(0,0,0,.1)}'
@@ -917,7 +918,7 @@ init();
   }
   var me=getSess();
   if(me){
-    window.addEventListener('DOMContentLoaded',function(){addBar(me);});
+    if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',function(){addBar(me);});}else{addBar(me);}
   } else {
     window.addEventListener('DOMContentLoaded',function(){showLogin();});
   }
