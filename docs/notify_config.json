@@ -5,11 +5,6 @@
       "enabled": true,
       "created": "2026-04-08",
       "note": "主要收件人（從 GitHub Secret 遷移）"
-    },
-    {
-      "email": "",
-      "enabled": true,
-      "created": "2026-04-08"
     }
   ],
   "schedule": {
