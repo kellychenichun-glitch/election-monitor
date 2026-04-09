@@ -901,17 +901,32 @@ init();
       +'#__lgbtn:hover{background:#333}';
     document.head.appendChild(css2);
     var mask=document.createElement('div');mask.id='__lgmask';
-    mask.innerHTML='<div id="__lgbox">'
-      +'<h2>\uD83D\uDCCA \u9078\u60c5\u96f7\u9054</h2>'
-      +'<p>\u5f70\u5316\u9078\u60c5\u76e3\u63a7\u7cfb\u7d71</p>'
-      +'<label class="__lglbl">\u5e33\u865f</label>'
-      +'<input class="__lginp" type="text" id="__lgu" placeholder="\u8acb\u8f38\u5165\u5e33\u865f" autocomplete="username">'
-      +'<label class="__lglbl">\u5bc6\u78bc</label>'
-      +'<input class="__lginp" type="password" id="__lgp" placeholder="\u8acb\u8f38\u5165\u5bc6\u78bc" autocomplete="current-password">'
-      +'<div id="__lgerr"></div>'
-      +'<button id="__lgbtn">\u767b\u5165</button>'
-      +'<p style="font-size:11px;color:#aaa;margin-top:12px">\u5982\u9700\u5e33\u865f\u8acb\u806f\u7d61\u7ba1\u7406\u54e1</p>'
-      +'</div>';
+    mask.innerHTML=
+    '<div id="__lgbox" style="max-width:420px;width:90%">'
+    +'<div style="text-align:center;margin-bottom:28px">'
+    +'<div style="font-size:36px;margin-bottom:8px">&#x1F4CA;</div>'
+    +'<h2 style="font-size:22px;font-weight:900;color:#1a1a1a;margin:0 0 4px">彰化選情監控</h2>'
+    +'<p style="font-size:13px;color:#aaa;margin:0">請選擇登入方式</p>'
+    +'</div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:24px">'
+    +'<button id="__tab_viewer" onclick="__switchTab('viewer')" style="flex:1;padding:14px;border:2px solid #1a1a1a;border-radius:10px;background:#1a1a1a;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif">&#x1F4CA; 選情雷達</button>'
+    +'<button id="__tab_admin" onclick="__switchTab('admin')" style="flex:1;padding:14px;border:2px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif">&#x2699;&#xFE0F; 後台管理</button>'
+    +'</div>'
+    +'<div id="__panel_viewer">'
+    +'<label class="__lglbl">帳號</label>'
+    +'<input class="__lginp" type="text" id="__lgu" placeholder="請輸入帳號" autocomplete="username">'
+    +'<label class="__lglbl">密碼</label>'
+    +'<input class="__lginp" type="password" id="__lgp" placeholder="請輸入密碼" autocomplete="current-password">'
+    +'<div id="__lgerr"></div>'
+    +'<button id="__lgbtn" class="_lb" style="width:100%;padding:11px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:sans-serif">登入</button>'
+    +'<p style="font-size:11px;color:#aaa;margin-top:12px;text-align:center">如需帳號請聯絡管理員</p>'
+    +'</div>'
+    +'<div id="__panel_admin" style="display:none;text-align:center;padding:20px 0">'
+    +'<p style="font-size:14px;color:#666;margin-bottom:20px">點擊下方進入管理員後台登入頁面</p>'
+    +'<a href="admin.html" style="display:inline-block;padding:12px 32px;background:#1a1a1a;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;font-weight:700;font-family:sans-serif">🔒 進入後台管理</a>'
+    +'<p style="font-size:11px;color:#aaa;margin-top:16px">僅限 admin 角色使用</p>'
+    +'</div>'
+    +'</div>';
     document.body.appendChild(mask);
     function go(){
       var u=(document.getElementById('__lgu').value||'').trim();
