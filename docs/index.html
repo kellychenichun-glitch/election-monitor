@@ -851,7 +851,16 @@ init();
 (function(){
   var SK='em_fe_session', UK='em_users';
   function h(s){var v=0;for(var i=0;i<s.length;i++){v=((v<<5)-v)+s.charCodeAt(i);v=v&v;}return'h'+Math.abs(v).toString(16)+s.length.toString(16);}
-  function getUsers(){try{var u=localStorage.getItem(UK);if(u)return JSON.parse(u);}catch(e){}return[{username:'admin',pwHash:h('admin123'),role:'admin',lastLogin:'',loginCount:0}];}
+  function getUsers(){
+    try{var u=localStorage.getItem('em_users_cache');if(u)return JSON.parse(u);}catch(e){}
+    return[{username:'admin',pwHash:h('admin123'),role:'admin',lastLogin:'',loginCount:0}];
+  }
+  function refreshUsers(){
+    fetch('https://raw.githubusercontent.com/kellychenichun-glitch/election-monitor/main/docs/users.json?ts='+Date.now())
+      .then(function(r){return r.json();})
+      .then(function(users){localStorage.setItem('em_users_cache',JSON.stringify(users));})
+      .catch(function(){});
+  }
   function getSess(){try{var s=JSON.parse(localStorage.getItem(SK)||'null');if(s&&Date.now()-new Date(s.time).getTime()<864e5)return s.username;}catch(e){}return null;}
   function setSess(u){localStorage.setItem(SK,JSON.stringify({username:u,time:new Date().toISOString()}));}
   function login(u,p){
@@ -918,7 +927,7 @@ init();
   }
   var me=getSess();
   if(me){
-    if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',function(){addBar(me);});}else{addBar(me);}
+    refreshUsers();if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',function(){addBar(me);});}else{addBar(me);}
   } else {
     window.addEventListener('DOMContentLoaded',function(){showLogin();});
   }
