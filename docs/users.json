@@ -1,10 +1,26 @@
 [
   {
     "username": "admin",
-    "pwHash": "h39c43b7d8",
+    "pwHash": "h54a392006",
     "role": "admin",
     "created": "2026-04-08",
+    "lastLogin": "2026/4/9 上午11:14:02",
+    "loginCount": 1
+  },
+  {
+    "username": "kelly0920",
+    "pwHash": "h667706f28",
+    "role": "admin",
+    "created": "2026/4/9 上午11:09:24",
     "lastLogin": "",
     "loginCount": 0
+  },
+  {
+    "username": "test",
+    "pwHash": "h54a392006",
+    "role": "viewer",
+    "created": "2026/4/9 上午11:09:34",
+    "lastLogin": "2026/4/9 上午11:13:43",
+    "loginCount": 2
   }
 ]
