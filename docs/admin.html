@@ -212,7 +212,31 @@ function getUsers() {
   localStorage.setItem(USERS_KEY, JSON.stringify(DEFAULT_USERS));
   return DEFAULT_USERS;
 }
-function saveUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  pushUsersToGitHub(users);
+}
+// === GitHub 使用者同步 ===
+var GH_TOKEN_KEY = 'em_gh_token';
+function getGHToken(){ try{return localStorage.getItem(GH_TOKEN_KEY)||'';}catch(e){return '';} }
+
+function pushUsersToGitHub(users) {
+  var token = getGHToken();
+  if (!token) { tst('請先設定 GitHub Token'); return; }
+  fetch('https://api.github.com/repos/kellychenichun-glitch/election-monitor/contents/docs/users.json',
+    {headers:{'Authorization':'token '+token}})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var content = btoa(unescape(encodeURIComponent(JSON.stringify(users,null,2))));
+    return fetch('https://api.github.com/repos/kellychenichun-glitch/election-monitor/contents/docs/users.json',{
+      method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Update users via admin',content:content,sha:d.sha})
+    });
+  }).then(function(r){return r.json();})
+  .then(function(res){ tst(res.commit ? '使用者已同步 ✅' : '同步失敗'); })
+  .catch(function(e){ tst('同步失敗: '+e.message); });
+}
+
 
 function getLogs() {
   try { var l = localStorage.getItem(LOGS_KEY); if (l) return JSON.parse(l); } catch(e) {}
@@ -523,6 +547,20 @@ function bind() {
   var eim=document.getElementById('eim'); if(eim) eim.addEventListener('click',function(){ var v=document.getElementById('ij').value.trim(); try{C=JSON.parse(v);mg(C,DF);save();go('scoring');tst('\u5319\u5165\u6210\u529f\uff01');}catch(e){alert('JSON \u932f\u8aa4\uff1a'+e.message);} });
   var clrl=document.getElementById('clr-logs'); if(clrl) clrl.addEventListener('click',function(){ if(confirm('\u78ba\u5b9a\u8981\u6e05\u9664\u6240\u6709\u8a18\u9304\uff1f')){ localStorage.removeItem(LOGS_KEY); render(); tst('\u8a18\u9304\u5df2\u6e05\u9664'); } });
   // users
+  var sgtok=document.getElementById('save-gh-tok');
+  if(sgtok){
+    var gti=document.getElementById('gh-tok');
+    var existingT=getGHToken();
+    if(gti&&existingT)gti.placeholder=existingT.substring(0,8)+'...(已設定)';
+    sgtok.addEventListener('click',function(){
+      var v=(document.getElementById('gh-tok').value||'').trim();
+      if(!v){alert('請輸入 Token');return;}
+      localStorage.setItem(GH_TOKEN_KEY,v);
+      tst('Token 已儲存！之後使用者變更會自動同步');
+      document.getElementById('gh-tok').value='';
+      document.getElementById('gh-tok').placeholder=v.substring(0,8)+'...(已設定)';
+    });
+  }
   var nadd=document.getElementById('nu-add');
   if(nadd) nadd.addEventListener('click',function(){
     var u=document.getElementById('nu-user').value.trim();
