@@ -847,104 +847,98 @@ init();
 </script>
 
 <script>
-/* LOGIN GUARD v4 */
+/* LOGIN GUARD v5 */
 (function(){
-  var SK='em_fe_session', UK='em_users';
+  var UK='em_users', SK='em_fe_session', CK='em_users_cache';
   function h(s){var v=0;for(var i=0;i<s.length;i++){v=((v<<5)-v)+s.charCodeAt(i);v=v&v;}return'h'+Math.abs(v).toString(16)+s.length.toString(16);}
   function getUsers(){
-    try{var u=localStorage.getItem('em_users_cache');if(u)return JSON.parse(u);}catch(e){}
-    return[{username:'admin',pwHash:h('admin123'),role:'admin',lastLogin:'',loginCount:0}];
+    try{var c=localStorage.getItem(CK);if(c)return JSON.parse(c);}catch(e){}
+    try{var u=localStorage.getItem(UK);if(u)return JSON.parse(u);}catch(e){}
+    return[{username:'admin',pwHash:h('admin123'),role:'admin'}];
   }
-  function refreshUsers(){
-    fetch('https://raw.githubusercontent.com/kellychenichun-glitch/election-monitor/main/docs/users.json?ts='+Date.now())
-      .then(function(r){return r.json();})
-      .then(function(users){localStorage.setItem('em_users_cache',JSON.stringify(users));})
-      .catch(function(){});
+  function getSess(){
+    try{var s=JSON.parse(localStorage.getItem(SK)||'null');
+      if(s&&Date.now()-new Date(s.time).getTime()<864e5)return s.username;}
+    catch(e){}return null;
   }
-  function getSess(){try{var s=JSON.parse(localStorage.getItem(SK)||'null');if(s&&Date.now()-new Date(s.time).getTime()<864e5)return s.username;}catch(e){}return null;}
-  function setSess(u){localStorage.setItem(SK,JSON.stringify({username:u,time:new Date().toISOString()}));}
   function login(u,p){
     var list=getUsers();
     var usr=list.find(function(x){return x.username===u;});
     if(!usr||usr.pwHash!==h(p))return false;
     usr.lastLogin=new Date().toLocaleString('zh-TW');usr.loginCount=(usr.loginCount||0)+1;
-    localStorage.setItem(UK,JSON.stringify(list));setSess(u);return true;
+    localStorage.setItem(UK,JSON.stringify(list));
+    localStorage.setItem(SK,JSON.stringify({username:u,time:new Date().toISOString()}));
+    // 背景更新 cache
+    fetch('https://raw.githubusercontent.com/kellychenichun-glitch/election-monitor/main/docs/users.json?ts='+Date.now())
+      .then(function(r){return r.json();}).then(function(d){localStorage.setItem(CK,JSON.stringify(d));}).catch(function(){});
+    return true;
   }
-  function addBar(name){
-    var existing=document.getElementById('__lgbar');
-    if(existing)existing.remove();
+  function makeBar(name){
+    if(document.getElementById('__lgbar'))return;
     var css=document.createElement('style');
-    css.textContent='#__lgbar{position:fixed;top:10px;right:14px;z-index:99999;display:flex;align-items:center;gap:8px}'
-      +'#__lgbar span{background:rgba(255,255,255,.95);color:#555;border:1.5px solid #ddd;border-radius:6px;padding:5px 12px;font-size:13px;font-family:monospace;box-shadow:0 2px 6px rgba(0,0,0,.1)}'
-      +'#__lgbar button{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer}'
-      +'#__lgbar button:hover{background:#444}';
+    css.textContent='#__lgbar{position:fixed;top:10px;right:14px;z-index:99999;display:flex;align-items:center;gap:8px;font-family:sans-serif}'
+      +'#__lgbar .lgname{background:rgba(255,255,255,.95);color:#555;border:1.5px solid #ddd;border-radius:6px;padding:5px 12px;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,.1)}'
+      +'#__lgbar .lgout{background:#1a1a1a;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer}'
+      +'#__lgbar .lgout:hover{background:#444}';
     document.head.appendChild(css);
     var bar=document.createElement('div');bar.id='__lgbar';
-    bar.innerHTML='<span>\uD83D\uDC64 '+name+'</span><button id="__lgout">\uD83D\uDEAA \u767b\u51fa</button>';
+    bar.innerHTML='<span class="lgname">👤 '+(name||'')+'</span>'
+      +'<button class="lgout" id="__lgout">🚪 登出</button>';
     document.body.appendChild(bar);
     document.getElementById('__lgout').addEventListener('click',function(){
-      if(!confirm('\u78ba\u5b9a\u8981\u767b\u51fa\uff1f'))return;
+      if(!confirm('確定要登出？'))return;
       localStorage.removeItem(SK);location.reload();
     });
   }
-  function showLogin(){
+  function makeLogin(){
     var css2=document.createElement('style');
     css2.textContent='#__lgmask{position:fixed;inset:0;background:#f5f6fa;z-index:99998;display:flex;align-items:center;justify-content:center}'
       +'#__lgbox{background:#fff;border:2px solid #d0d5e8;border-radius:14px;padding:36px 44px;width:360px;box-shadow:0 4px 20px rgba(0,0,0,.1);text-align:center;font-family:sans-serif}'
       +'#__lgbox h2{font-size:20px;font-weight:900;color:#1a1a1a;margin:0 0 4px}'
-      +'#__lgbox p{font-size:13px;color:#888;margin:0 0 20px}'
+      +'#__lgbox .lgsub{font-size:13px;color:#888;margin:0 0 24px}'
       +'.__lglbl{display:block;font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;text-align:left;margin:10px 0 4px}'
-      +'.__lginp{width:100%;background:#f0f2f8;border:2px solid #d0d5e8;border-radius:8px;padding:9px 12px;color:#1a1a1a;font-size:15px;outline:none;box-sizing:border-box}'
+      +'.__lginp{width:100%;background:#f0f2f8;border:2px solid #d0d5e8;border-radius:8px;padding:9px 12px;color:#1a1a1a;font-size:15px;outline:none;box-sizing:border-box;font-family:sans-serif}'
       +'.__lginp:focus{border-color:#1a1a1a;background:#fff}'
       +'#__lgerr{color:#c33;font-size:13px;min-height:18px;margin:6px 0;text-align:left}'
-      +'#__lgbtn{width:100%;padding:11px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}'
-      +'#__lgbtn:hover{background:#333}';
+      +'#__lgbtn{width:100%;padding:11px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:sans-serif}'
+      +'#__lgbtn:hover{background:#333}'
+      +'#__lgadmin{display:block;margin-top:14px;padding-top:14px;border-top:1px solid #eee}'
+      +'#__lgadmin a{display:block;padding:10px;background:#f5f5f5;color:#555;text-decoration:none;border-radius:8px;font-size:13px;text-align:center;border:1px solid #ddd}';
     document.head.appendChild(css2);
     var mask=document.createElement('div');mask.id='__lgmask';
-    mask.innerHTML=
-    '<div id="__lgbox" style="max-width:420px;width:90%">'
-    +'<div style="text-align:center;margin-bottom:28px">'
-    +'<div style="font-size:36px;margin-bottom:8px">&#x1F4CA;</div>'
-    +'<h2 style="font-size:22px;font-weight:900;color:#1a1a1a;margin:0 0 4px">彰化選情監控</h2>'
-    +'<p style="font-size:13px;color:#aaa;margin:0">請選擇登入方式</p>'
-    +'</div>'
-    +'<div style="display:flex;gap:12px;margin-bottom:24px">'
-    +'<button id="__tab_viewer" onclick="__switchTab('viewer')" style="flex:1;padding:14px;border:2px solid #1a1a1a;border-radius:10px;background:#1a1a1a;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif">&#x1F4CA; 選情雷達</button>'
-    +'<button id="__tab_admin" onclick="__switchTab('admin')" style="flex:1;padding:14px;border:2px solid #ddd;border-radius:10px;background:#fff;color:#666;font-size:15px;font-weight:700;cursor:pointer;font-family:sans-serif">&#x2699;&#xFE0F; 後台管理</button>'
-    +'</div>'
-    +'<div id="__panel_viewer">'
-    +'<label class="__lglbl">帳號</label>'
-    +'<input class="__lginp" type="text" id="__lgu" placeholder="請輸入帳號" autocomplete="username">'
-    +'<label class="__lglbl">密碼</label>'
-    +'<input class="__lginp" type="password" id="__lgp" placeholder="請輸入密碼" autocomplete="current-password">'
-    +'<div id="__lgerr"></div>'
-    +'<button id="__lgbtn" class="_lb" style="width:100%;padding:11px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;font-family:sans-serif">登入</button>'
-    +'<p style="font-size:11px;color:#aaa;margin-top:12px;text-align:center">如需帳號請聯絡管理員</p><div style="margin-top:14px;padding-top:14px;border-top:1px solid #eee"><a href="admin.html" style="display:block;padding:10px;background:#f5f5f5;color:#555;text-decoration:none;border-radius:8px;font-size:13px;text-align:center;border:1px solid #ddd">⚙️ 後台管理員登入 →</a></div>'
-    +'</div>'
-    +'<div id="__panel_admin" style="display:none;text-align:center;padding:20px 0">'
-    +'<p style="font-size:14px;color:#666;margin-bottom:20px">點擊下方進入管理員後台登入頁面</p>'
-    +'<a href="admin.html" style="display:inline-block;padding:12px 32px;background:#1a1a1a;color:#fff;text-decoration:none;border-radius:8px;font-size:15px;font-weight:700;font-family:sans-serif">🔒 進入後台管理</a>'
-    +'<p style="font-size:11px;color:#aaa;margin-top:16px">僅限 admin 角色使用</p>'
-    +'</div>'
-    +'</div>';
+    mask.innerHTML='<div id="__lgbox">'
+      +'<h2>📊 選情雷達</h2>'
+      +'<div class="lgsub">彰化選情監控系統<br><small style="color:#bbb">一般觀看者登入區</small></div>'
+      +'<label class="__lglbl">帳號</label>'
+      +'<input class="__lginp" type="text" id="__lgu" placeholder="請輸入帳號" autocomplete="username">'
+      +'<label class="__lglbl">密碼</label>'
+      +'<input class="__lginp" type="password" id="__lgp" placeholder="請輸入密碼" autocomplete="current-password">'
+      +'<div id="__lgerr"></div>'
+      +'<button id="__lgbtn">登入</button>'
+      +'<div id="__lgadmin"><a href="admin.html">⚙️ 後台管理員登入 →</a></div>'
+      +'</div>';
     document.body.appendChild(mask);
     function go(){
       var u=(document.getElementById('__lgu').value||'').trim();
       var p=document.getElementById('__lgp').value||'';
       var e=document.getElementById('__lgerr');
-      if(!u||!p){e.textContent='\u8acb\u8f38\u5165\u5e33\u865f\u548c\u5bc6\u78bc';return;}
-      if(login(u,p)){mask.remove();addBar(u);}
-      else{e.textContent='\u5e33\u865f\u6216\u5bc6\u78bc\u932f\u8aa4';document.getElementById('__lgp').value='';}
+      if(!u||!p){e.textContent='請輸入帳號和密碼';return;}
+      if(login(u,p)){mask.remove();makeBar(u);}
+      else{e.textContent='帳號或密碼錯誤';document.getElementById('__lgp').value='';}
     }
     document.getElementById('__lgbtn').addEventListener('click',go);
     document.getElementById('__lgp').addEventListener('keydown',function(e){if(e.key==='Enter')go();});
     document.getElementById('__lgu').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('__lgp').focus();});
   }
+  // 背景更新 users cache
+  fetch('https://raw.githubusercontent.com/kellychenichun-glitch/election-monitor/main/docs/users.json?ts='+Date.now())
+    .then(function(r){return r.json();}).then(function(d){localStorage.setItem(CK,JSON.stringify(d));}).catch(function(){});
+  // 判斷顯示登入或登出按鈕
   var me=getSess();
-  if(me){
-    refreshUsers();if(document.readyState==='loading'){window.addEventListener('DOMContentLoaded',function(){addBar(me);});}else{addBar(me);}
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){me?makeBar(me):makeLogin();});
   } else {
-    window.addEventListener('DOMContentLoaded',function(){showLogin();});
+    me?makeBar(me):makeLogin();
   }
 })();
 </script>
