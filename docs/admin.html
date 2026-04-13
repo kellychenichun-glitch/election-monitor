@@ -688,6 +688,7 @@ function rSubscribe() {
       + (s.enabled ? '\u8a02\u95b1\u4e2d' : '\u5df2\u505c\u7528') + '</span>'
       + '<button class="btn btn-s" style="padding:5px 10px;font-size:13px" data-tog-sub="' + i + '">'
       + (s.enabled ? '\u66ab\u505c\u8a02\u95b1' : '\u958b\u555f\u8a02\u95b1') + '</button>'
+      + '<button class="btn btn-g" style="padding:5px 10px;font-size:13px" data-resend="' + i + '">重發通知</button>'
       + '<button class="btn btn-d" style="padding:5px 10px;font-size:13px" data-del-sub="' + i + '">\u53d6\u6d88\u8a02\u95b1</button>'
       + '</div>';
   }).join('');
@@ -926,6 +927,7 @@ bind = function() {
       cfg.subscribers.push({email:email, enabled:true, created:new Date().toISOString().split('T')[0]});
       saveNotifyConfig(cfg);
       addLog('user', getSession().username, '\u65b0\u589e\u8a02\u95b1: '+email);
+      ejNotify('sub', email);
       render();
       tst(email + ' \u5df2\u52a0\u5165\u8a02\u95b1\uff01');
     });
@@ -943,6 +945,13 @@ bind = function() {
       render();
     });
   });
+  document.querySelectorAll('[data-resend]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cfg=getNotifyConfig();
+      var sub=cfg.subscribers[parseInt(this.dataset.resend)];
+      if(sub&&sub.email) ejNotify('sub', sub.email);
+    });
+  });
   document.querySelectorAll('[data-del-sub]').forEach(function(btn){
     btn.addEventListener('click', function(){
       var idx = parseInt(this.dataset.delSub);
@@ -951,6 +960,7 @@ bind = function() {
       if (!confirm('\u78ba\u5b9a\u8981\u53d6\u6d88 '+email+' \u7684\u8a02\u95b1\uff1f')) return;
       cfg.subscribers.splice(idx, 1);
       saveNotifyConfig(cfg);
+      ejNotify('unsub', email);
       addLog('user', getSession().username, '\u53d6\u6d88\u8a02\u95b1: '+email);
       render();
       tst('\u5df2\u53d6\u6d88\u8a02\u95b1');
