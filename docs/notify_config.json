@@ -1,17 +1,21 @@
 {
   "subscribers": [
     {
+      "email": "onlylikeenergy@gmail.com",
+      "enabled": true,
+      "created": "2026-04-12"
+    },
+    {
       "email": "kelly.chenichun@gmail.com",
       "enabled": true,
-      "created": "2026-04-08",
-      "note": "主要收件人（從 GitHub Secret 遷移）"
+      "created": "2026-04-12"
     }
   ],
   "schedule": {
-    "mode": "daily",
-    "daily_hour": 6,
-    "interval_hours": 6,
+    "mode": "interval",
+    "daily_hour": 24,
+    "interval_hours": 24,
     "enabled": true
   },
-  "last_updated": "2026-04-08"
+  "last_updated": "2026-04-12"
 }
