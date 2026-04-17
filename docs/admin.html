@@ -107,7 +107,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);
 .user-row:last-child{border-bottom:none}
 .user-name{flex:1;font-size:15px;font-weight:600}
 .user-role{font-size:13px;color:var(--mu);background:var(--sf2);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace}
-.user-last{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace;min-width:160px}
+.user-last{font-size:13px;color:var(--mu);font-family:'DM Mono',monospace;min-width:160px}.perm-label{display:inline-flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:2px 8px;background:var(--sf2);border-radius:4px;margin-right:4px;font-family:'DM Mono',monospace;user-select:none}.perm-label input[type=checkbox]{accent-color:var(--ac);width:14px;height:14px}
 .log-table{width:100%;border-collapse:collapse;font-size:14px}
 .log-table th{background:var(--sf2);padding:8px 12px;text-align:left;font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--bd)}
 .log-table td{padding:9px 12px;border-bottom:1px solid var(--sf3);vertical-align:middle}
@@ -232,6 +232,18 @@ function pushUsersToGitHub(users) {
       method:'PUT',headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
       body:JSON.stringify({message:'Update users via admin',content:content,sha:d.sha})
     });
+
+// 權限勾選變更
+document.addEventListener('change', function(e){
+  if(!e.target.classList.contains('perm-cb'))return;
+  var ui=parseInt(e.target.dataset.ui), p=e.target.dataset.p;
+  var users=getUsers();
+  if(p==='fe') users[ui].canFrontend=e.target.checked;
+  if(p==='be'){ users[ui].canBackend=e.target.checked; users[ui].role=e.target.checked?'admin':'viewer'; }
+  saveUsers(users);
+  addLog('user',getSession().username,'修改權限: '+users[ui].username);
+  tst('權限已更新 ✅');
+});
   }).then(function(r){return r.json();})
   .then(function(res){ tst(res.commit ? '使用者已同步 ✅' : '同步失敗'); })
   .catch(function(e){ tst('同步失敗: '+e.message); });
@@ -263,6 +275,7 @@ function tryLogin(username, password) {
   var user = users.find(function(u){ return u.username === username; });
   if (!user) { addLog('fail', username, '\u5e33\u865f\u4e0d\u5b58\u5728'); return false; }
   if (user.pwHash !== simpleHash(password)) { addLog('fail', username, '\u5bc6\u78bc\u932f\u8aa4'); return false; }
+  if (user.canBackend === false) { addLog('fail', username, '無後台權限'); return false; }
   user.lastLogin = new Date().toLocaleString('zh-TW');
   user.loginCount = (user.loginCount || 0) + 1;
   saveUsers(users);
@@ -447,7 +460,7 @@ function rUsers() {
     var isMe = sess && u.username === sess.username;
     return '<div class="user-row">'
       +'<span class="user-name">'+esc(u.username)+(isMe?' <span style="color:var(--ac);font-size:12px">(\u6211)</span>':'')+'</span>'
-      +'<span class="user-role">'+u.role+'</span>'
+      +'<label class="perm-label"><input type="checkbox" class="perm-cb" data-ui="'+i+'" data-p="fe" '+(u.canFrontend!==false?'checked':'')+'>前台</label>'+'<label class="perm-label"><input type="checkbox" class="perm-cb" data-ui="'+i+'" data-p="be" '+(u.canBackend!==false?'checked':'')+'>後台</label>'
       +'<span class="user-last">\u4e0a\u6b21\u767b\u5165\uff1a'+(u.lastLogin||'\u5f9e\u672a\u767b\u5165')+'</span>'
       +'<button class="btn btn-s" style="padding:5px 12px;font-size:13px" data-changepw="'+i+'">\u4fee\u6539\u5bc6\u78bc</button>'
       +(u.role!=='admin'||users.filter(function(x){return x.role==='admin';}).length>1?'<button class="btn btn-d" style="padding:5px 12px;font-size:13px" data-deluser="'+i+'">\u522a\u9664</button>':'')
@@ -460,7 +473,7 @@ function rUsers() {
     +'<div class="sec"><div class="sh"><div class="st">\u65b0\u589e\u4f7f\u7528\u8005</div></div><div class="sb">'
     +'<div class="fg"><div class="fld"><label>\u5e33\u865f</label><input type="text" id="nu-user" placeholder="請輸入帳號"></div>'
     +'<div class="fld"><label>\u5bc6\u78bc</label><input type="password" id="nu-pass" placeholder="\u81f3\u5c116\u4f4d"></div>'
-    +'<div class="fld"><label>\u89d2\u8272</label><select id="nu-role"><option value="admin">admin</option><option value="viewer" selected>viewer</option></select></div></div>'
+    +'<div class="fld"><label>\u89d2\u8272</label><label class="perm-label"><input type="checkbox" id="nu-fe" checked> 前台</label><label class="perm-label"><input type="checkbox" id="nu-be"> 後台</label></div></div>'
     +'<button class="btn btn-g" id="nu-add" style="margin-top:14px">+ \u65b0\u589e\u4f7f\u7528\u8005</button>'
     +'</div></div>';
 }
@@ -565,12 +578,12 @@ function bind() {
   if(nadd) nadd.addEventListener('click',function(){
     var u=document.getElementById('nu-user').value.trim();
     var p=document.getElementById('nu-pass').value.trim();
-    var r=document.getElementById('nu-role').value;
+    var r=document.getElementById('nu-be').checked?'admin':'viewer';
     if(!u||!p){alert('\u5e33\u865f\u548c\u5bc6\u78bc\u4e0d\u80fd\u70ba\u7a7a');return;}
     if(p.length<6){alert('\u5bc6\u78bc\u81f3\u5c116\u4f4d');return;}
     var users=getUsers();
     if(users.find(function(x){return x.username===u;})){alert('\u5e33\u865f\u5df2\u5b58\u5728');return;}
-    users.push({username:u,pwHash:simpleHash(p),role:r,created:new Date().toLocaleString('zh-TW'),lastLogin:'',loginCount:0});
+    users.push({username:u,pwHash:simpleHash(p),role:r,canFrontend:document.getElementById('nu-fe').checked,canBackend:document.getElementById('nu-be').checked,created:new Date().toLocaleString('zh-TW'),lastLogin:'',loginCount:0});
     saveUsers(users);
     addLog('user',getSession().username,'\u65b0\u589e\u4f7f\u7528\u8005: '+u);
     render(); tst('\u4f7f\u7528\u8005 '+u+' \u5df2\u65b0\u589e\uff01');
