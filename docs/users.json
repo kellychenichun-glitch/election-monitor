@@ -5,7 +5,9 @@
     "role": "admin",
     "created": "2026-04-08",
     "lastLogin": "2026/4/13 下午10:44:43",
-    "loginCount": 7
+    "loginCount": 7,
+    "canFrontend": true,
+    "canBackend": true
   },
   {
     "username": "kelly0920",
@@ -13,7 +15,9 @@
     "role": "admin",
     "created": "2026/4/9 上午11:09:24",
     "lastLogin": "",
-    "loginCount": 0
+    "loginCount": 0,
+    "canFrontend": true,
+    "canBackend": true
   },
   {
     "username": "test",
@@ -21,7 +25,9 @@
     "role": "viewer",
     "created": "2026/4/9 上午11:09:34",
     "lastLogin": "2026/4/17 下午2:20:24",
-    "loginCount": 4
+    "loginCount": 4,
+    "canFrontend": true,
+    "canBackend": false
   },
   {
     "username": "kelly09200722",
@@ -29,6 +35,8 @@
     "role": "admin",
     "created": "2026/4/17 下午2:21:09",
     "lastLogin": "",
-    "loginCount": 0
+    "loginCount": 0,
+    "canFrontend": true,
+    "canBackend": true
   }
 ]
