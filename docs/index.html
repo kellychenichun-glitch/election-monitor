@@ -849,6 +849,7 @@ init();
     var list=getUsers();
     var usr=list.find(function(x){return x.username===u;});
     if(!usr||usr.pwHash!==h(p))return false;
+  if(usr.canFrontend===false)return false;
     usr.lastLogin=new Date().toLocaleString('zh-TW');usr.loginCount=(usr.loginCount||0)+1;
     localStorage.setItem(UK,JSON.stringify(list));
     localStorage.setItem(SK,JSON.stringify({username:u,time:new Date().toISOString()}));
