@@ -4,10 +4,8 @@
     "pwHash": "h667706f28",
     "role": "admin",
     "created": "2026-04-08",
-    "lastLogin": "2026/4/13 下午10:44:43",
-    "loginCount": 7,
-    "canFrontend": true,
-    "canBackend": true
+    "lastLogin": "2026/4/17 下午2:21:49",
+    "loginCount": 8
   },
   {
     "username": "kelly0920",
@@ -15,28 +13,24 @@
     "role": "admin",
     "created": "2026/4/9 上午11:09:24",
     "lastLogin": "",
-    "loginCount": 0,
-    "canFrontend": true,
-    "canBackend": true
+    "loginCount": 0
   },
   {
     "username": "test",
     "pwHash": "h54a392006",
     "role": "viewer",
     "created": "2026/4/9 上午11:09:34",
-    "lastLogin": "2026/4/17 下午2:20:24",
-    "loginCount": 4,
-    "canFrontend": true,
-    "canBackend": false
+    "lastLogin": "2026/4/9 上午11:19:16",
+    "loginCount": 3
   },
   {
-    "username": "kelly09200722",
-    "pwHash": "h667706f28",
-    "role": "admin",
-    "created": "2026/4/17 下午2:21:09",
-    "lastLogin": "",
-    "loginCount": 0,
+    "username": "123",
+    "pwHash": "h567606636",
+    "role": "viewer",
     "canFrontend": true,
-    "canBackend": true
+    "canBackend": false,
+    "created": "2026/4/17 下午9:08:45",
+    "lastLogin": "",
+    "loginCount": 0
   }
 ]
